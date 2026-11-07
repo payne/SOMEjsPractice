@@ -118,4 +118,29 @@ The app already uses relative paths, so it works from the `/SOMEjsPractice/` sub
 
 ### 11:24 — Claude (response)
 
-See the final response below this entry in the conversation; summarized: question sets added, Chapter Tour set created and verified, Core set chapter titles corrected, pushed to main.
+You can now choose between question sets, and there's a second 10-question set called **Chapter Tour**. All 20 questions pass their own checks in Chromium. Both changes are committed and pushed to `main`.
+
+**Choosing a set:** use the "Question set" menu at the top of the question list, or the set list on the About page. Each set keeps its own answers, progress and place. Your existing progress moved into the first set, now named **Core Practice**. You can also add your own set by URL on the About page, and remove it later. All sets work offline.
+
+**The Chapter Tour questions**
+
+| Ch | Question |
+|---|---|
+| 2 | Miles per gallon from text input (`parseFloat`, `toFixed`) |
+| 5 | Find and fix two bugs in an average function |
+| 7 | Countdown using `setInterval` / `clearInterval` |
+| 12 | Random die roll with `Math`, and currency formatting |
+| 13 | Phone number check with a regular expression, `throw` and `try...catch` |
+| 14 | Task list saved to local storage as JSON |
+| 15 | `filter`, `reduce`, a `Set` and a `Map` |
+| 16 | A class with a getter, and a subclass that uses `super` |
+| 17 | Counter with private state using a closure |
+| 18 | `async`/`await` with `fetch()`, handling a 404 |
+
+**Things to know**
+- **The product page has no descriptions for individual chapters,** only each chapter's topic list. I based the questions on those lists.
+- **Two chapters are left out.** Ch 11 needs the jQuery UI library, and Ch 19 is Node.js, which can't run in a browser.
+- **Exams run without internet,** so the Ch 18 question uses built-in sample data in place of the real JSON Placeholder API.
+- **I fixed chapter titles in the Core set.** The product page showed some of my from-memory titles were wrong. For example, arrays are Ch 15, not Ch 13.
+
+**GitHub Pages still isn't turned on,** so the site hasn't deployed yet. At https://github.com/payne/SOMEjsPractice/settings/pages, set **Source** to **GitHub Actions**. Then run the workflow from the Actions tab, or tell me and I'll start a deploy.
