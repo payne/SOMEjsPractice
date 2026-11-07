@@ -78,3 +78,25 @@ Times before this request are approximate, taken from file timestamps, and marke
 ### 10:50 — User
 
 > I've pushed the repo to github.  I want the app to be served via github pages.
+
+### 10:51 — Claude (work done)
+
+- Added `.github/workflows/deploy-pages.yml`: on every push to `main` it runs `npm ci` and `npm run build`, then publishes `dist/` to GitHub Pages.
+- Set `GITHUB_URL` in `src/config.js` to https://github.com/payne/SOMEjsPractice and added the live URL to `README.md`.
+- Checked that a clean `npm ci` + build works locally, then committed (7f839ab) and pushed to `main`.
+- The first workflow run (https://github.com/payne/SOMEjsPractice/actions/runs/42393354160) failed at `actions/configure-pages`, and the deploy step was skipped. Pages is not enabled for the repo yet, and that needs the repo settings page.
+
+### 10:51 — Claude (response)
+
+The deploy workflow is pushed, but the site isn't live yet. GitHub Pages has to be switched on in the repo settings first, and I can't do that from here.
+
+**One step for you:** go to https://github.com/payne/SOMEjsPractice/settings/pages and under **Build and deployment → Source**, choose **GitHub Actions**.
+
+Then tell me and I'll push this log update, which triggers a new deploy. Or start it yourself from the Actions tab: **Deploy to GitHub Pages → Run workflow**. The app will be at **https://payne.github.io/SOMEjsPractice/**.
+
+What I changed:
+- Added `.github/workflows/deploy-pages.yml`. Every push to `main` builds the app and publishes it to Pages.
+- The About page now shows https://github.com/payne/SOMEjsPractice.
+- The README links to the live site.
+
+The app already uses relative paths, so it works from the `/SOMEjsPractice/` subfolder. Offline mode and installing it as an app should work there too.
