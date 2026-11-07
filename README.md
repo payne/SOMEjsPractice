@@ -14,8 +14,11 @@ npm run build     # production build in dist/ (includes the service worker)
 npm run preview   # serve dist/ locally — use this to test offline/PWA behaviour
 ```
 
-The build uses relative paths, so `dist/` can be hosted from any folder (e.g. GitHub Pages).
-Set your repository address in `src/config.js` (`GITHUB_URL`) — it is shown on the About page.
+Live app: **https://payne.github.io/SOMEjsPractice/**
+
+Every push to `main` builds and deploys to GitHub Pages via `.github/workflows/deploy-pages.yml`.
+The build uses relative paths, so `dist/` works from any folder. The repository address shown
+on the About page is `GITHUB_URL` in `src/config.js`.
 
 ## Offline and storage
 

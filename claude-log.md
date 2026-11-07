@@ -74,3 +74,7 @@ I built the PWA and the 10-question bank, and tested them in headless Chromium. 
 I created `claude-log.md` with both of your prompts and my responses in order, and added a rule to `CLAUDE.md` so I'll keep the log updated in every future session in this folder.
 
 Times before this request are approximate, taken from file timestamps, and marked "≈". From now on I'll record entries as they happen. I can't read the exact time you send a message, so I'll use the clock time when I start working on it.
+
+### 10:50 — User
+
+> I've pushed the repo to github.  I want the app to be served via github pages.
