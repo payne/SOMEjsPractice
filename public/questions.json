@@ -1,0 +1,380 @@
+{
+  "title": "Murach's JavaScript and jQuery — Closed-Book Practice",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Getting started with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with links, images, and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures and arrays"
+  },
+  "questions": [
+    {
+      "id": "q01-for-loop-sum",
+      "title": "Sum with a for loop",
+      "chapters": [
+        3
+      ],
+      "difficulty": "easy",
+      "prompt": "Write a `for` loop from scratch that adds the whole numbers **1 through 10** together.\n\n- Store the running sum in a variable named `total` (declare it yourself).\n- After the loop, write `total` to the console with `console.log()`.\n\nDo not use arrays or any built-in math helpers — just the loop.",
+      "starterCode": "// Write your for loop here\n",
+      "hints": [
+        "A for loop has three parts: for (initialization; condition; increment) { ... }",
+        "Start total at 0 before the loop, then use total += i inside it."
+      ],
+      "solution": "let total = 0;\nfor (let i = 1; i <= 10; i++) {\n  total += i;\n}\nconsole.log(total);",
+      "tests": [
+        {
+          "name": "A variable named total equals 55",
+          "code": "return typeof total !== \"undefined\" && total === 55;"
+        },
+        {
+          "name": "Uses a for loop",
+          "code": "return /\\bfor\\s*\\(/.test(code);"
+        },
+        {
+          "name": "Logs 55 to the console",
+          "code": "return logs.some(l => l.trim() === \"55\");"
+        }
+      ]
+    },
+    {
+      "id": "q02-array-highest-passing",
+      "title": "Loop through an array of scores",
+      "chapters": [
+        3,
+        13
+      ],
+      "difficulty": "easy",
+      "prompt": "The starter code declares an array of test scores. Using a loop (`for`, `for...of`, or `while`):\n\n1. Find the highest score and store it in a variable named `highest`. **Do not** use `Math.max()` or `sort()`.\n2. Count how many scores are **80 or higher** and store the count in a variable named `passing`.",
+      "starterCode": "const scores = [88, 92, 75, 100, 64, 80];\n\n",
+      "hints": [
+        "Start highest at the first element (scores[0]) and passing at 0.",
+        "Inside the loop, use an if statement for each job: one compares to highest, one compares to 80."
+      ],
+      "solution": "const scores = [88, 92, 75, 100, 64, 80];\n\nlet highest = scores[0];\nlet passing = 0;\nfor (const score of scores) {\n  if (score > highest) {\n    highest = score;\n  }\n  if (score >= 80) {\n    passing++;\n  }\n}",
+      "tests": [
+        {
+          "name": "highest equals 100",
+          "code": "return typeof highest !== \"undefined\" && highest === 100;"
+        },
+        {
+          "name": "passing equals 4",
+          "code": "return typeof passing !== \"undefined\" && passing === 4;"
+        },
+        {
+          "name": "Does not use Math.max() or sort()",
+          "code": "return !/Math\\.max|\\.sort\\s*\\(/.test(code);"
+        },
+        {
+          "name": "Uses a loop",
+          "code": "return /\\b(for|while)\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "q03-function-initials",
+      "title": "Write a function that returns initials",
+      "chapters": [
+        4,
+        12
+      ],
+      "difficulty": "medium",
+      "prompt": "Write a function named `getInitials` that accepts one parameter, a person's full name, and **returns** their initials as an uppercase string.\n\nExamples:\n\n```\ngetInitials(\"Grace Hopper\")          // \"GH\"\ngetInitials(\"ada king lovelace\")     // \"AKL\"\ngetInitials(\"  Alan   Turing \")      // \"AT\"\n```\n\nNotice the last example: extra spaces must be ignored. You may write it as a function declaration, a function expression, or an arrow function.",
+      "starterCode": "// Define getInitials here\n",
+      "hints": [
+        "trim() removes leading and trailing spaces; split(\" \") breaks a string into an array of words.",
+        "Splitting \"Alan   Turing\" on a single space gives empty strings — skip any word whose length is 0.",
+        "word.charAt(0) or word[0] gets the first letter; toUpperCase() converts it."
+      ],
+      "solution": "const getInitials = fullName => {\n  const words = fullName.trim().split(\" \");\n  let initials = \"\";\n  for (const word of words) {\n    if (word.length > 0) {\n      initials += word.charAt(0).toUpperCase();\n    }\n  }\n  return initials;\n};",
+      "tests": [
+        {
+          "name": "getInitials is a function",
+          "code": "return typeof getInitials === \"function\";"
+        },
+        {
+          "name": "getInitials(\"Grace Hopper\") returns \"GH\"",
+          "code": "return getInitials(\"Grace Hopper\") === \"GH\";"
+        },
+        {
+          "name": "getInitials(\"ada king lovelace\") returns \"AKL\"",
+          "code": "return getInitials(\"ada king lovelace\") === \"AKL\";"
+        },
+        {
+          "name": "getInitials(\"  Alan   Turing \") returns \"AT\"",
+          "code": "return getInitials(\"  Alan   Turing \") === \"AT\";"
+        }
+      ]
+    },
+    {
+      "id": "q04-dom-one-line-text",
+      "title": "One line to change a heading",
+      "chapters": [
+        6
+      ],
+      "difficulty": "easy",
+      "prompt": "The page below has a heading that still says **Loading...**.\n\nWrite **exactly one statement** of plain JavaScript (no jQuery) that changes the heading's text to:\n\n```\nWelcome to the Exam\n```\n\nSelect the heading by its `id`.",
+      "setup": {
+        "html": "<main>\n  <h1 id=\"page_title\">Loading...</h1>\n  <p>Read each question carefully before you answer.</p>\n</main>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nh1 { color: #1f2a44; border-bottom: 3px solid #f7df1e; padding-bottom: .25em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "document.getElementById() or document.querySelector() returns the element.",
+        "Set the element's textContent property."
+      ],
+      "solution": "document.getElementById(\"page_title\").textContent = \"Welcome to the Exam\";",
+      "tests": [
+        {
+          "name": "Heading text is \"Welcome to the Exam\"",
+          "code": "return document.getElementById(\"page_title\").textContent.trim() === \"Welcome to the Exam\";"
+        },
+        {
+          "name": "Answer is a single statement",
+          "code": "const lines = code.split(\"\\n\").map(l => l.trim()).filter(l => l && !l.startsWith(\"//\"));\nreturn lines.length === 1 && lines[0].replace(/;\\s*$/, \"\").indexOf(\";\") === -1;"
+        },
+        {
+          "name": "Does not use jQuery",
+          "code": "return !/\\$\\(|jQuery/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "q05-dom-classlist-loop",
+      "title": "Add a class to every list item",
+      "chapters": [
+        6,
+        3
+      ],
+      "difficulty": "medium",
+      "prompt": "The page has two lists. Using plain JavaScript (no jQuery):\n\n- Select **only** the `<li>` elements inside the list whose id is `task_list`.\n- Loop through them and add the CSS class `highlight` to each one.\n\nThe CSS rule for `.highlight` is already in the page's style sheet. The items in `#done_list` must **not** be changed.",
+      "setup": {
+        "html": "<h2>To do</h2>\n<ul id=\"task_list\">\n  <li>Read chapter 6</li>\n  <li>Finish the DOM exercises</li>\n  <li>Review querySelectorAll()</li>\n</ul>\n<h2>Done</h2>\n<ul id=\"done_list\">\n  <li>Read chapter 5</li>\n  <li>Install a code editor</li>\n</ul>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nli { padding: .25em .5em; margin: .2em 0; }\n.highlight { background-color: #fff3a0; border-left: 4px solid #e6b800; font-weight: bold; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "document.querySelectorAll(\"#task_list li\") returns a NodeList you can loop through with for...of.",
+        "element.classList.add(\"highlight\") adds a class without removing existing ones."
+      ],
+      "solution": "const tasks = document.querySelectorAll(\"#task_list li\");\nfor (const task of tasks) {\n  task.classList.add(\"highlight\");\n}",
+      "tests": [
+        {
+          "name": "Every #task_list item has the highlight class",
+          "code": "const items = document.querySelectorAll(\"#task_list li\");\nreturn items.length === 3 && [...items].every(li => li.classList.contains(\"highlight\"));"
+        },
+        {
+          "name": "#done_list items are unchanged",
+          "code": "return [...document.querySelectorAll(\"#done_list li\")].every(li => !li.classList.contains(\"highlight\"));"
+        },
+        {
+          "name": "Does not use jQuery",
+          "code": "return !/\\$\\(|jQuery/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "q06-event-click-counter",
+      "title": "Click counter with an event handler",
+      "chapters": [
+        4,
+        6
+      ],
+      "difficulty": "medium",
+      "prompt": "The page has a button and a `<span>` that shows `0`.\n\nWrite plain JavaScript so that **each time the button is clicked**, the number in the span goes up by one (1, 2, 3, ...).\n\n- Attach the handler with `addEventListener()` (or the `onclick` property).\n- Wrap your code so it runs after the DOM is loaded, the way the book does with the `DOMContentLoaded` event.",
+      "setup": {
+        "html": "<p>Button clicks: <span id=\"click_count\">0</span></p>\n<button type=\"button\" id=\"add_button\">Add one</button>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; font-size: 1.2em; }\n#click_count { font-weight: bold; color: #c0392b; }\nbutton { font-size: 1em; padding: .4em 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "document.addEventListener(\"DOMContentLoaded\", () => { ... }); runs code once the page is ready.",
+        "Read the span with textContent, convert it with parseInt() or Number(), add 1, and write it back.",
+        "Or keep the count in a variable that lives outside the click handler."
+      ],
+      "solution": "const $ = selector => document.querySelector(selector);\n\ndocument.addEventListener(\"DOMContentLoaded\", () => {\n  $(\"#add_button\").addEventListener(\"click\", () => {\n    const count = parseInt($(\"#click_count\").textContent);\n    $(\"#click_count\").textContent = count + 1;\n  });\n});",
+      "tests": [
+        {
+          "name": "Span still shows 0 before any click",
+          "code": "return document.getElementById(\"click_count\").textContent.trim() === \"0\";"
+        },
+        {
+          "name": "Shows 1 after one click",
+          "code": "document.getElementById(\"add_button\").click();\nreturn document.getElementById(\"click_count\").textContent.trim() === \"1\";"
+        },
+        {
+          "name": "Shows 3 after two more clicks",
+          "code": "const b = document.getElementById(\"add_button\");\nb.click(); b.click();\nreturn document.getElementById(\"click_count\").textContent.trim() === \"3\";"
+        },
+        {
+          "name": "Uses DOMContentLoaded",
+          "code": "return /DOMContentLoaded/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "q07-image-swap-links",
+      "title": "Image swap with links",
+      "chapters": [
+        7,
+        4
+      ],
+      "difficulty": "hard",
+      "prompt": "This is the classic image-swap application. Each thumbnail link's `href` points to a larger image.\n\nWrite plain JavaScript so that when the user clicks any link inside `#image_links`:\n\n1. The `src` of the image `#main_image` changes to the clicked link's `href`.\n2. The caption `#caption` changes to the link's `title` attribute.\n3. The browser does **not** follow the link (cancel the default action).",
+      "setup": {
+        "html": "<h1>Color Gallery</h1>\n<ul id=\"image_links\">\n  <li><a href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='140'%3E%3Crect width='240' height='140' fill='%23e74c3c'/%3E%3Ctext x='120' y='80' font-size='28' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\" title=\"Red\">Red</a></li>\n  <li><a href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='140'%3E%3Crect width='240' height='140' fill='%2327ae60'/%3E%3Ctext x='120' y='80' font-size='28' text-anchor='middle' fill='white'%3EGreen%3C/text%3E%3C/svg%3E\" title=\"Green\">Green</a></li>\n  <li><a href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='140'%3E%3Crect width='240' height='140' fill='%232980b9'/%3E%3Ctext x='120' y='80' font-size='28' text-anchor='middle' fill='white'%3EBlue%3C/text%3E%3C/svg%3E\" title=\"Blue\">Blue</a></li>\n</ul>\n<img id=\"main_image\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='140'%3E%3Crect width='240' height='140' fill='%23e74c3c'/%3E%3Ctext x='120' y='80' font-size='28' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\" alt=\"Gallery image\">\n<p id=\"caption\">Red</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#image_links { list-style: none; padding: 0; display: flex; gap: 1em; }\n#image_links a { color: #1f2a44; font-weight: bold; }\n#main_image { display: block; border: 2px solid #333; }\n#caption { font-style: italic; }"
+      },
+      "starterCode": "document.addEventListener(\"DOMContentLoaded\", () => {\n\n});\n",
+      "hints": [
+        "document.querySelectorAll(\"#image_links a\") gets every link; loop and add a click handler to each.",
+        "Inside the handler, evt.currentTarget (or this, in a regular function) is the clicked link. Use its href and title.",
+        "Call evt.preventDefault() to stop the browser from following the link."
+      ],
+      "solution": "document.addEventListener(\"DOMContentLoaded\", () => {\n  const links = document.querySelectorAll(\"#image_links a\");\n  const mainImage = document.querySelector(\"#main_image\");\n  const caption = document.querySelector(\"#caption\");\n\n  for (const link of links) {\n    link.addEventListener(\"click\", evt => {\n      const clicked = evt.currentTarget;\n      mainImage.src = clicked.href;\n      caption.textContent = clicked.title;\n      evt.preventDefault();\n    });\n  }\n});",
+      "tests": [
+        {
+          "name": "Clicking \"Green\" swaps the image src",
+          "code": "const link = document.querySelectorAll(\"#image_links a\")[1];\nlink.dispatchEvent(new MouseEvent(\"click\", { bubbles: true, cancelable: true }));\nreturn document.getElementById(\"main_image\").src === link.href;"
+        },
+        {
+          "name": "Clicking \"Blue\" updates the caption",
+          "code": "const link = document.querySelectorAll(\"#image_links a\")[2];\nlink.dispatchEvent(new MouseEvent(\"click\", { bubbles: true, cancelable: true }));\nreturn document.getElementById(\"caption\").textContent.trim() === \"Blue\";"
+        },
+        {
+          "name": "The link's default action is cancelled",
+          "code": "const link = document.querySelectorAll(\"#image_links a\")[0];\nconst notCancelled = link.dispatchEvent(new MouseEvent(\"click\", { bubbles: true, cancelable: true }));\nreturn notCancelled === false;"
+        }
+      ]
+    },
+    {
+      "id": "q08-jquery-hide-one-line",
+      "title": "One jQuery statement to hide elements",
+      "chapters": [
+        8
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "jQuery is loaded on this page.\n\nWrite **one jQuery statement** that hides every element with the class `answer` that is **inside** the element with id `faqs`.\n\nThe paragraph with class `answer` in the footer must stay visible.",
+      "setup": {
+        "html": "<section id=\"faqs\">\n  <h2>What is jQuery?</h2>\n  <p class=\"answer\">A JavaScript library that makes DOM scripting easier.</p>\n  <h2>Why use it?</h2>\n  <p class=\"answer\">It handles cross-browser differences for you.</p>\n</section>\n<footer>\n  <p class=\"answer\">Footer note: this one should stay visible.</p>\n</footer>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nh2 { font-size: 1.1em; color: #1f2a44; margin-bottom: .2em; }\n.answer { margin-top: 0; }\nfooter { border-top: 1px solid #ccc; margin-top: 1em; color: #555; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "jQuery selectors use CSS syntax: a descendant selector is \"#parent .child\".",
+        "The hide() method sets display to none."
+      ],
+      "solution": "$(\"#faqs .answer\").hide();",
+      "tests": [
+        {
+          "name": "Both answers inside #faqs are hidden",
+          "code": "return $(\"#faqs .answer\").length === 2 && $(\"#faqs .answer\").toArray().every(el => $(el).is(\":hidden\"));"
+        },
+        {
+          "name": "Footer answer is still visible",
+          "code": "return $(\"footer .answer\").is(\":visible\");"
+        },
+        {
+          "name": "Uses jQuery",
+          "code": "return /\\$\\(|jQuery\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "q09-jquery-slidetoggle",
+      "title": "FAQ toggle with a jQuery effect",
+      "chapters": [
+        8,
+        9
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "jQuery is loaded. Each answer `<div>` starts hidden by the CSS.\n\nWrite jQuery code so that when the user clicks any `<h2>` inside `#faqs`:\n\n1. The class `minus` is toggled on the clicked `<h2>` (the CSS uses it to change the + to a −).\n2. The `<div>` **right after** that `<h2>` slides down if hidden, or up if visible, using a jQuery effect.\n\nUse the ready event handler, as in the book.",
+      "setup": {
+        "html": "<section id=\"faqs\">\n  <h2>What is a closure?</h2>\n  <div><p>A function together with the variables it remembers from its outer scope.</p></div>\n  <h2>What does $ mean in jQuery?</h2>\n  <div><p>It's a short name for the jQuery() function.</p></div>\n</section>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nh2 { font-size: 1.1em; cursor: pointer; color: #1f2a44; }\nh2::before { content: \"+ \"; }\nh2.minus::before { content: \"\\2212  \"; }\n#faqs div { display: none; padding-left: 1.5em; }"
+      },
+      "starterCode": "$(document).ready( () => {\n\n});\n",
+      "hints": [
+        "$(\"#faqs h2\").click(function() { ... }) — inside a regular function, $(this) is the clicked heading.",
+        "toggleClass(\"minus\") adds the class if missing and removes it if present.",
+        "next() gets the next sibling; slideToggle() animates it up or down."
+      ],
+      "solution": "$(document).ready( () => {\n  $(\"#faqs h2\").click( function() {\n    $(this).toggleClass(\"minus\");\n    $(this).next().slideToggle();\n  });\n});",
+      "tests": [
+        {
+          "name": "Clicking the first heading adds class \"minus\"",
+          "code": "$(\"#faqs h2\").eq(0).trigger(\"click\");\nreturn $(\"#faqs h2\").eq(0).hasClass(\"minus\");"
+        },
+        {
+          "name": "The first answer is shown after the animation",
+          "code": "await wait(800);\nreturn $(\"#faqs div\").eq(0).is(\":visible\");"
+        },
+        {
+          "name": "The second answer is still hidden",
+          "code": "return $(\"#faqs div\").eq(1).is(\":hidden\");"
+        },
+        {
+          "name": "Clicking again removes \"minus\" and hides the answer",
+          "code": "$(\"#faqs h2\").eq(0).trigger(\"click\");\nawait wait(800);\nreturn !$(\"#faqs h2\").eq(0).hasClass(\"minus\") && $(\"#faqs div\").eq(0).is(\":hidden\");"
+        },
+        {
+          "name": "Uses a slide effect",
+          "code": "return /slide(Toggle|Down|Up)\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "q10-jquery-form-validation",
+      "title": "Validate a form before it submits",
+      "chapters": [
+        10,
+        8,
+        12
+      ],
+      "difficulty": "hard",
+      "useJQuery": true,
+      "prompt": "jQuery is loaded. Write a **submit** event handler for the form `#email_form` that validates the email field:\n\n- If `#email` is empty (after trimming spaces) **or** does not contain an `@`, put the text `Enter a valid email.` in the `<span>` right after the field, and **stop the form from submitting**.\n- Otherwise, clear the span (set it to an empty string) and let the form submit.",
+      "setup": {
+        "html": "<form id=\"email_form\" action=\"join.html\" method=\"get\">\n  <label for=\"email\">Email:</label>\n  <input type=\"text\" id=\"email\" name=\"email\">\n  <span></span><br>\n  <input type=\"submit\" id=\"join\" value=\"Join our list\">\n</form>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nlabel { display: inline-block; width: 4em; }\ninput[type=text] { width: 14em; }\nspan { color: #c0392b; margin-left: .5em; }\n#join { margin-top: 1em; }"
+      },
+      "starterCode": "$(document).ready( () => {\n\n});\n",
+      "hints": [
+        "$(\"#email_form\").submit( evt => { ... }) attaches a submit handler.",
+        "val() gets the field value; trim() removes spaces; indexOf(\"@\") returns -1 when there is no @.",
+        "evt.preventDefault() stops the submission. $(\"#email\").next() is the span."
+      ],
+      "solution": "$(document).ready( () => {\n  $(\"#email_form\").submit( evt => {\n    const email = $(\"#email\").val().trim();\n    if (email === \"\" || email.indexOf(\"@\") === -1) {\n      $(\"#email\").next().text(\"Enter a valid email.\");\n      evt.preventDefault();\n    } else {\n      $(\"#email\").next().text(\"\");\n    }\n  });\n});",
+      "tests": [
+        {
+          "name": "Empty email shows the error message",
+          "code": "$(\"#email\").val(\"   \");\ndocument.getElementById(\"email_form\").dispatchEvent(new Event(\"submit\", { bubbles: true, cancelable: true }));\nreturn $(\"#email\").next().text().trim() === \"Enter a valid email.\";"
+        },
+        {
+          "name": "Empty email cancels the submit",
+          "code": "$(\"#email\").val(\"\");\nconst notCancelled = document.getElementById(\"email_form\").dispatchEvent(new Event(\"submit\", { bubbles: true, cancelable: true }));\nreturn notCancelled === false;"
+        },
+        {
+          "name": "Email without @ is rejected",
+          "code": "$(\"#email\").val(\"grace.example.com\");\nconst notCancelled = document.getElementById(\"email_form\").dispatchEvent(new Event(\"submit\", { bubbles: true, cancelable: true }));\nreturn notCancelled === false && $(\"#email\").next().text().trim() === \"Enter a valid email.\";"
+        },
+        {
+          "name": "Valid email clears the message and submits",
+          "code": "$(\"#email\").val(\"grace@example.com\");\nconst notCancelled = document.getElementById(\"email_form\").dispatchEvent(new Event(\"submit\", { bubbles: true, cancelable: true }));\nreturn notCancelled === true && $(\"#email\").next().text() === \"\";"
+        }
+      ]
+    }
+  ]
+}

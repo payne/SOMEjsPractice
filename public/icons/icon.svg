@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1f2a44"/>
+  <text x="256" y="300" font-family="DejaVu Sans Mono, Menlo, Consolas, monospace" font-size="190" font-weight="700" fill="#f7df1e" text-anchor="middle">{JS}</text>
+  <rect x="136" y="360" width="240" height="22" rx="11" fill="#5b8def"/>
+</svg>
