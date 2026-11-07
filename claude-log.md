@@ -152,3 +152,11 @@ You can now choose between question sets, and there's a second 10-question set c
 ### 11:26 — Claude (work done)
 
 - Pushed this log update to `main` to start a new Pages deploy, and watched the workflow run.
+- Deploy run 42396321669 succeeded (build and deploy). All files return 200 on the live site.
+- Loaded the live site in headless Chromium: 10 questions listed, both question sets in the picker, and the service worker active with scope https://payne.github.io/SOMEjsPractice/ (offline support on).
+
+### 11:27 — Claude (response)
+
+The app is live at **https://payne.github.io/SOMEjsPractice/**. The deploy succeeded, and I loaded the live site in a browser: both question sets appear and offline support is active.
+
+From now on, every push to `main` updates the site automatically, usually within a minute or two. Phones and browsers that already have the app installed pick up a new version the next time it's opened online, or right away with **About → Reload app**.
