@@ -1,0 +1,335 @@
+{
+  "title": "Chapter 4: How to work with JavaScript objects, functions, and events",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Get started fast with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with images and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
+  },
+  "questions": [
+    {
+      "id": "ch04-01-the-window-and-document-objects",
+      "title": "The window and document objects",
+      "chapters": [
+        4
+      ],
+      "difficulty": "easy",
+      "prompt": "Using the **document** object, change the page's title (the text in the browser tab) to `Order Form`. Then, using a method of the **window** object, convert the string `\"12.5 kg\"` to the number 12.5 and store it in `weight` — call the method through `window.` explicitly.",
+      "setup": {
+        "html": "<h1>Orders</h1>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "document.title holds the page title.",
+        "parseFloat() is a method of the window object: window.parseFloat(...)"
+      ],
+      "solution": "document.title = \"Order Form\";\nconst weight = window.parseFloat(\"12.5 kg\");",
+      "tests": [
+        {
+          "name": "document.title is \"Order Form\"",
+          "code": "return document.title === \"Order Form\";"
+        },
+        {
+          "name": "weight is 12.5 using window.parseFloat",
+          "code": "return weight === 12.5 && /window\\.parseFloat\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch04-02-textbox-and-number-objects",
+      "title": "Textbox and Number objects",
+      "chapters": [
+        4
+      ],
+      "difficulty": "medium",
+      "prompt": "When **Calculate** is clicked, read the `value` of the two text boxes, convert them to numbers, and put the product (rounded to 2 decimals with the Number object's `toFixed()` method) into the `#total` text box. If either value isn't a number, put `Invalid entry` in `#total` instead.",
+      "setup": {
+        "html": "<label>Price: <input type=\"text\" id=\"price\" value=\"19.99\"></label><br>\n<label>Quantity: <input type=\"text\" id=\"quantity\" value=\"3\"></label><br>\n<button type=\"button\" id=\"calculate\">Calculate</button><br>\n<label>Total: <input type=\"text\" id=\"total\" readonly></label>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nlabel { display: inline-block; margin: .3em 0; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "Text box values are strings: parseFloat(document.querySelector(\"#price\").value)",
+        "Use isNaN() to detect bad input."
+      ],
+      "solution": "const $ = selector => document.querySelector(selector);\n\ndocument.addEventListener(\"DOMContentLoaded\", () => {\n  $(\"#calculate\").addEventListener(\"click\", () => {\n    const price = parseFloat($(\"#price\").value);\n    const quantity = parseFloat($(\"#quantity\").value);\n    if (isNaN(price) || isNaN(quantity)) {\n      $(\"#total\").value = \"Invalid entry\";\n    } else {\n      $(\"#total\").value = (price * quantity).toFixed(2);\n    }\n  });\n});",
+      "tests": [
+        {
+          "name": "19.99 × 3 shows 59.97",
+          "code": "document.getElementById(\"calculate\").click();\nreturn document.getElementById(\"total\").value === \"59.97\";"
+        },
+        {
+          "name": "2.5 × 4 shows 10.00",
+          "code": "document.getElementById(\"price\").value = \"2.5\";\ndocument.getElementById(\"quantity\").value = \"4\";\ndocument.getElementById(\"calculate\").click();\nreturn document.getElementById(\"total\").value === \"10.00\";"
+        },
+        {
+          "name": "Bad input shows \"Invalid entry\"",
+          "code": "document.getElementById(\"quantity\").value = \"three\";\ndocument.getElementById(\"calculate\").click();\nreturn document.getElementById(\"total\").value === \"Invalid entry\";"
+        }
+      ]
+    },
+    {
+      "id": "ch04-03-date-objects-format-a-date",
+      "title": "Date objects: format a date",
+      "chapters": [
+        4
+      ],
+      "difficulty": "medium",
+      "prompt": "Write a function `formatDate(date)` that takes a `Date` object and returns it as `MM/DD/YYYY`, with a leading zero on one-digit months and days.\n\n```\nformatDate(new Date(2026, 0, 5))     // \"01/05/2026\"\nformatDate(new Date(2026, 11, 25))   // \"12/25/2026\"\n```\n\nRemember: `getMonth()` counts months from **0**.",
+      "starterCode": "",
+      "hints": [
+        "getMonth() + 1 gives 1–12. getDate() gives the day of the month.",
+        "String(n).padStart(2, \"0\") adds a leading zero."
+      ],
+      "solution": "function formatDate(date) {\n  const month = String(date.getMonth() + 1).padStart(2, \"0\");\n  const day = String(date.getDate()).padStart(2, \"0\");\n  return `${month}/${day}/${date.getFullYear()}`;\n}",
+      "tests": [
+        {
+          "name": "January 5, 2026 is \"01/05/2026\"",
+          "code": "return formatDate(new Date(2026, 0, 5)) === \"01/05/2026\";"
+        },
+        {
+          "name": "December 25, 2026 is \"12/25/2026\"",
+          "code": "return formatDate(new Date(2026, 11, 25)) === \"12/25/2026\";"
+        }
+      ]
+    },
+    {
+      "id": "ch04-04-string-object-methods",
+      "title": "String object methods",
+      "chapters": [
+        4
+      ],
+      "difficulty": "easy",
+      "prompt": "Write a function `getDomain(email)` that returns the part of an email address after the `@`, in **lowercase**, using the String methods `indexOf()`, `substring()` (or `slice()`) and `toLowerCase()`. If there is no `@`, return an empty string.\n\n```\ngetDomain(\"Grace@Example.COM\")   // \"example.com\"\ngetDomain(\"no-at-sign\")          // \"\"\n```",
+      "starterCode": "",
+      "hints": [
+        "indexOf(\"@\") returns -1 when there is no @.",
+        "substring(i + 1) returns everything after index i."
+      ],
+      "solution": "function getDomain(email) {\n  const at = email.indexOf(\"@\");\n  if (at === -1) {\n    return \"\";\n  }\n  return email.substring(at + 1).toLowerCase();\n}",
+      "tests": [
+        {
+          "name": "getDomain(\"Grace@Example.COM\") is \"example.com\"",
+          "code": "return getDomain(\"Grace@Example.COM\") === \"example.com\";"
+        },
+        {
+          "name": "getDomain(\"no-at-sign\") is \"\"",
+          "code": "return getDomain(\"no-at-sign\") === \"\";"
+        },
+        {
+          "name": "Uses indexOf()",
+          "code": "return /indexOf\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch04-05-three-ways-to-write-a-function",
+      "title": "Three ways to write a function",
+      "chapters": [
+        4
+      ],
+      "difficulty": "medium",
+      "prompt": "Write the same function three ways. Each takes a `subtotal` and returns the sales tax at 6%, rounded to 2 decimals as a number:\n\n1. a **function declaration** named `taxDeclaration`\n2. a **function expression** stored in a constant `taxExpression`\n3. an **arrow function** stored in a constant `taxArrow`",
+      "starterCode": "",
+      "hints": [
+        "Declaration: function name(p) { ... }",
+        "Expression: const name = function(p) { ... };",
+        "Arrow: const name = p => ...;"
+      ],
+      "solution": "function taxDeclaration(subtotal) {\n  return Number((subtotal * 0.06).toFixed(2));\n}\n\nconst taxExpression = function(subtotal) {\n  return Number((subtotal * 0.06).toFixed(2));\n};\n\nconst taxArrow = subtotal => Number((subtotal * 0.06).toFixed(2));",
+      "tests": [
+        {
+          "name": "All three return 6.15 for 102.5",
+          "code": "return [taxDeclaration, taxExpression, taxArrow].every(f => f(102.5) === 6.15);"
+        },
+        {
+          "name": "taxDeclaration is a function declaration",
+          "code": "return /function\\s+taxDeclaration\\s*\\(/.test(code);"
+        },
+        {
+          "name": "taxExpression is a function expression",
+          "code": "return /taxExpression\\s*=\\s*function\\b/.test(code);"
+        },
+        {
+          "name": "taxArrow is an arrow function",
+          "code": "return /taxArrow\\s*=\\s*(\\(?[\\w\\s,]*\\)?)\\s*=>/.test(code) && !(\"prototype\" in taxArrow);"
+        }
+      ]
+    },
+    {
+      "id": "ch04-06-global-local-and-block-scope",
+      "title": "Global, local and block scope",
+      "chapters": [
+        4
+      ],
+      "difficulty": "medium",
+      "prompt": "The function in the starter code should return the shipping cost, but calling it throws a **ReferenceError** because of **block scope**. Fix the function (without making `shipping` a global variable) so that:\n\n```\ngetShipping(30)    // 5.99\ngetShipping(75)    // 0\n```",
+      "starterCode": "function getShipping(subtotal) {\n  if (subtotal < 50) {\n    let shipping = 5.99;\n  } else {\n    let shipping = 0;\n  }\n  return shipping;\n}\n",
+      "hints": [
+        "A variable declared with let inside { } only exists inside those braces.",
+        "Declare shipping once, before the if statement, and assign it inside."
+      ],
+      "solution": "function getShipping(subtotal) {\n  let shipping;\n  if (subtotal < 50) {\n    shipping = 5.99;\n  } else {\n    shipping = 0;\n  }\n  return shipping;\n}",
+      "tests": [
+        {
+          "name": "getShipping(30) is 5.99",
+          "code": "return getShipping(30) === 5.99;"
+        },
+        {
+          "name": "getShipping(75) is 0",
+          "code": "return getShipping(75) === 0;"
+        },
+        {
+          "name": "shipping is not global",
+          "code": "return typeof shipping === \"undefined\";"
+        }
+      ]
+    },
+    {
+      "id": "ch04-07-attach-a-click-event-handler",
+      "title": "Attach a click event handler",
+      "chapters": [
+        4
+      ],
+      "difficulty": "easy",
+      "prompt": "When the button is clicked, **toggle** the class `dark` on the `<body>` element, and change the button's text to `Light mode` when dark mode is on and `Dark mode` when it's off. Attach the handler with `addEventListener()`.",
+      "setup": {
+        "html": "<button type=\"button\" id=\"mode\">Dark mode</button>\n<p>Some text on the page.</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nbody.dark { background: #222; color: #eee; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "document.body.classList.toggle(\"dark\") returns true if the class is now on."
+      ],
+      "solution": "const button = document.getElementById(\"mode\");\nbutton.addEventListener(\"click\", () => {\n  const isDark = document.body.classList.toggle(\"dark\");\n  button.textContent = isDark ? \"Light mode\" : \"Dark mode\";\n});",
+      "tests": [
+        {
+          "name": "One click turns dark mode on",
+          "code": "document.getElementById(\"mode\").click();\nreturn document.body.classList.contains(\"dark\") && document.getElementById(\"mode\").textContent === \"Light mode\";"
+        },
+        {
+          "name": "A second click turns it off",
+          "code": "document.getElementById(\"mode\").click();\nreturn !document.body.classList.contains(\"dark\") && document.getElementById(\"mode\").textContent === \"Dark mode\";"
+        },
+        {
+          "name": "Uses addEventListener",
+          "code": "return /addEventListener\\s*\\(\\s*[\"']click/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch04-08-an-anonymous-function-for-a-change-event",
+      "title": "An anonymous function for a change event",
+      "chapters": [
+        4
+      ],
+      "difficulty": "easy",
+      "prompt": "When the user picks a different option in the `#size` list, show the matching price in `#price` (`$8.00` for small, `$10.00` for medium, `$12.00` for large). Use an **anonymous function** as the `change` event handler.",
+      "setup": {
+        "html": "<label>Size: <select id=\"size\">\n  <option value=\"small\">Small</option>\n  <option value=\"medium\">Medium</option>\n  <option value=\"large\">Large</option>\n</select></label>\n<p>Price: <span id=\"price\">$8.00</span></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "The select element's value property is the chosen option's value.",
+        "Use if/else or an object like { small: \"$8.00\", ... } to look up the price."
+      ],
+      "solution": "const prices = { small: \"$8.00\", medium: \"$10.00\", large: \"$12.00\" };\ndocument.getElementById(\"size\").addEventListener(\"change\", function() {\n  document.getElementById(\"price\").textContent = prices[this.value];\n});",
+      "tests": [
+        {
+          "name": "Choosing large shows $12.00",
+          "code": "const s = document.getElementById(\"size\");\ns.value = \"large\";\ns.dispatchEvent(new Event(\"change\"));\nreturn document.getElementById(\"price\").textContent === \"$12.00\";"
+        },
+        {
+          "name": "Choosing medium shows $10.00",
+          "code": "const s = document.getElementById(\"size\");\ns.value = \"medium\";\ns.dispatchEvent(new Event(\"change\"));\nreturn document.getElementById(\"price\").textContent === \"$10.00\";"
+        }
+      ]
+    },
+    {
+      "id": "ch04-09-use-the-event-object",
+      "title": "Use the Event object",
+      "chapters": [
+        4
+      ],
+      "difficulty": "medium",
+      "prompt": "As the user types in the `#comment` text area, show how many characters are left out of 50 in `#remaining`, like `42 characters left`. Use the `input` event and the **Event object's** `target` property to read the text. If the count goes below 0, also add the class `over` to `#remaining` (and remove it otherwise).",
+      "setup": {
+        "html": "<textarea id=\"comment\" rows=\"3\" cols=\"40\"></textarea>\n<p id=\"remaining\">50 characters left</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n.over { color: #c0392b; font-weight: bold; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "comment.addEventListener(\"input\", evt => { const text = evt.target.value; ... })",
+        "classList.toggle(\"over\", left < 0) adds or removes based on the condition."
+      ],
+      "solution": "document.getElementById(\"comment\").addEventListener(\"input\", evt => {\n  const left = 50 - evt.target.value.length;\n  const remaining = document.getElementById(\"remaining\");\n  remaining.textContent = `${left} characters left`;\n  remaining.classList.toggle(\"over\", left < 0);\n});",
+      "tests": [
+        {
+          "name": "Typing 8 characters shows 42 left",
+          "code": "const c = document.getElementById(\"comment\");\nc.value = \"Hi there\";\nc.dispatchEvent(new Event(\"input\"));\nreturn document.getElementById(\"remaining\").textContent === \"42 characters left\";"
+        },
+        {
+          "name": "Going over 50 adds class \"over\"",
+          "code": "const c = document.getElementById(\"comment\");\nc.value = \"x\".repeat(55);\nc.dispatchEvent(new Event(\"input\"));\nconst r = document.getElementById(\"remaining\");\nreturn r.textContent === \"-5 characters left\" && r.classList.contains(\"over\");"
+        },
+        {
+          "name": "Uses the event's target",
+          "code": "return /\\.target\\b/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch04-10-email-list-application",
+      "title": "Email List application",
+      "chapters": [
+        4
+      ],
+      "difficulty": "hard",
+      "prompt": "Like the chapter's Email List application: when the form is submitted, check that\n\n- the first email isn't empty → otherwise `Email is required.`\n- the second email matches the first → otherwise `Emails must match.`\n\nShow each message in the `<span>` right after that field (empty string when OK). If there are any errors, **cancel the submit** with the Event object's `preventDefault()` method.",
+      "setup": {
+        "html": "<form id=\"email_form\" action=\"join.html\">\n  <label for=\"email_1\">Email:</label> <input type=\"text\" id=\"email_1\"> <span></span><br>\n  <label for=\"email_2\">Re-enter:</label> <input type=\"text\" id=\"email_2\"> <span></span><br>\n  <input type=\"submit\" value=\"Join\">\n</form>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nspan { color: #c0392b; }\nlabel { display: inline-block; width: 5em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "element.nextElementSibling is the span right after an input.",
+        "Listen for the form's \"submit\" event and call evt.preventDefault() when there are errors."
+      ],
+      "solution": "const $ = selector => document.querySelector(selector);\n\ndocument.addEventListener(\"DOMContentLoaded\", () => {\n  $(\"#email_form\").addEventListener(\"submit\", evt => {\n    const email1 = $(\"#email_1\").value.trim();\n    const email2 = $(\"#email_2\").value.trim();\n    let isValid = true;\n\n    $(\"#email_1\").nextElementSibling.textContent = \"\";\n    $(\"#email_2\").nextElementSibling.textContent = \"\";\n    if (email1 === \"\") {\n      $(\"#email_1\").nextElementSibling.textContent = \"Email is required.\";\n      isValid = false;\n    }\n    if (email2 !== email1) {\n      $(\"#email_2\").nextElementSibling.textContent = \"Emails must match.\";\n      isValid = false;\n    }\n    if (!isValid) {\n      evt.preventDefault();\n    }\n  });\n});",
+      "tests": [
+        {
+          "name": "Empty email shows \"Email is required.\" and cancels",
+          "code": "const f = document.getElementById(\"email_form\");\nconst ok = f.dispatchEvent(new Event(\"submit\", { cancelable: true }));\nreturn ok === false && document.getElementById(\"email_1\").nextElementSibling.textContent === \"Email is required.\";"
+        },
+        {
+          "name": "Mismatched emails show \"Emails must match.\"",
+          "code": "document.getElementById(\"email_1\").value = \"a@b.com\";\ndocument.getElementById(\"email_2\").value = \"a@c.com\";\nconst ok = document.getElementById(\"email_form\").dispatchEvent(new Event(\"submit\", { cancelable: true }));\nreturn ok === false && document.getElementById(\"email_2\").nextElementSibling.textContent === \"Emails must match.\" && document.getElementById(\"email_1\").nextElementSibling.textContent === \"\";"
+        },
+        {
+          "name": "Matching emails clear messages and submit",
+          "code": "document.getElementById(\"email_2\").value = \"a@b.com\";\nconst ok = document.getElementById(\"email_form\").dispatchEvent(new Event(\"submit\", { cancelable: true }));\nreturn ok === true && document.getElementById(\"email_2\").nextElementSibling.textContent === \"\";"
+        }
+      ]
+    }
+  ]
+}

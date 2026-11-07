@@ -1,0 +1,301 @@
+{
+  "title": "Chapter 1: Introduction to web development",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Get started fast with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with images and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
+  },
+  "questions": [
+    {
+      "id": "ch01-01-select-links-inside-the-nav",
+      "title": "Select links inside the nav",
+      "chapters": [
+        1
+      ],
+      "difficulty": "easy",
+      "prompt": "CSS selectors are used by CSS **and** by JavaScript. Assign a string to a constant named `selector` that selects **only the `<a>` elements inside the `<nav>`** element (not the link in the main content).",
+      "setup": {
+        "html": "<header><h1>Town Library</h1>\n  <nav>\n    <a href=\"index.html\" class=\"current\">Home</a>\n    <a href=\"books.html\">Books</a>\n    <a href=\"events.html\">Events</a>\n  </nav>\n</header>\n<main>\n  <p class=\"intro\">Welcome! <a href=\"hours.html\">See our hours</a>.</p>\n  <p>New books arrive every week.</p>\n  <p class=\"intro note\">Closed on holidays.</p>\n</main>\n<footer><p>&copy; Town Library</p></footer>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "A descendant selector is two selectors separated by a space: \"parent child\"."
+      ],
+      "solution": "const selector = \"nav a\";",
+      "tests": [
+        {
+          "name": "selector is a string",
+          "code": "return typeof selector === \"string\";"
+        },
+        {
+          "name": "Selects exactly the 3 nav links",
+          "code": "const got = [...document.querySelectorAll(selector)];\nconst want = [...document.querySelectorAll(\"nav a\")];\nreturn got.length === want.length && got.every((el, i) => el === want[i]);"
+        }
+      ]
+    },
+    {
+      "id": "ch01-02-select-by-class",
+      "title": "Select by class",
+      "chapters": [
+        1
+      ],
+      "difficulty": "easy",
+      "prompt": "Assign to `selector` a CSS selector that selects every element with the class `intro`. (Notice that one paragraph has two classes.)",
+      "setup": {
+        "html": "<header><h1>Town Library</h1>\n  <nav>\n    <a href=\"index.html\" class=\"current\">Home</a>\n    <a href=\"books.html\">Books</a>\n    <a href=\"events.html\">Events</a>\n  </nav>\n</header>\n<main>\n  <p class=\"intro\">Welcome! <a href=\"hours.html\">See our hours</a>.</p>\n  <p>New books arrive every week.</p>\n  <p class=\"intro note\">Closed on holidays.</p>\n</main>\n<footer><p>&copy; Town Library</p></footer>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "A class selector starts with a period."
+      ],
+      "solution": "const selector = \".intro\";",
+      "tests": [
+        {
+          "name": "Selects both .intro paragraphs",
+          "code": "const got = [...document.querySelectorAll(selector)];\nconst want = [...document.querySelectorAll(\".intro\")];\nreturn got.length === want.length && got.every((el, i) => el === want[i]);"
+        }
+      ]
+    },
+    {
+      "id": "ch01-03-select-by-id-and-by-two-classes",
+      "title": "Select by id and by two classes",
+      "chapters": [
+        1
+      ],
+      "difficulty": "medium",
+      "prompt": "Assign to `currentLink` a selector that selects the link with the class `current` **inside the nav**, and assign to `introNote` a selector that selects only the element that has **both** the `intro` and `note` classes.",
+      "setup": {
+        "html": "<header><h1>Town Library</h1>\n  <nav>\n    <a href=\"index.html\" class=\"current\">Home</a>\n    <a href=\"books.html\">Books</a>\n    <a href=\"events.html\">Events</a>\n  </nav>\n</header>\n<main>\n  <p class=\"intro\">Welcome! <a href=\"hours.html\">See our hours</a>.</p>\n  <p>New books arrive every week.</p>\n  <p class=\"intro note\">Closed on holidays.</p>\n</main>\n<footer><p>&copy; Town Library</p></footer>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "Chain class selectors with no space to require both: \".a.b\""
+      ],
+      "solution": "const currentLink = \"nav a.current\";\nconst introNote = \".intro.note\";",
+      "tests": [
+        {
+          "name": "currentLink selects only the Home link",
+          "code": "const r = document.querySelectorAll(currentLink);\nreturn r.length === 1 && r[0].textContent === \"Home\";"
+        },
+        {
+          "name": "introNote selects only \"Closed on holidays.\"",
+          "code": "const r = document.querySelectorAll(introNote);\nreturn r.length === 1 && r[0].textContent.includes(\"Closed\");"
+        }
+      ]
+    },
+    {
+      "id": "ch01-04-write-a-css-style-rule",
+      "title": "Write a CSS style rule",
+      "chapters": [
+        1
+      ],
+      "difficulty": "easy",
+      "prompt": "Assign to a constant named `css` a string that contains **one CSS style rule** for `h1` elements that sets:\n\n- the text color to `navy`\n- the font size to `40px`\n\nThe checker adds your rule to the page's style sheet.",
+      "setup": {
+        "html": "<h1>Styled heading</h1>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "A rule is a selector followed by declarations in braces: h1 { property: value; }"
+      ],
+      "solution": "const css = \"h1 { color: navy; font-size: 40px; }\";",
+      "tests": [
+        {
+          "name": "css is a string with one rule",
+          "code": "return typeof css === \"string\" && (css.match(/\\{/g) || []).length === 1;"
+        },
+        {
+          "name": "h1 is navy and 40px",
+          "code": "const style = document.createElement(\"style\");\nstyle.textContent = css;\ndocument.head.appendChild(style);\nconst cs = getComputedStyle(document.querySelector(\"h1\"));\nreturn cs.color === \"rgb(0, 0, 128)\" && cs.fontSize === \"40px\";"
+        }
+      ]
+    },
+    {
+      "id": "ch01-05-html5-semantic-page-layout",
+      "title": "HTML5 semantic page layout",
+      "chapters": [
+        1
+      ],
+      "difficulty": "medium",
+      "prompt": "Assign to a constant named `html` a string of HTML for a page body that uses the HTML5 **semantic elements**, in this order:\n\n1. a `header` that contains an `h1`\n2. a `main` that contains a `section` with an `h2` and a `p`\n3. a `footer` that contains a `p`\n\nAny text is fine. (Template literals let a string span several lines.)",
+      "starterCode": "",
+      "hints": [
+        "Use backticks for a multi-line string.",
+        "The semantic elements are header, nav, main, section, article, aside and footer."
+      ],
+      "solution": "const html = `\n<header><h1>My Site</h1></header>\n<main>\n  <section>\n    <h2>About</h2>\n    <p>Hello!</p>\n  </section>\n</main>\n<footer><p>Copyright 2026</p></footer>`;",
+      "tests": [
+        {
+          "name": "html is a string",
+          "code": "return typeof html === \"string\";"
+        },
+        {
+          "name": "Has header > h1, main > section > h2 + p, footer > p",
+          "code": "const doc = new DOMParser().parseFromString(html, \"text/html\");\nreturn !!doc.querySelector(\"header h1\") && !!doc.querySelector(\"main section h2\") &&\n  !!doc.querySelector(\"main section p\") && !!doc.querySelector(\"footer p\");"
+        },
+        {
+          "name": "Elements are in the order header, main, footer",
+          "code": "const doc = new DOMParser().parseFromString(html, \"text/html\");\nconst order = [...doc.body.children].map(e => e.tagName.toLowerCase()).filter(t => [\"header\", \"main\", \"footer\"].includes(t));\nreturn order.join(\",\") === \"header,main,footer\";"
+        }
+      ]
+    },
+    {
+      "id": "ch01-06-basic-html-attributes",
+      "title": "Basic HTML attributes",
+      "chapters": [
+        1
+      ],
+      "difficulty": "easy",
+      "prompt": "Assign to `html` a string containing:\n\n1. An `img` element whose `src` is `logo.png` and whose `alt` text is `Company logo`.\n2. An `a` element that links to `about.html`, has the `title` attribute `Learn more`, the class `nav-link`, and the text `About us`.",
+      "starterCode": "",
+      "hints": [
+        "Attribute syntax: <tag name=\"value\">",
+        "img is a void element: it has no closing tag."
+      ],
+      "solution": "const html = '<img src=\"logo.png\" alt=\"Company logo\"> <a href=\"about.html\" title=\"Learn more\" class=\"nav-link\">About us</a>';",
+      "tests": [
+        {
+          "name": "img has src and alt",
+          "code": "const d = new DOMParser().parseFromString(html, \"text/html\");\nconst img = d.querySelector(\"img\");\nreturn !!img && img.getAttribute(\"src\") === \"logo.png\" && img.getAttribute(\"alt\") === \"Company logo\";"
+        },
+        {
+          "name": "a has href, title, class and text",
+          "code": "const d = new DOMParser().parseFromString(html, \"text/html\");\nconst a = d.querySelector(\"a\");\nreturn !!a && a.getAttribute(\"href\") === \"about.html\" && a.title === \"Learn more\" && a.classList.contains(\"nav-link\") && a.textContent.trim() === \"About us\";"
+        }
+      ]
+    },
+    {
+      "id": "ch01-07-div-versus-span",
+      "title": "div versus span",
+      "chapters": [
+        1
+      ],
+      "difficulty": "easy",
+      "prompt": "Assign to `html` a string with a `div` that has the id `notice`. Inside it, put a paragraph with the text `Sale ends Friday`, where only the word **Friday** is wrapped in a `span` with the class `highlight`.\n\n`div` is a block element for grouping; `span` is an inline element for marking part of a line.",
+      "starterCode": "",
+      "hints": [
+        "<div id=\"...\"><p>Sale ends <span class=\"...\">Friday</span></p></div>"
+      ],
+      "solution": "const html = '<div id=\"notice\"><p>Sale ends <span class=\"highlight\">Friday</span></p></div>';",
+      "tests": [
+        {
+          "name": "div#notice contains a p",
+          "code": "const d = new DOMParser().parseFromString(html, \"text/html\");\nreturn !!d.querySelector(\"div#notice > p\");"
+        },
+        {
+          "name": "Paragraph text is \"Sale ends Friday\"",
+          "code": "const d = new DOMParser().parseFromString(html, \"text/html\");\nreturn d.querySelector(\"#notice p\").textContent.trim() === \"Sale ends Friday\";"
+        },
+        {
+          "name": "Only \"Friday\" is in span.highlight",
+          "code": "const d = new DOMParser().parseFromString(html, \"text/html\");\nconst s = d.querySelectorAll(\"#notice span.highlight\");\nreturn s.length === 1 && s[0].textContent === \"Friday\";"
+        }
+      ]
+    },
+    {
+      "id": "ch01-08-client-side-javascript-show-the-year",
+      "title": "Client-side JavaScript: show the year",
+      "chapters": [
+        1
+      ],
+      "difficulty": "easy",
+      "prompt": "JavaScript runs in the browser (client-side processing) and can change the page after it loads.\n\nWrite JavaScript that puts the **current four-digit year** into the `span` with the id `year`. Get the year from a `Date` object; don't type it in.",
+      "setup": {
+        "html": "<footer><p>&copy; <span id=\"year\"></span> Town Library</p></footer>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "new Date().getFullYear() returns the year.",
+        "Set the span's textContent."
+      ],
+      "solution": "document.getElementById(\"year\").textContent = new Date().getFullYear();",
+      "tests": [
+        {
+          "name": "The span shows the current year",
+          "code": "return document.getElementById(\"year\").textContent.trim() === String(new Date().getFullYear());"
+        },
+        {
+          "name": "Uses getFullYear()",
+          "code": "return /getFullYear\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch01-09-find-the-errors",
+      "title": "Find the errors",
+      "chapters": [
+        1
+      ],
+      "difficulty": "medium",
+      "prompt": "The starter code should log `Welcome, Grace!` but it has **two syntax errors**, so it doesn't run at all. In a real browser you'd see them in the developer tools' Console; here they appear in the Console panel when you press Run.\n\nFix the code so it runs and logs the message.",
+      "starterCode": "const firstName = \"Grace;\nconst message = \"Welcome, \" + firstName + \"!\";\nconsole.log(message;\n",
+      "hints": [
+        "Check that every string has an opening and closing quote.",
+        "Check that every ( has a matching )."
+      ],
+      "solution": "const firstName = \"Grace\";\nconst message = \"Welcome, \" + firstName + \"!\";\nconsole.log(message);",
+      "tests": [
+        {
+          "name": "Logs \"Welcome, Grace!\"",
+          "code": "return logs.includes(\"Welcome, Grace!\");"
+        },
+        {
+          "name": "message is \"Welcome, Grace!\"",
+          "code": "return message === \"Welcome, Grace!\";"
+        }
+      ]
+    },
+    {
+      "id": "ch01-10-static-versus-dynamic-pages",
+      "title": "Static versus dynamic pages",
+      "chapters": [
+        1
+      ],
+      "difficulty": "easy",
+      "prompt": "For each task, decide where it is processed in a web application: by the **web server** (`\"server\"`) or in the **browser** (`\"client\"`). Assign an object named `where` with these properties, each set to `\"server\"` or `\"client\"`:\n\n- `runPhp` — running PHP code to build a page from a database\n- `runJavaScript` — running the JavaScript in a `<script>` element\n- `applyCss` — applying CSS to render the page\n- `querySql` — querying a database with SQL\n- `validateFormBeforeSubmit` — checking a form's fields before it is sent",
+      "starterCode": "",
+      "hints": [
+        "The browser handles HTML, CSS and JavaScript. Server-side languages and the database run on the server."
+      ],
+      "solution": "const where = {\n  runPhp: \"server\",\n  runJavaScript: \"client\",\n  applyCss: \"client\",\n  querySql: \"server\",\n  validateFormBeforeSubmit: \"client\",\n};",
+      "tests": [
+        {
+          "name": "where is an object with 5 answers",
+          "code": "return typeof where === \"object\" && Object.keys(where).length === 5;"
+        },
+        {
+          "name": "Server-side tasks are correct",
+          "code": "return where.runPhp === \"server\" && where.querySql === \"server\";"
+        },
+        {
+          "name": "Client-side tasks are correct",
+          "code": "return where.runJavaScript === \"client\" && where.applyCss === \"client\" && where.validateFormBeforeSubmit === \"client\";"
+        }
+      ]
+    }
+  ]
+}

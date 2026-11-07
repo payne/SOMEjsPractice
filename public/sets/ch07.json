@@ -1,0 +1,349 @@
+{
+  "title": "Chapter 7: How to work with images and timers",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Get started fast with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with images and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
+  },
+  "questions": [
+    {
+      "id": "ch07-01-create-an-image-element",
+      "title": "Create an image element",
+      "chapters": [
+        7
+      ],
+      "difficulty": "easy",
+      "prompt": "Use the `Image` constructor (an `HTMLImageElement` object) to create an image whose `src` is the string in `photoUrl` and whose `alt` is `Red square`. Add it to `#gallery`.",
+      "setup": {
+        "html": "<div id=\"gallery\"></div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "const photoUrl = \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\";\n",
+      "hints": [
+        "const img = new Image(); img.src = ...; img.alt = ...;",
+        "Then gallery.appendChild(img)."
+      ],
+      "solution": "const photoUrl = \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\";\nconst img = new Image();\nimg.src = photoUrl;\nimg.alt = \"Red square\";\ndocument.getElementById(\"gallery\").appendChild(img);",
+      "tests": [
+        {
+          "name": "#gallery has the image with the right src and alt",
+          "code": "const img = document.querySelector(\"#gallery img\");\nreturn !!img && img.src === photoUrl && img.alt === \"Red square\";"
+        },
+        {
+          "name": "Uses new Image()",
+          "code": "return /new\\s+Image\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch07-02-preload-images",
+      "title": "Preload images",
+      "chapters": [
+        7
+      ],
+      "difficulty": "medium",
+      "prompt": "Preloading downloads images before they're shown, so swaps are instant. For each link in `#links`, create an `Image` object, set its `src` to the link's `href`, and add it to an array named `preloaded`. Don't add the images to the page.",
+      "setup": {
+        "html": "<ul id=\"links\">\n  <li><a href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\">Red</a></li>\n  <li><a href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%2327ae60'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EGreen%3C/text%3E%3C/svg%3E\">Green</a></li>\n  <li><a href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%232980b9'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EBlue%3C/text%3E%3C/svg%3E\">Blue</a></li>\n</ul>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "for (const link of document.querySelectorAll(\"#links a\")) { const image = new Image(); image.src = link.href; preloaded.push(image); }"
+      ],
+      "solution": "const preloaded = [];\nfor (const link of document.querySelectorAll(\"#links a\")) {\n  const image = new Image();\n  image.src = link.href;\n  preloaded.push(image);\n}",
+      "tests": [
+        {
+          "name": "preloaded has 3 Image objects",
+          "code": "return Array.isArray(preloaded) && preloaded.length === 3 && preloaded.every(i => i instanceof HTMLImageElement);"
+        },
+        {
+          "name": "Their src values match the links",
+          "code": "const links = [...document.querySelectorAll(\"#links a\")];\nreturn preloaded.every((img, i) => img.src === links[i].href);"
+        },
+        {
+          "name": "The images were not added to the page",
+          "code": "return document.querySelectorAll(\"img\").length === 0;"
+        }
+      ]
+    },
+    {
+      "id": "ch07-03-image-rollover",
+      "title": "Image rollover",
+      "chapters": [
+        7
+      ],
+      "difficulty": "medium",
+      "prompt": "Each image has a `data-rollover` attribute with a second image. When the mouse moves **over** an image, swap its `src` to the rollover image; when the mouse moves **out**, put the original back. Make it work for every image in `#rollovers`.",
+      "setup": {
+        "html": "<div id=\"rollovers\">\n  <img src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\" data-rollover=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%2327ae60'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EGreen%3C/text%3E%3C/svg%3E\" alt=\"Red to green\">\n  <img src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%232980b9'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EBlue%3C/text%3E%3C/svg%3E\" data-rollover=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\" alt=\"Blue to red\">\n</div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "Save the original src in a variable (or a data attribute) before swapping.",
+        "Use the mouseover and mouseout events."
+      ],
+      "solution": "for (const img of document.querySelectorAll(\"#rollovers img\")) {\n  const original = img.src;\n  const rollover = img.dataset.rollover;\n  img.addEventListener(\"mouseover\", () => { img.src = rollover; });\n  img.addEventListener(\"mouseout\", () => { img.src = original; });\n}",
+      "tests": [
+        {
+          "name": "mouseover shows the rollover image",
+          "code": "const img = document.querySelectorAll(\"#rollovers img\")[0];\nimg.dispatchEvent(new MouseEvent(\"mouseover\"));\nreturn img.getAttribute(\"src\") === img.dataset.rollover || img.src === img.dataset.rollover;"
+        },
+        {
+          "name": "mouseout restores the original",
+          "code": "const img = document.querySelectorAll(\"#rollovers img\")[0];\nimg.dispatchEvent(new MouseEvent(\"mouseout\"));\nreturn img.src.includes(\"Red\") && !img.src.includes(\"Green\");"
+        },
+        {
+          "name": "Works for the second image too",
+          "code": "const img = document.querySelectorAll(\"#rollovers img\")[1];\nimg.dispatchEvent(new MouseEvent(\"mouseover\"));\nconst over = img.src.includes(\"Red\");\nimg.dispatchEvent(new MouseEvent(\"mouseout\"));\nreturn over && img.src.includes(\"Blue\");"
+        }
+      ]
+    },
+    {
+      "id": "ch07-04-a-one-time-timer",
+      "title": "A one-time timer",
+      "chapters": [
+        7
+      ],
+      "difficulty": "easy",
+      "prompt": "When **Save** is clicked, immediately show `Saved!` in `#status`, then use a **one-time timer** to clear the message **500 milliseconds** later.",
+      "setup": {
+        "html": "<button type=\"button\" id=\"save\">Save</button>\n<p id=\"status\"></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "setTimeout(callback, 500) runs the callback once, after 500 ms."
+      ],
+      "solution": "document.getElementById(\"save\").addEventListener(\"click\", () => {\n  const status = document.getElementById(\"status\");\n  status.textContent = \"Saved!\";\n  setTimeout(() => {\n    status.textContent = \"\";\n  }, 500);\n});",
+      "tests": [
+        {
+          "name": "Clicking shows \"Saved!\" right away",
+          "code": "document.getElementById(\"save\").click();\nreturn document.getElementById(\"status\").textContent === \"Saved!\";"
+        },
+        {
+          "name": "Still showing after 300 ms",
+          "code": "await wait(300);\nreturn document.getElementById(\"status\").textContent === \"Saved!\";"
+        },
+        {
+          "name": "Cleared after 500 ms",
+          "code": "await wait(350);\nreturn document.getElementById(\"status\").textContent === \"\";"
+        },
+        {
+          "name": "Uses setTimeout()",
+          "code": "return /setTimeout\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch07-05-cancel-a-timer",
+      "title": "Cancel a timer",
+      "chapters": [
+        7
+      ],
+      "difficulty": "medium",
+      "prompt": "Clicking **Delete** shows `Deleting in 1 second… (click Undo to cancel)` in `#status` and starts a 1000 ms **one-time timer**. When the timer runs, it removes `#item` and shows `Deleted.`. Clicking **Undo** before then cancels the timer with `clearTimeout()` and shows `Cancelled.`.",
+      "setup": {
+        "html": "<p id=\"item\">Important file.txt</p>\n<button type=\"button\" id=\"delete\">Delete</button>\n<button type=\"button\" id=\"undo\">Undo</button>\n<p id=\"status\"></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "Keep the id that setTimeout() returns in a variable both handlers can see."
+      ],
+      "solution": "let timer = null;\nconst status = document.getElementById(\"status\");\ndocument.getElementById(\"delete\").addEventListener(\"click\", () => {\n  status.textContent = \"Deleting in 1 second… (click Undo to cancel)\";\n  timer = setTimeout(() => {\n    document.getElementById(\"item\")?.remove();\n    status.textContent = \"Deleted.\";\n  }, 1000);\n});\ndocument.getElementById(\"undo\").addEventListener(\"click\", () => {\n  clearTimeout(timer);\n  status.textContent = \"Cancelled.\";\n});",
+      "tests": [
+        {
+          "name": "Undo cancels the delete",
+          "code": "document.getElementById(\"delete\").click();\nawait wait(200);\ndocument.getElementById(\"undo\").click();\nawait wait(1100);\nreturn !!document.getElementById(\"item\") && document.getElementById(\"status\").textContent === \"Cancelled.\";"
+        },
+        {
+          "name": "Without Undo, the item is deleted",
+          "code": "document.getElementById(\"delete\").click();\nawait wait(1150);\nreturn !document.getElementById(\"item\") && document.getElementById(\"status\").textContent === \"Deleted.\";"
+        },
+        {
+          "name": "Uses clearTimeout()",
+          "code": "return /clearTimeout\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch07-06-an-interval-timer",
+      "title": "An interval timer",
+      "chapters": [
+        7
+      ],
+      "difficulty": "easy",
+      "prompt": "Use an **interval timer** that adds 1 to the number in `#count` every **100 milliseconds**. When it reaches **5**, stop the timer.",
+      "setup": {
+        "html": "<p>Count: <span id=\"count\">0</span></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "const timer = setInterval(() => { ... }, 100);",
+        "clearInterval(timer) stops it."
+      ],
+      "solution": "let count = 0;\nconst timer = setInterval(() => {\n  count++;\n  document.getElementById(\"count\").textContent = count;\n  if (count === 5) {\n    clearInterval(timer);\n  }\n}, 100);",
+      "tests": [
+        {
+          "name": "Counts up while running",
+          "code": "await wait(250);\nconst n = parseInt(document.getElementById(\"count\").textContent);\nreturn n >= 1 && n <= 4;"
+        },
+        {
+          "name": "Stops at 5",
+          "code": "await wait(800);\nreturn document.getElementById(\"count\").textContent === \"5\";"
+        },
+        {
+          "name": "Uses setInterval() and clearInterval()",
+          "code": "return /setInterval\\s*\\(/.test(code) && /clearInterval\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch07-07-slide-show",
+      "title": "Slide Show",
+      "chapters": [
+        7
+      ],
+      "difficulty": "hard",
+      "prompt": "Like the chapter's Slide Show application: the `slides` array (starter code) holds image URLs and captions. Every **300 ms**, show the next slide by changing `#slide`'s `src` and `#caption`'s text. After the last slide, go back to the first.",
+      "setup": {
+        "html": "<img id=\"slide\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\" alt=\"Slide\">\n<p id=\"caption\">Red</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "const slides = [\n  { src: \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\", caption: \"Red\" },\n  { src: \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%2327ae60'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EGreen%3C/text%3E%3C/svg%3E\", caption: \"Green\" },\n  { src: \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%232980b9'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EBlue%3C/text%3E%3C/svg%3E\", caption: \"Blue\" },\n];\n",
+      "hints": [
+        "Keep an index. Each tick: index = (index + 1) % slides.length."
+      ],
+      "solution": "const slides = [\n  { src: \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\", caption: \"Red\" },\n  { src: \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%2327ae60'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EGreen%3C/text%3E%3C/svg%3E\", caption: \"Green\" },\n  { src: \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%232980b9'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EBlue%3C/text%3E%3C/svg%3E\", caption: \"Blue\" },\n];\nlet index = 0;\nsetInterval(() => {\n  index = (index + 1) % slides.length;\n  document.getElementById(\"slide\").src = slides[index].src;\n  document.getElementById(\"caption\").textContent = slides[index].caption;\n}, 300);",
+      "tests": [
+        {
+          "name": "Shows the second slide after about 300 ms",
+          "code": "await wait(400);\nreturn document.getElementById(\"caption\").textContent === \"Green\" && document.getElementById(\"slide\").src === slides[1].src;"
+        },
+        {
+          "name": "Shows the third slide after about 600 ms",
+          "code": "await wait(300);\nreturn document.getElementById(\"caption\").textContent === \"Blue\";"
+        },
+        {
+          "name": "Wraps back to the first slide",
+          "code": "await wait(300);\nreturn document.getElementById(\"caption\").textContent === \"Red\" && document.getElementById(\"slide\").src === slides[0].src;"
+        }
+      ]
+    },
+    {
+      "id": "ch07-08-pause-and-resume-a-slide-show",
+      "title": "Pause and resume a slide show",
+      "chapters": [
+        7
+      ],
+      "difficulty": "hard",
+      "prompt": "The page shows a counter. Start an interval timer that increments `#tick` every **100 ms**. The `#toggle` button **pauses** the timer (its text becomes `Resume`) and clicking it again **resumes** it (text `Pause`).",
+      "setup": {
+        "html": "<p>Tick: <span id=\"tick\">0</span></p>\n<button type=\"button\" id=\"toggle\">Pause</button>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "Store the timer id; set it to null when paused.",
+        "To resume, call setInterval again and store the new id."
+      ],
+      "solution": "let tick = 0;\nlet timer = null;\nconst start = () => {\n  timer = setInterval(() => {\n    tick++;\n    document.getElementById(\"tick\").textContent = tick;\n  }, 100);\n};\nstart();\ndocument.getElementById(\"toggle\").addEventListener(\"click\", evt => {\n  if (timer) {\n    clearInterval(timer);\n    timer = null;\n    evt.target.textContent = \"Resume\";\n  } else {\n    start();\n    evt.target.textContent = \"Pause\";\n  }\n});",
+      "tests": [
+        {
+          "name": "The counter runs",
+          "code": "await wait(350);\nreturn parseInt(document.getElementById(\"tick\").textContent) >= 2;"
+        },
+        {
+          "name": "Pause stops the counter",
+          "code": "document.getElementById(\"toggle\").click();\nconst a = document.getElementById(\"tick\").textContent;\nawait wait(350);\nreturn document.getElementById(\"tick\").textContent === a && document.getElementById(\"toggle\").textContent === \"Resume\";"
+        },
+        {
+          "name": "Resume starts it again",
+          "code": "const a = parseInt(document.getElementById(\"tick\").textContent);\ndocument.getElementById(\"toggle\").click();\nawait wait(350);\nreturn parseInt(document.getElementById(\"tick\").textContent) >= a + 2 && document.getElementById(\"toggle\").textContent === \"Pause\";"
+        }
+      ]
+    },
+    {
+      "id": "ch07-09-progress-bar-with-a-timer",
+      "title": "Progress bar with a timer",
+      "chapters": [
+        7
+      ],
+      "difficulty": "medium",
+      "prompt": "Clicking **Start** grows the `#bar` element's width by **10%** every **50 ms** (set `style.width` to `\"10%\"`, `\"20%\"`, …). At `100%`, stop the timer and show `Done!` in `#status`.",
+      "setup": {
+        "html": "<div id=\"track\"><div id=\"bar\"></div></div>\n<button type=\"button\" id=\"start\">Start</button>\n<p id=\"status\"></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#track { width: 300px; height: 20px; background: #ddd; }\n#bar { height: 100%; width: 0; background: #27ae60; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "Keep a percent variable, add 10 on each tick, and set bar.style.width = percent + \"%\"."
+      ],
+      "solution": "document.getElementById(\"start\").addEventListener(\"click\", () => {\n  let percent = 0;\n  const timer = setInterval(() => {\n    percent += 10;\n    document.getElementById(\"bar\").style.width = percent + \"%\";\n    if (percent >= 100) {\n      clearInterval(timer);\n      document.getElementById(\"status\").textContent = \"Done!\";\n    }\n  }, 50);\n});",
+      "tests": [
+        {
+          "name": "The bar is partway after about 200 ms",
+          "code": "document.getElementById(\"start\").click();\nawait wait(220);\nconst w = parseInt(document.getElementById(\"bar\").style.width);\nreturn w >= 20 && w <= 60;"
+        },
+        {
+          "name": "It reaches 100% and shows \"Done!\"",
+          "code": "await wait(600);\nreturn document.getElementById(\"bar\").style.width === \"100%\" && document.getElementById(\"status\").textContent === \"Done!\";"
+        },
+        {
+          "name": "It stops at 100%",
+          "code": "await wait(200);\nreturn document.getElementById(\"bar\").style.width === \"100%\";"
+        }
+      ]
+    },
+    {
+      "id": "ch07-10-image-swap-with-captions",
+      "title": "Image Swap with captions",
+      "chapters": [
+        7
+      ],
+      "difficulty": "hard",
+      "prompt": "Like the chapter's Image Swap application: when a thumbnail link in `#thumbs` is clicked, show its `href` in `#main` and its `title` in `#caption`, and cancel the link's default action. Also **preload** all the images when the page loads (store them in an array named `cache`).",
+      "setup": {
+        "html": "<ul id=\"thumbs\">\n  <li><a href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\" title=\"Red sunset\">Red</a></li>\n  <li><a href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%2327ae60'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EGreen%3C/text%3E%3C/svg%3E\" title=\"Green forest\">Green</a></li>\n  <li><a href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%232980b9'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EBlue%3C/text%3E%3C/svg%3E\" title=\"Blue ocean\">Blue</a></li>\n</ul>\n<img id=\"main\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\" alt=\"\">\n<p id=\"caption\">Red sunset</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "Loop through the links once: preload each image and attach its click handler."
+      ],
+      "solution": "const cache = [];\nfor (const link of document.querySelectorAll(\"#thumbs a\")) {\n  const image = new Image();\n  image.src = link.href;\n  cache.push(image);\n  link.addEventListener(\"click\", evt => {\n    evt.preventDefault();\n    document.getElementById(\"main\").src = link.href;\n    document.getElementById(\"caption\").textContent = link.title;\n  });\n}",
+      "tests": [
+        {
+          "name": "cache holds 3 preloaded images",
+          "code": "return Array.isArray(cache) && cache.length === 3 && cache.every(i => i instanceof HTMLImageElement);"
+        },
+        {
+          "name": "Clicking \"Blue\" swaps the image and caption",
+          "code": "const link = document.querySelectorAll(\"#thumbs a\")[2];\nconst ok = link.dispatchEvent(new MouseEvent(\"click\", { bubbles: true, cancelable: true }));\nreturn ok === false && document.getElementById(\"main\").src === link.href && document.getElementById(\"caption\").textContent === \"Blue ocean\";"
+        }
+      ]
+    }
+  ]
+}

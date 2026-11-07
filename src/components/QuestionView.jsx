@@ -56,8 +56,8 @@ export default function QuestionView({
   const fileInput = useRef(null);
   const [fileNotice, setFileNotice] = useState(null);
 
-  const downloadFiles = () => {
-    const { fileName, blob } = buildQuestionZip({
+  const downloadFiles = async () => {
+    const { fileName, blob } = await buildQuestionZip({
       set, question, number, code, chapters,
       includeHelp: !settings.examMode,
       appUrl: window.location.origin + window.location.pathname,

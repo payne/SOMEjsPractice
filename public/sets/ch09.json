@@ -1,0 +1,346 @@
+{
+  "title": "Chapter 9: How to use effects and animations",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Get started fast with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with images and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
+  },
+  "questions": [
+    {
+      "id": "ch09-01-fadeout-with-a-callback",
+      "title": "fadeOut() with a callback",
+      "chapters": [
+        9
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "When the **Dismiss** button inside `#banner` is clicked, fade the banner out over **200 ms**, and **after** the fade finishes (in a callback function) remove the banner from the page.",
+      "setup": {
+        "html": "<div id=\"banner\">Free shipping this week! <button type=\"button\" id=\"dismiss\">Dismiss</button></div>\n<p>Page content.</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#banner { background: #fff3a0; padding: .5em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#banner\").fadeOut(200, () => { ... });",
+        "remove() takes an element out of the DOM."
+      ],
+      "solution": "$(\"#dismiss\").click( () => {\n  $(\"#banner\").fadeOut(200, () => {\n    $(\"#banner\").remove();\n  });\n});",
+      "tests": [
+        {
+          "name": "Still on the page right after the click",
+          "code": "$(\"#dismiss\").click();\nreturn $(\"#banner\").length === 1;"
+        },
+        {
+          "name": "Removed after the fade",
+          "code": "await wait(450);\nreturn $(\"#banner\").length === 0;"
+        },
+        {
+          "name": "Uses fadeOut()",
+          "code": "return /\\.fadeOut\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch09-02-slidetoggle-a-panel",
+      "title": "slideToggle() a panel",
+      "chapters": [
+        9
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "The `#panel` starts hidden (CSS). Clicking `#toggle` should slide the panel down or up with `slideToggle()` over **150 ms**, and change the button text to `Hide details` or `Show details` to match.",
+      "setup": {
+        "html": "<button type=\"button\" id=\"toggle\">Show details</button>\n<div id=\"panel\">Details about the product.</div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#panel { display: none; background: #eef; padding: .5em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "Check $(\"#panel\").is(\":visible\") before toggling, or use the callback."
+      ],
+      "solution": "$(\"#toggle\").click( () => {\n  const willShow = $(\"#panel\").is(\":hidden\");\n  $(\"#panel\").slideToggle(150);\n  $(\"#toggle\").text(willShow ? \"Hide details\" : \"Show details\");\n});",
+      "tests": [
+        {
+          "name": "First click shows the panel",
+          "code": "$(\"#toggle\").click();\nawait wait(350);\nreturn $(\"#panel\").is(\":visible\") && $(\"#toggle\").text() === \"Hide details\";"
+        },
+        {
+          "name": "Second click hides it",
+          "code": "$(\"#toggle\").click();\nawait wait(350);\nreturn $(\"#panel\").is(\":hidden\") && $(\"#toggle\").text() === \"Show details\";"
+        },
+        {
+          "name": "Uses slideToggle()",
+          "code": "return /\\.slideToggle\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch09-03-animate-basics",
+      "title": "animate() basics",
+      "chapters": [
+        9
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "When `#go` is clicked, use `animate()` to move `#box` so its `left` is `200px` and its `opacity` is `0.5`, over **200 ms**.",
+      "setup": {
+        "html": "<button type=\"button\" id=\"go\">Go</button>\n<div id=\"stage\"><div id=\"box\"></div></div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#stage { position: relative; height: 60px; }\n#box { position: absolute; left: 0; width: 50px; height: 50px; background: #2980b9; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#box\").animate({ left: \"200px\", opacity: 0.5 }, 200);"
+      ],
+      "solution": "$(\"#go\").click( () => {\n  $(\"#box\").animate({ left: \"200px\", opacity: 0.5 }, 200);\n});",
+      "tests": [
+        {
+          "name": "Moving partway at 100 ms",
+          "code": "$(\"#go\").click();\nawait wait(100);\nconst left = parseFloat($(\"#box\").css(\"left\"));\nreturn left > 0 && left < 200;"
+        },
+        {
+          "name": "Ends at left 200px and opacity 0.5",
+          "code": "await wait(300);\nreturn $(\"#box\").css(\"left\") === \"200px\" && Number($(\"#box\").css(\"opacity\")) === 0.5;"
+        }
+      ]
+    },
+    {
+      "id": "ch09-04-chain-animations",
+      "title": "Chain animations",
+      "chapters": [
+        9
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "Clicking `#grow` should **chain** two `animate()` calls on `#bar`: first animate its `width` to `300px` (150 ms), **then** its `height` to `60px` (150 ms). Chained animations run one after another.",
+      "setup": {
+        "html": "<button type=\"button\" id=\"grow\">Grow</button>\n<div id=\"bar\"></div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#bar { width: 50px; height: 20px; background: #27ae60; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#bar\").animate({ width: \"300px\" }, 150).animate({ height: \"60px\" }, 150);"
+      ],
+      "solution": "$(\"#grow\").click( () => {\n  $(\"#bar\").animate({ width: \"300px\" }, 150).animate({ height: \"60px\" }, 150);\n});",
+      "tests": [
+        {
+          "name": "Width finishes before height starts",
+          "code": "$(\"#grow\").click();\nawait wait(200);\nreturn $(\"#bar\").width() === 300 && $(\"#bar\").height() < 60;"
+        },
+        {
+          "name": "Both animations finish",
+          "code": "await wait(300);\nreturn $(\"#bar\").width() === 300 && $(\"#bar\").height() === 60;"
+        }
+      ]
+    },
+    {
+      "id": "ch09-05-delay-between-effects",
+      "title": "delay() between effects",
+      "chapters": [
+        9
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "When `#save` is clicked, make `#msg` (hidden by CSS) **fade in** over 100 ms, **wait 300 ms** using `delay()`, then **fade out** over 100 ms — all in one chain.",
+      "setup": {
+        "html": "<button type=\"button\" id=\"save\">Save</button>\n<p id=\"msg\">Saved!</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#msg { display: none; color: #27ae60; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#msg\").fadeIn(100).delay(300).fadeOut(100);"
+      ],
+      "solution": "$(\"#save\").click( () => {\n  $(\"#msg\").fadeIn(100).delay(300).fadeOut(100);\n});",
+      "tests": [
+        {
+          "name": "The message is visible during the delay",
+          "code": "$(\"#save\").click();\nawait wait(250);\nreturn $(\"#msg\").is(\":visible\");"
+        },
+        {
+          "name": "The message is hidden afterwards",
+          "code": "await wait(500);\nreturn $(\"#msg\").is(\":hidden\");"
+        },
+        {
+          "name": "Uses delay()",
+          "code": "return /\\.delay\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch09-06-stop-an-animation",
+      "title": "stop() an animation",
+      "chapters": [
+        9
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "`#start` animates `#box` to `left: 400px` over **2000 ms**. `#stop` must **stop** the animation right where it is with `stop()`.",
+      "setup": {
+        "html": "<button type=\"button\" id=\"start\">Start</button> <button type=\"button\" id=\"stop\">Stop</button>\n<div id=\"stage\"><div id=\"box\"></div></div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#stage { position: relative; height: 60px; }\n#box { position: absolute; left: 0; width: 40px; height: 40px; background: #c0392b; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#box\").stop();"
+      ],
+      "solution": "$(\"#start\").click( () => {\n  $(\"#box\").animate({ left: \"400px\" }, 2000);\n});\n$(\"#stop\").click( () => {\n  $(\"#box\").stop();\n});",
+      "tests": [
+        {
+          "name": "Stop leaves the box partway",
+          "code": "$(\"#start\").click();\nawait wait(300);\n$(\"#stop\").click();\nconst at = parseFloat($(\"#box\").css(\"left\"));\nawait wait(300);\nreturn at > 0 && at < 400 && parseFloat($(\"#box\").css(\"left\")) === at;"
+        },
+        {
+          "name": "Uses stop()",
+          "code": "return /\\.stop\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch09-07-finish-an-animation",
+      "title": "finish() an animation",
+      "chapters": [
+        9
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "`#start` fades `#note` to opacity `0.2` over **2000 ms** and then slides it up. `#finish` must jump straight to the **end of all queued animations** using `finish()`.",
+      "setup": {
+        "html": "<button type=\"button\" id=\"start\">Start</button> <button type=\"button\" id=\"finish\">Finish</button>\n<p id=\"note\">A note that will fade and slide away.</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#note { background: #eef; padding: .5em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#note\").fadeTo(2000, 0.2).slideUp(2000);",
+        "finish() completes the current and queued animations immediately; stop() only halts the current one."
+      ],
+      "solution": "$(\"#start\").click( () => {\n  $(\"#note\").fadeTo(2000, 0.2).slideUp(2000);\n});\n$(\"#finish\").click( () => {\n  $(\"#note\").finish();\n});",
+      "tests": [
+        {
+          "name": "Finish jumps to the end state",
+          "code": "$(\"#start\").click();\nawait wait(200);\n$(\"#finish\").click();\nreturn $(\"#note\").is(\":hidden\") && Number($(\"#note\").css(\"opacity\")) === 0.2;"
+        },
+        {
+          "name": "Uses finish()",
+          "code": "return /\\.finish\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch09-08-easings",
+      "title": "Easings",
+      "chapters": [
+        9
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "Animate `#ball` to `left: 300px` over **400 ms** using the **linear** easing (jQuery's default easing is `swing`). Start the animation when the page loads.",
+      "setup": {
+        "html": "<div id=\"stage\"><div id=\"ball\"></div></div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#stage { position: relative; height: 50px; }\n#ball { position: absolute; left: 0; width: 40px; height: 40px; border-radius: 50%; background: #e67e22; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#ball\").animate({ left: \"300px\" }, 400, \"linear\");"
+      ],
+      "solution": "$(\"#ball\").animate({ left: \"300px\" }, 400, \"linear\");",
+      "tests": [
+        {
+          "name": "Moves at a steady speed (about halfway at 200 ms)",
+          "code": "await wait(170);\nconst left = parseFloat($(\"#ball\").css(\"left\"));\nreturn left > 90 && left < 210;"
+        },
+        {
+          "name": "Ends at 300px",
+          "code": "await wait(400);\nreturn $(\"#ball\").css(\"left\") === \"300px\";"
+        },
+        {
+          "name": "Uses the linear easing",
+          "code": "return /[\"']linear[\"']/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch09-09-slide-show-with-fades",
+      "title": "Slide show with fades",
+      "chapters": [
+        9
+      ],
+      "difficulty": "hard",
+      "useJQuery": true,
+      "prompt": "Clicking `#next` should **fade out** `#slide` (100 ms), then — in the callback — change its `src` to the next image in `images` (wrapping around) and **fade it back in** (100 ms). Update `#caption` to `Slide 2 of 3` etc. at the same time as the src.",
+      "setup": {
+        "html": "<img id=\"slide\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\" alt=\"\">\n<p id=\"caption\">Slide 1 of 3</p>\n<button type=\"button\" id=\"next\">Next</button>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "const images = [\n  \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\",\n  \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%2327ae60'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EGreen%3C/text%3E%3C/svg%3E\",\n  \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%232980b9'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EBlue%3C/text%3E%3C/svg%3E\",\n];\n",
+      "hints": [
+        "$(\"#slide\").fadeOut(100, () => { ...change src...; $(\"#slide\").fadeIn(100); });"
+      ],
+      "solution": "const images = [\n  \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\",\n  \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%2327ae60'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EGreen%3C/text%3E%3C/svg%3E\",\n  \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%232980b9'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EBlue%3C/text%3E%3C/svg%3E\",\n];\nlet current = 0;\n$(\"#next\").click( () => {\n  $(\"#slide\").fadeOut(100, () => {\n    current = (current + 1) % images.length;\n    $(\"#slide\").attr(\"src\", images[current]).fadeIn(100);\n    $(\"#caption\").text(`Slide ${current + 1} of ${images.length}`);\n  });\n});",
+      "tests": [
+        {
+          "name": "Next shows slide 2",
+          "code": "$(\"#next\").click();\nawait wait(350);\nreturn $(\"#slide\").attr(\"src\") === images[1] && $(\"#slide\").is(\":visible\") && $(\"#caption\").text() === \"Slide 2 of 3\";"
+        },
+        {
+          "name": "Wraps from slide 3 to slide 1",
+          "code": "$(\"#next\").click();\nawait wait(350);\n$(\"#next\").click();\nawait wait(350);\nreturn $(\"#slide\").attr(\"src\") === images[0] && $(\"#caption\").text() === \"Slide 1 of 3\";"
+        },
+        {
+          "name": "Uses fadeOut() with a callback",
+          "code": "return /fadeOut\\s*\\(\\s*\\d+\\s*,/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch09-10-carousel-with-animate",
+      "title": "Carousel with animate()",
+      "chapters": [
+        9
+      ],
+      "difficulty": "hard",
+      "useJQuery": true,
+      "prompt": "Like the chapter's Carousel application: `#strip` holds four 100px-wide items inside a 100px-wide window. Clicking `#right` animates `#strip`'s `left` **100px further left** (150 ms) to show the next item; at the last item it animates back to `left: 0`. Ignore clicks while an animation is running (check `:animated`).",
+      "setup": {
+        "html": "<div id=\"window\"><ul id=\"strip\"><li>1</li><li>2</li><li>3</li><li>4</li></ul></div>\n<button type=\"button\" id=\"right\">Next ›</button>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#window { width: 100px; overflow: hidden; position: relative; height: 60px; border: 1px solid #333; }\n#strip { position: absolute; left: 0; margin: 0; padding: 0; list-style: none; width: 400px; }\n#strip li { float: left; width: 100px; height: 60px; line-height: 60px; text-align: center; font-size: 2em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "Read the current position with parseInt($(\"#strip\").css(\"left\")).",
+        "if ($(\"#strip\").is(\":animated\")) return;"
+      ],
+      "solution": "$(\"#right\").click( () => {\n  if ($(\"#strip\").is(\":animated\")) return;\n  const left = parseInt($(\"#strip\").css(\"left\"));\n  const newLeft = left <= -300 ? 0 : left - 100;\n  $(\"#strip\").animate({ left: newLeft + \"px\" }, 150);\n});",
+      "tests": [
+        {
+          "name": "One click moves to -100px",
+          "code": "$(\"#right\").click();\nawait wait(300);\nreturn $(\"#strip\").css(\"left\") === \"-100px\";"
+        },
+        {
+          "name": "A click during the animation is ignored",
+          "code": "$(\"#right\").click();\n$(\"#right\").click();\nawait wait(300);\nreturn $(\"#strip\").css(\"left\") === \"-200px\";"
+        },
+        {
+          "name": "After the last item it returns to 0",
+          "code": "$(\"#right\").click();\nawait wait(300);\n$(\"#right\").click();\nawait wait(300);\nreturn $(\"#strip\").css(\"left\") === \"0px\";"
+        }
+      ]
+    }
+  ]
+}

@@ -1,9 +1,13 @@
 // Builds a zip of one question as plain files (index.html, styles.css, main.js,
 // README.md…) so it can be worked on in any editor, and reads answers back in.
 import { strToU8, strFromU8, zipSync, unzipSync } from 'fflate';
-import { jquerySource } from './harness.js';
+import { jquerySource, prepareQuestion } from './harness.js';
+import { cookieShim, networkShim } from './shims.js';
 
 const JQUERY_FILE = 'jquery-3.7.1.min.js';
+const JQUERY_UI_FILE = 'jquery-ui-1.14.2.min.js';
+const JQUERY_UI_CSS = 'jquery-ui-1.14.2.min.css';
+const usesJQuery = (q) => q.useJQuery || q.useJQueryUI;
 
 /** "Core Practice" -> "Core-Practice"; keeps names safe on every OS. */
 export function slug(text, max = 60) {
@@ -27,9 +31,11 @@ const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace
 function indexHtml(question) {
   const setup = question.setup || {};
   const scripts = [];
+  if (question.useCookies) scripts.push('cookie-shim.js');
   if (question.storage) scripts.push('seed-storage.js');
   if (question.mockFetch) scripts.push('mock-fetch.js');
-  if (question.useJQuery) scripts.push(JQUERY_FILE);
+  if (usesJQuery(question)) scripts.push(JQUERY_FILE);
+  if (question.useJQueryUI) scripts.push(JQUERY_UI_FILE);
   scripts.push('main.js');
   const body = setup.html
     ? setup.html.split('\n').map((l) => '  ' + l).join('\n')
@@ -40,7 +46,7 @@ function indexHtml(question) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(question.title)}</title>
-  <link rel="stylesheet" href="styles.css">
+${question.useJQueryUI ? `  <link rel="stylesheet" href="${JQUERY_UI_CSS}">\n` : ''}  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 ${body}
@@ -62,35 +68,27 @@ for (const key of Object.keys(seed)) {
 `;
 }
 
-function mockFetchJs(routes) {
-  return `// Practice exams run without internet, so this replaces fetch() with sample data.
-// Listed URLs return this JSON; any other URL gets a 404 response.
-// Delete the <script src="mock-fetch.js"> line in index.html to use the real network.
-const sampleResponses = ${JSON.stringify(routes, null, 2)};
-window.fetch = input => {
-  const url = String(input && input.url ? input.url : input);
-  const found = Object.prototype.hasOwnProperty.call(sampleResponses, url);
-  const body = JSON.stringify(found ? sampleResponses[url] : {});
-  return new Promise(resolve => setTimeout(() => resolve(new Response(body, {
-    status: found ? 200 : 404,
-    headers: { "Content-Type": "application/json" },
-  })), 100));
-};
-`;
-}
-
 function readme({ set, question, number, chapters, appUrl, includeHelp }) {
   const chapterLines = (question.chapters || [])
     .map((c) => `- Chapter ${c}${chapters[c] ? `: ${chapters[c]}` : ''}`).join('\n');
-  const files = [
-    '- `README.md` — this file',
-    '- `index.html` — the page (open it in a browser to run your code)',
-    '- `styles.css` — the page\'s CSS',
-    '- `main.js` — **your code goes here**',
-  ];
-  if (question.useJQuery) files.push(`- \`${JQUERY_FILE}\` — jQuery, included so this works without internet`);
+  const node = question.node;
+  const files = node
+    ? ['- `README.md` — this file', '- `main.js` — **your code goes here**']
+    : [
+      '- `README.md` — this file',
+      '- `index.html` — the page (open it in a browser to run your code)',
+      '- `styles.css` — the page\'s CSS',
+      '- `main.js` — **your code goes here**',
+    ];
+  if (node) {
+    Object.keys(node.files || {}).forEach((f) => files.push(`- \`${f}\` — a data file used by the question`));
+    Object.keys(node.modules || {}).forEach((f) => files.push(`- \`${f}\` — a module used by the question`));
+  }
+  if (usesJQuery(question)) files.push(`- \`${JQUERY_FILE}\` — jQuery, included so this works without internet`);
+  if (question.useJQueryUI) files.push(`- \`${JQUERY_UI_FILE}\`, \`${JQUERY_UI_CSS}\` — jQuery UI and its theme`);
+  if (question.useCookies) files.push('- `cookie-shim.js` — lets cookies work when the page is opened from a file (delete its <script> line when using a web server)');
   if (question.storage) files.push('- `seed-storage.js` — puts the starting data into localStorage');
-  if (question.mockFetch) files.push('- `mock-fetch.js` — sample data in place of the internet for `fetch()`');
+  if (question.mockFetch) files.push('- `mock-fetch.js` — sample data in place of the internet for `fetch()` and `XMLHttpRequest`');
   if (includeHelp && question.hints?.length) files.push('- `HINTS.md` — hints, if you get stuck');
   if (includeHelp && question.solution) files.push('- `SOLUTION.md` — a model solution (try first!)');
   const checks = (question.tests || []).map((t) => `- [ ] ${t.name}`).join('\n');
@@ -110,10 +108,13 @@ ${files.join('\n')}
 
 ## How to work on it
 
-1. Edit \`main.js\` in any editor (VS Code, Notepad, vi…).
+${node ? `1. Edit \`main.js\` in any editor (VS Code, Notepad, vi…).
+2. In a terminal in this folder, run: \`node main.js${(node.argv || []).map((a) => ' ' + a).join('')}\`
+3. Output and errors appear in the terminal. (The app checks Node questions with a
+   small in-browser stand-in for Node.js.)` : `1. Edit \`main.js\` in any editor (VS Code, Notepad, vi…).
 2. Open \`index.html\` in a browser, and reload it after each change.
 3. Open the browser's developer tools (F12) and look at the **Console** for
-   \`console.log()\` output and errors.
+   \`console.log()\` output and errors.`}
 
 ## What the checker looks for
 
@@ -129,19 +130,32 @@ or load the zip into the app with **Load answer from file**.
 ${appUrl ? `\nApp: ${appUrl}\n` : ''}`;
 }
 
-/** Returns { fileName, blob } for one question. */
-export function buildQuestionZip({ set, question, number, code, chapters = {}, includeHelp = true, appUrl = '' }) {
+/** Returns a promise of { fileName, blob } for one question. */
+export async function buildQuestionZip({ set, question, number, code, chapters = {}, includeHelp = true, appUrl = '' }) {
   const { setFolder, questionFolder } = folderNames(set, question, number);
   const root = `SOMEjsPractice/${setFolder}/${questionFolder}/`;
+  const { jqueryUi } = await prepareQuestion(question);
   const files = {
     'README.md': readme({ set, question, number, chapters, appUrl, includeHelp }),
-    'index.html': indexHtml(question),
-    'styles.css': question.setup?.css ? question.setup.css + '\n' : '/* No CSS for this question. */\n',
-    'main.js': code.endsWith('\n') || code === '' ? code : code + '\n',
   };
-  if (question.useJQuery) files[JQUERY_FILE] = jquerySource;
+  if (question.node) {
+    Object.assign(files, question.node.files || {}, question.node.modules || {});
+  } else {
+    files['index.html'] = indexHtml(question);
+    files['styles.css'] = question.setup?.css ? question.setup.css + '\n' : '/* No CSS for this question. */\n';
+  }
+  files['main.js'] = code.endsWith('\n') || code === '' ? code : code + '\n';
+  if (usesJQuery(question)) files[JQUERY_FILE] = jquerySource;
+  if (question.useJQueryUI) {
+    files[JQUERY_UI_FILE] = jqueryUi.js;
+    files[JQUERY_UI_CSS] = jqueryUi.css;
+  }
+  if (question.useCookies) files['cookie-shim.js'] = cookieShim();
   if (question.storage) files['seed-storage.js'] = seedStorageJs(question.storage);
-  if (question.mockFetch) files['mock-fetch.js'] = mockFetchJs(question.mockFetch);
+  if (question.mockFetch) {
+    files['mock-fetch.js'] = networkShim(question.mockFetch)
+      + '// Delete the <script src="mock-fetch.js"> line in index.html to use the real network.\n';
+  }
   if (includeHelp && question.hints?.length) {
     files['HINTS.md'] = `# Hints — ${question.title}\n\n` +
       question.hints.map((h, i) => `${i + 1}. ${h}`).join('\n') + '\n';

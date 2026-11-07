@@ -2,6 +2,15 @@
 // It renders the question's setup HTML/CSS, runs the student's code, then
 // (in "check" mode) runs each test and posts the results to the parent page.
 import jquerySource from 'jquery/dist/jquery.min.js?raw';
+import { cookieShim, networkShim, nodeShim } from './shims.js';
+
+// jQuery UI is large, so it is loaded on demand for questions that use it.
+let jqueryUi = null;
+export const needsPreparing = (question) => !!question.useJQueryUI && !jqueryUi;
+export async function prepareQuestion(question) {
+  if (question.useJQueryUI && !jqueryUi) jqueryUi = (await import('./jqueryUiAssets.js')).default;
+  return { jqueryUi };
+}
 
 // Makes text safe to place inside an inline <script>.
 const scriptSafe = (s) => s.replace(/<\/(script)/gi, '<\\/$1');
@@ -100,28 +109,18 @@ const RUNNER = `
 
 // Optional per-question extras that run before the student's code:
 //  - question.storage:   { key: "string value" } pre-loaded into localStorage
-//  - question.mockFetch: { url: jsonValue }      served by a fake fetch(), since
-//    exams run without internet. Unknown URLs get a 404 response.
+//  - question.mockFetch: { url: jsonValue } answered by fake fetch()/XMLHttpRequest
+//    (keys may start with a method, e.g. "POST https://…"); others get a 404
+//  - question.node:      { files, modules, argv } runs the code with a Node.js stand-in
 function extrasScript(question) {
-  const parts = [];
+  const parts = [cookieShim()];
   if (question.storage) {
-    parts.push(`(() => { const seed = ${jsonSafe(question.storage)};
+    parts.push(`(() => { const seed = ${JSON.stringify(question.storage)};
       Object.keys(seed).forEach((k) => localStorage.setItem(k, seed[k])); })();`);
   }
-  if (question.mockFetch) {
-    parts.push(`(() => { const routes = ${jsonSafe(question.mockFetch)};
-      window.fetch = (input) => {
-        const url = String(input && input.url ? input.url : input);
-        const found = Object.prototype.hasOwnProperty.call(routes, url);
-        const body = JSON.stringify(found ? routes[url] : {});
-        return new Promise((resolve) => setTimeout(() => resolve(new Response(body, {
-          status: found ? 200 : 404,
-          headers: { 'Content-Type': 'application/json' },
-        })), 20));
-      };
-      window.XMLHttpRequest = undefined; })();`);
-  }
-  return parts.length ? `<script>${parts.join('\n')}</script>` : '';
+  if (question.mockFetch) parts.push(networkShim(question.mockFetch));
+  if (question.node) parts.push(nodeShim(question.node));
+  return `<script>${scriptSafe(parts.join('\n'))}</script>`;
 }
 
 /**
@@ -134,13 +133,15 @@ export function buildDocument(question, code, mode) {
   const job = { mode, code: mode === 'preview' ? '' : code, tests: question.tests || [] };
   return `<!doctype html>
 <html><head><meta charset="utf-8">
+${question.useJQueryUI && jqueryUi ? `<style>${jqueryUi.css.replace(/<\/style/gi, '<\\/style')}</style>` : ''}
 <style>body{font-family:system-ui,sans-serif;margin:0;padding:.5em;color:#222;background:#fff}${setup.css || ''}</style>
 </head><body>
 ${setup.html || ''}
 <script>${BOOTSTRAP}</script>
 ${mode === 'check' ? `<script>${CHECK_MODE}</script>` : ''}
 ${extrasScript(question)}
-${question.useJQuery ? `<script>${scriptSafe(jquerySource)}</script>` : ''}
+${question.useJQuery || question.useJQueryUI ? `<script>${scriptSafe(jquerySource)}</script>` : ''}
+${question.useJQueryUI && jqueryUi ? `<script>${scriptSafe(jqueryUi.js)}</script>` : ''}
 <script type="application/json" id="__job">${jsonSafe(job)}</script>
 <script>${RUNNER}</script>
 </body></html>`;

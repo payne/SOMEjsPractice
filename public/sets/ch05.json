@@ -1,0 +1,299 @@
+{
+  "title": "Chapter 5: How to test and debug a JavaScript application",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Get started fast with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with images and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
+  },
+  "questions": [
+    {
+      "id": "ch05-01-syntax-error-a-missing-brace",
+      "title": "Syntax error: a missing brace",
+      "chapters": [
+        5
+      ],
+      "difficulty": "easy",
+      "prompt": "The starter code has a **syntax error**, so none of it runs. Find it (the Console panel shows the error when you press Run) and fix it so that `isEven(4)` returns `true` and `isEven(7)` returns `false`.",
+      "starterCode": "function isEven(n) {\n  if (n % 2 === 0) {\n    return true;\n  } else {\n    return false;\n}\n",
+      "hints": [
+        "Count the opening and closing braces."
+      ],
+      "solution": "function isEven(n) {\n  if (n % 2 === 0) {\n    return true;\n  } else {\n    return false;\n  }\n}",
+      "tests": [
+        {
+          "name": "isEven(4) returns true",
+          "code": "return isEven(4) === true;"
+        },
+        {
+          "name": "isEven(7) returns false",
+          "code": "return isEven(7) === false;"
+        }
+      ]
+    },
+    {
+      "id": "ch05-02-runtime-error-a-misspelled-method",
+      "title": "Runtime error: a misspelled method",
+      "chapters": [
+        5
+      ],
+      "difficulty": "easy",
+      "prompt": "The starter code runs, but throws a **runtime error** (`TypeError: … is not a function`) when it tries to change the heading. Fix it so the heading says `Debugged!`.",
+      "setup": {
+        "html": "<h1 id=\"heading\">Broken</h1>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "document.getElementByID(\"heading\").textContent = \"Debugged!\";\n",
+      "hints": [
+        "JavaScript is case-sensitive. Look closely at the method name's capital letters."
+      ],
+      "solution": "document.getElementById(\"heading\").textContent = \"Debugged!\";",
+      "tests": [
+        {
+          "name": "The heading says \"Debugged!\"",
+          "code": "return document.getElementById(\"heading\").textContent === \"Debugged!\";"
+        }
+      ]
+    },
+    {
+      "id": "ch05-03-logic-error-versus",
+      "title": "Logic error: = versus ===",
+      "chapters": [
+        5
+      ],
+      "difficulty": "medium",
+      "prompt": "`getMessage(score)` should return `\"Perfect!\"` only for a score of 100, and `\"Keep going\"` otherwise — but it always says `\"Perfect!\"`. It's a **logic error**: the code runs but gives the wrong result. Fix it.",
+      "starterCode": "function getMessage(score) {\n  if (score = 100) {\n    return \"Perfect!\";\n  }\n  return \"Keep going\";\n}\n",
+      "hints": [
+        "A single = assigns a value; it doesn't compare."
+      ],
+      "solution": "function getMessage(score) {\n  if (score === 100) {\n    return \"Perfect!\";\n  }\n  return \"Keep going\";\n}",
+      "tests": [
+        {
+          "name": "getMessage(100) returns \"Perfect!\"",
+          "code": "return getMessage(100) === \"Perfect!\";"
+        },
+        {
+          "name": "getMessage(85) returns \"Keep going\"",
+          "code": "return getMessage(85) === \"Keep going\";"
+        },
+        {
+          "name": "getMessage(0) returns \"Keep going\"",
+          "code": "return getMessage(0) === \"Keep going\";"
+        }
+      ]
+    },
+    {
+      "id": "ch05-04-off-by-one",
+      "title": "Off by one",
+      "chapters": [
+        5
+      ],
+      "difficulty": "easy",
+      "prompt": "`sumTo(n)` should add the whole numbers from 1 to n, but `sumTo(5)` returns 10 instead of 15. Fix the loop.",
+      "starterCode": "function sumTo(n) {\n  let total = 0;\n  for (let i = 1; i < n; i++) {\n    total += i;\n  }\n  return total;\n}\n",
+      "hints": [
+        "Trace it: which values does i take when n is 5?"
+      ],
+      "solution": "function sumTo(n) {\n  let total = 0;\n  for (let i = 1; i <= n; i++) {\n    total += i;\n  }\n  return total;\n}",
+      "tests": [
+        {
+          "name": "sumTo(5) returns 15",
+          "code": "return sumTo(5) === 15;"
+        },
+        {
+          "name": "sumTo(1) returns 1",
+          "code": "return sumTo(1) === 1;"
+        },
+        {
+          "name": "sumTo(10) returns 55",
+          "code": "return sumTo(10) === 55;"
+        }
+      ]
+    },
+    {
+      "id": "ch05-05-strings-that-look-like-numbers",
+      "title": "Strings that look like numbers",
+      "chapters": [
+        5
+      ],
+      "difficulty": "medium",
+      "prompt": "The Add button should show the **sum** of the two text boxes, but with 2 and 3 it shows `23`. Fix the bug.",
+      "setup": {
+        "html": "<input id=\"a\" value=\"2\"> + <input id=\"b\" value=\"3\">\n<button type=\"button\" id=\"add\">Add</button>\n<p>Sum: <span id=\"sum\"></span></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\ninput { width: 4em; }"
+      },
+      "starterCode": "document.getElementById(\"add\").addEventListener(\"click\", () => {\n  const a = document.getElementById(\"a\").value;\n  const b = document.getElementById(\"b\").value;\n  document.getElementById(\"sum\").textContent = a + b;\n});\n",
+      "hints": [
+        "A text box's value is a string, and + joins strings."
+      ],
+      "solution": "document.getElementById(\"add\").addEventListener(\"click\", () => {\n  const a = parseFloat(document.getElementById(\"a\").value);\n  const b = parseFloat(document.getElementById(\"b\").value);\n  document.getElementById(\"sum\").textContent = a + b;\n});",
+      "tests": [
+        {
+          "name": "2 + 3 shows 5",
+          "code": "document.getElementById(\"add\").click();\nreturn document.getElementById(\"sum\").textContent === \"5\";"
+        },
+        {
+          "name": "1.5 + 2.25 shows 3.75",
+          "code": "document.getElementById(\"a\").value = \"1.5\";\ndocument.getElementById(\"b\").value = \"2.25\";\ndocument.getElementById(\"add\").click();\nreturn document.getElementById(\"sum\").textContent === \"3.75\";"
+        }
+      ]
+    },
+    {
+      "id": "ch05-06-trace-the-execution",
+      "title": "Trace the execution",
+      "chapters": [
+        5
+      ],
+      "difficulty": "easy",
+      "prompt": "**Tracing** means logging values as code runs. Add one `console.log()` statement **inside** the loop of the starter code so that each pass logs the index and the running total in this exact format:\n\n```\ni=0 total=4\ni=1 total=12\ni=2 total=27\n```\n\nDon't change anything else.",
+      "starterCode": "const values = [4, 8, 15];\nlet total = 0;\nfor (let i = 0; i < values.length; i++) {\n  total += values[i];\n}\n",
+      "hints": [
+        "console.log(`i=${i} total=${total}`) — after total is updated."
+      ],
+      "solution": "const values = [4, 8, 15];\nlet total = 0;\nfor (let i = 0; i < values.length; i++) {\n  total += values[i];\n  console.log(`i=${i} total=${total}`);\n}",
+      "tests": [
+        {
+          "name": "Logs the three trace lines in order",
+          "code": "return logs.join(\"|\") === \"i=0 total=4|i=1 total=12|i=2 total=27\";"
+        },
+        {
+          "name": "total is still 27",
+          "code": "return total === 27;"
+        }
+      ]
+    },
+    {
+      "id": "ch05-07-nan-from-a-misspelled-property",
+      "title": "NaN from a misspelled property",
+      "chapters": [
+        5
+      ],
+      "difficulty": "medium",
+      "prompt": "`average(scores)` returns `NaN` instead of the average. Find the bug (tracing values with `console.log()` will help) and fix it.",
+      "starterCode": "function average(scores) {\n  let total = 0;\n  for (const score of scores) {\n    total += score;\n  }\n  return total / scores.lenght;\n}\n",
+      "hints": [
+        "Log scores.lenght — what is it? JavaScript returns undefined for properties that don't exist."
+      ],
+      "solution": "function average(scores) {\n  let total = 0;\n  for (const score of scores) {\n    total += score;\n  }\n  return total / scores.length;\n}",
+      "tests": [
+        {
+          "name": "average([90, 80, 70]) returns 80",
+          "code": "return average([90, 80, 70]) === 80;"
+        },
+        {
+          "name": "average([5]) returns 5",
+          "code": "return average([5]) === 5;"
+        }
+      ]
+    },
+    {
+      "id": "ch05-08-an-event-handler-that-runs-too-soon",
+      "title": "An event handler that runs too soon",
+      "chapters": [
+        5
+      ],
+      "difficulty": "medium",
+      "prompt": "The Greet button should show `Hello!` **when clicked**, but the message appears as soon as the page loads, and clicking does nothing. Fix the bug.",
+      "setup": {
+        "html": "<button type=\"button\" id=\"greet\">Greet</button>\n<p id=\"message\"></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "function showMessage() {\n  document.getElementById(\"message\").textContent = \"Hello!\";\n}\ndocument.getElementById(\"greet\").onclick = showMessage();\n",
+      "hints": [
+        "showMessage() calls the function now. showMessage (no parentheses) refers to the function itself."
+      ],
+      "solution": "function showMessage() {\n  document.getElementById(\"message\").textContent = \"Hello!\";\n}\ndocument.getElementById(\"greet\").onclick = showMessage;",
+      "tests": [
+        {
+          "name": "No message before the click",
+          "code": "return document.getElementById(\"message\").textContent === \"\";"
+        },
+        {
+          "name": "Clicking shows \"Hello!\"",
+          "code": "document.getElementById(\"greet\").click();\nreturn document.getElementById(\"message\").textContent === \"Hello!\";"
+        }
+      ]
+    },
+    {
+      "id": "ch05-09-plan-the-test-runs",
+      "title": "Plan the test runs",
+      "chapters": [
+        5
+      ],
+      "difficulty": "medium",
+      "prompt": "Write a function `isValidPercent(value)` that returns `true` for numbers from 0 to 100 (inclusive) and `false` for anything else, including non-numbers.\n\nThen plan your tests the way the chapter recommends — include the **boundaries** and invalid data. Create an array `testCases` of objects like `{ input: 0, expected: true }` with at least six cases, including `0`, `100`, `-1`, `101` and a string such as `\"abc\"`. Finally, loop through `testCases` and log `PASS` or `FAIL` for each.",
+      "starterCode": "",
+      "hints": [
+        "typeof value === \"number\" checks for a number.",
+        "for (const test of testCases) { console.log(isValidPercent(test.input) === test.expected ? \"PASS\" : \"FAIL\"); }"
+      ],
+      "solution": "function isValidPercent(value) {\n  return typeof value === \"number\" && value >= 0 && value <= 100;\n}\n\nconst testCases = [\n  { input: 0, expected: true },\n  { input: 100, expected: true },\n  { input: 50, expected: true },\n  { input: -1, expected: false },\n  { input: 101, expected: false },\n  { input: \"abc\", expected: false },\n];\n\nfor (const test of testCases) {\n  console.log(isValidPercent(test.input) === test.expected ? \"PASS\" : \"FAIL\");\n}",
+      "tests": [
+        {
+          "name": "isValidPercent handles boundaries",
+          "code": "return isValidPercent(0) && isValidPercent(100) && !isValidPercent(-1) && !isValidPercent(101);"
+        },
+        {
+          "name": "isValidPercent rejects non-numbers",
+          "code": "return !isValidPercent(\"abc\") && !isValidPercent(\"50\") && !isValidPercent(undefined);"
+        },
+        {
+          "name": "testCases covers 0, 100, -1, 101 and a string",
+          "code": "const inputs = testCases.map(t => t.input);\nreturn testCases.length >= 6 && [0, 100, -1, 101].every(v => inputs.includes(v)) && inputs.some(v => typeof v === \"string\");"
+        },
+        {
+          "name": "Logs PASS for every case",
+          "code": "return logs.filter(l => l === \"PASS\").length === testCases.length && !logs.includes(\"FAIL\");"
+        }
+      ]
+    },
+    {
+      "id": "ch05-10-two-bugs-in-the-cart",
+      "title": "Two bugs in the cart",
+      "chapters": [
+        5
+      ],
+      "difficulty": "hard",
+      "prompt": "`cartTotal(items)` should return the total price of all items (price × quantity), with 10% off when the total is **over 100**. It has **two bugs**. Use tracing to find them and fix them.\n\n```\ncartTotal([{ price: 20, qty: 2 }, { price: 15, qty: 1 }])    // 55\ncartTotal([{ price: 60, qty: 2 }])                            // 108\n```",
+      "starterCode": "function cartTotal(items) {\n  let total = 0;\n  for (const item of items) {\n    total = item.price * item.qty;\n  }\n  if (total > 100) {\n    total = total * 0.10;\n  }\n  return total;\n}\n",
+      "hints": [
+        "Is total being added to, or replaced, on each pass?",
+        "10% off means you pay 90%."
+      ],
+      "solution": "function cartTotal(items) {\n  let total = 0;\n  for (const item of items) {\n    total += item.price * item.qty;\n  }\n  if (total > 100) {\n    total = total * 0.90;\n  }\n  return total;\n}",
+      "tests": [
+        {
+          "name": "First example returns 55",
+          "code": "return cartTotal([{ price: 20, qty: 2 }, { price: 15, qty: 1 }]) === 55;"
+        },
+        {
+          "name": "Second example returns 108",
+          "code": "return cartTotal([{ price: 60, qty: 2 }]) === 108;"
+        },
+        {
+          "name": "Exactly 100 has no discount",
+          "code": "return cartTotal([{ price: 50, qty: 2 }]) === 100;"
+        }
+      ]
+    }
+  ]
+}

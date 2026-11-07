@@ -186,3 +186,7 @@ Each question now has a **Download as files (.zip)** button. The zip unpacks to 
 **Sharing answers:** zip the folder and email it. I also added a **Load answer from file…** button. It loads a `main.js` or one of these zips back into the editor so the answer can be checked automatically. That covers both checking your own work after editing offline, and someone checking an answer you emailed them.
 
 **Tested:** I downloaded zips from four kinds of questions and opened each unzipped `index.html` straight from disk. The plain DOM, jQuery, web storage and `fetch()` questions all ran correctly. Loading a zip back into the app passed all its checks.
+
+### 12:00 — User
+
+> Create a question set for each chapter in the book: there should be 10 questions in each of these.

@@ -1,0 +1,353 @@
+{
+  "title": "Chapter 10: How to work with forms and data validation",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Get started fast with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with images and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
+  },
+  "questions": [
+    {
+      "id": "ch10-01-html5-validation-attributes",
+      "title": "HTML5 validation attributes",
+      "chapters": [
+        10
+      ],
+      "difficulty": "easy",
+      "prompt": "Using JavaScript (not by editing the HTML), turn on HTML5 validation for the form's fields:\n\n- `#email`: make it **required** and change its `type` to `email`\n- `#age`: change its `type` to `number` and give it a `min` of 18 and `max` of 120\n- `#zip`: give it a `pattern` that allows exactly **5 digits**\n\nThe browser then checks these when the form is submitted.",
+      "setup": {
+        "html": "<form id=\"signup\">\n  <label>Email: <input id=\"email\"></label><br>\n  <label>Age: <input id=\"age\"></label><br>\n  <label>Zip: <input id=\"zip\"></label><br>\n  <button>Sign up</button>\n</form>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "element.required = true; element.type = \"email\";",
+        "element.pattern = \"\\\\d{5}\" — the browser anchors the pattern to the whole value."
+      ],
+      "solution": "const email = document.getElementById(\"email\");\nemail.required = true;\nemail.type = \"email\";\nconst age = document.getElementById(\"age\");\nage.type = \"number\";\nage.min = 18;\nage.max = 120;\ndocument.getElementById(\"zip\").pattern = \"\\\\d{5}\";",
+      "tests": [
+        {
+          "name": "Email is required and of type email",
+          "code": "const e = document.getElementById(\"email\");\ne.value = \"\";\nconst emptyInvalid = !e.checkValidity();\ne.value = \"not-an-email\";\nconst badInvalid = !e.checkValidity();\ne.value = \"a@b.com\";\nreturn emptyInvalid && badInvalid && e.checkValidity();"
+        },
+        {
+          "name": "Age must be 18–120",
+          "code": "const a = document.getElementById(\"age\");\na.value = \"17\"; const low = a.checkValidity();\na.value = \"121\"; const high = a.checkValidity();\na.value = \"30\";\nreturn !low && !high && a.checkValidity();"
+        },
+        {
+          "name": "Zip must be 5 digits",
+          "code": "const z = document.getElementById(\"zip\");\nz.value = \"1234\"; const four = z.checkValidity();\nz.value = \"123456\"; const six = z.checkValidity();\nz.value = \"93711\";\nreturn !four && !six && z.checkValidity();"
+        }
+      ]
+    },
+    {
+      "id": "ch10-02-checkvalidity-and-validationmessage",
+      "title": "checkValidity() and validationMessage",
+      "chapters": [
+        10
+      ],
+      "difficulty": "medium",
+      "prompt": "The form uses HTML5 attributes. Turn off the browser's own error bubbles by setting the form's `noValidate` property to `true`, then handle validation yourself: on `submit`, if `form.checkValidity()` is false, cancel the submit and put each invalid field's `validationMessage` into the `<span>` after it (empty for valid fields).",
+      "setup": {
+        "html": "<form id=\"order\">\n  <label>Name: <input id=\"name\" required></label> <span></span><br>\n  <label>Quantity: <input id=\"qty\" type=\"number\" min=\"1\" max=\"10\" required></label> <span></span><br>\n  <button>Order</button>\n</form>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nspan { color: #c0392b; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "for (const field of form.elements) { if (field.tagName === \"INPUT\") field.nextElementSibling... }",
+        "field.validationMessage is \"\" when the field is valid. Note: the span follows the label here, so use field.parentElement.nextElementSibling."
+      ],
+      "solution": "const form = document.getElementById(\"order\");\nform.noValidate = true;\nform.addEventListener(\"submit\", evt => {\n  for (const field of form.querySelectorAll(\"input\")) {\n    field.parentElement.nextElementSibling.textContent = field.validationMessage;\n  }\n  if (!form.checkValidity()) {\n    evt.preventDefault();\n  }\n});",
+      "tests": [
+        {
+          "name": "noValidate is true",
+          "code": "return document.getElementById(\"order\").noValidate === true;"
+        },
+        {
+          "name": "Empty form is cancelled and shows messages",
+          "code": "const ok = document.getElementById(\"order\").dispatchEvent(new Event(\"submit\", { cancelable: true }));\nconst spans = document.querySelectorAll(\"#order span\");\nreturn ok === false && spans[0].textContent !== \"\" && spans[1].textContent !== \"\";"
+        },
+        {
+          "name": "Valid form submits with empty messages",
+          "code": "document.getElementById(\"name\").value = \"Ann\";\ndocument.getElementById(\"qty\").value = \"3\";\nconst ok = document.getElementById(\"order\").dispatchEvent(new Event(\"submit\", { cancelable: true }));\nreturn ok === true && [...document.querySelectorAll(\"#order span\")].every(s => s.textContent === \"\");"
+        }
+      ]
+    },
+    {
+      "id": "ch10-03-setcustomvalidity",
+      "title": "setCustomValidity()",
+      "chapters": [
+        10
+      ],
+      "difficulty": "medium",
+      "prompt": "Whenever the user types in `#confirm` (the `input` event), compare it with `#password`. If they differ, call `setCustomValidity(\"Passwords must match.\")` on `#confirm`; if they match, clear the custom message with `setCustomValidity(\"\")`.",
+      "setup": {
+        "html": "<form>\n  <label>Password: <input type=\"password\" id=\"password\" value=\"secret123\"></label><br>\n  <label>Confirm: <input type=\"password\" id=\"confirm\"></label>\n</form>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "A non-empty custom message makes the field invalid; an empty string makes it valid again."
+      ],
+      "solution": "const confirmBox = document.getElementById(\"confirm\");\nconfirmBox.addEventListener(\"input\", () => {\n  const password = document.getElementById(\"password\").value;\n  confirmBox.setCustomValidity(confirmBox.value === password ? \"\" : \"Passwords must match.\");\n});",
+      "tests": [
+        {
+          "name": "A mismatch is invalid with the message",
+          "code": "const c = document.getElementById(\"confirm\");\nc.value = \"secret\";\nc.dispatchEvent(new Event(\"input\"));\nreturn !c.checkValidity() && c.validationMessage === \"Passwords must match.\";"
+        },
+        {
+          "name": "A match is valid",
+          "code": "const c = document.getElementById(\"confirm\");\nc.value = \"secret123\";\nc.dispatchEvent(new Event(\"input\"));\nreturn c.checkValidity() && c.validationMessage === \"\";"
+        }
+      ]
+    },
+    {
+      "id": "ch10-04-jquery-form-selectors",
+      "title": "jQuery form selectors",
+      "chapters": [
+        10
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "Using jQuery's form selectors, store:\n\n- `textCount` — the number of text boxes (`:text`)\n- `checkedValues` — an **array** of the values of the checked check boxes (`:checkbox:checked`)\n- `disabledCount` — the number of disabled controls (`:disabled`)",
+      "setup": {
+        "html": "<form>\n  <input type=\"text\" id=\"first\"> <input type=\"text\" id=\"last\"> <input type=\"text\" id=\"old\" disabled>\n  <label><input type=\"checkbox\" value=\"news\" checked> News</label>\n  <label><input type=\"checkbox\" value=\"offers\"> Offers</label>\n  <label><input type=\"checkbox\" value=\"tips\" checked> Tips</label>\n  <button disabled>Send</button>\n</form>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\":checkbox:checked\").map((i, el) => el.value).get() returns a plain array."
+      ],
+      "solution": "const textCount = $(\":text\").length;\nconst checkedValues = $(\":checkbox:checked\").map((i, el) => $(el).val()).get();\nconst disabledCount = $(\":disabled\").length;",
+      "tests": [
+        {
+          "name": "textCount is 3",
+          "code": "return textCount === 3;"
+        },
+        {
+          "name": "checkedValues is [\"news\", \"tips\"]",
+          "code": "return Array.isArray(checkedValues) && checkedValues.join() === \"news,tips\";"
+        },
+        {
+          "name": "disabledCount is 2",
+          "code": "return disabledCount === 2;"
+        }
+      ]
+    },
+    {
+      "id": "ch10-05-radio-buttons-and-selects-with-val",
+      "title": "Radio buttons and selects with val()",
+      "chapters": [
+        10
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "When `#show` is clicked, put a summary like `Medium, Delivery` in `#summary`: the **value** of the checked `size` radio button and the **text** of the selected option in `#method`.",
+      "setup": {
+        "html": "<p><label><input type=\"radio\" name=\"size\" value=\"Small\"> Small</label>\n<label><input type=\"radio\" name=\"size\" value=\"Medium\" checked> Medium</label>\n<label><input type=\"radio\" name=\"size\" value=\"Large\"> Large</label></p>\n<select id=\"method\"><option value=\"P\">Pickup</option><option value=\"D\" selected>Delivery</option></select>\n<button type=\"button\" id=\"show\">Show</button>\n<p id=\"summary\"></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"input[name=size]:checked\").val()",
+        "$(\"#method option:selected\").text()"
+      ],
+      "solution": "$(\"#show\").click( () => {\n  const size = $(\"input[name=size]:checked\").val();\n  const method = $(\"#method option:selected\").text();\n  $(\"#summary\").text(`${size}, ${method}`);\n});",
+      "tests": [
+        {
+          "name": "Shows \"Medium, Delivery\"",
+          "code": "$(\"#show\").click();\nreturn $(\"#summary\").text() === \"Medium, Delivery\";"
+        },
+        {
+          "name": "Shows \"Large, Pickup\" after changes",
+          "code": "$(\"input[value=Large]\").prop(\"checked\", true);\n$(\"#method\").val(\"P\");\n$(\"#show\").click();\nreturn $(\"#summary\").text() === \"Large, Pickup\";"
+        }
+      ]
+    },
+    {
+      "id": "ch10-06-focus-and-blur-events",
+      "title": "focus and blur events",
+      "chapters": [
+        10
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "For every text box in `#profile`:\n\n- On `focus`, add the class `active`.\n- On `blur`, remove the class `active`, trim the value, and if it's empty put `Required` in the `<span>` after it (otherwise empty the span).",
+      "setup": {
+        "html": "<form id=\"profile\">\n  <label>Name:</label> <input type=\"text\" id=\"name\"> <span></span><br>\n  <label>City:</label> <input type=\"text\" id=\"city\"> <span></span>\n</form>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n.active { background: #fffbe0; }\nspan { color: #c0392b; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#profile :text\").focus( function() { ... }).blur( function() { ... });"
+      ],
+      "solution": "$(\"#profile :text\").focus( function() {\n  $(this).addClass(\"active\");\n}).blur( function() {\n  const value = $(this).val().trim();\n  $(this).removeClass(\"active\").val(value);\n  $(this).next().text(value === \"\" ? \"Required\" : \"\");\n});",
+      "tests": [
+        {
+          "name": "focus adds \"active\"",
+          "code": "$(\"#name\").trigger(\"focus\");\nreturn $(\"#name\").hasClass(\"active\");"
+        },
+        {
+          "name": "blur on an empty box removes \"active\" and shows Required",
+          "code": "$(\"#name\").val(\"   \").trigger(\"blur\");\nreturn !$(\"#name\").hasClass(\"active\") && $(\"#name\").next().text() === \"Required\" && $(\"#name\").val() === \"\";"
+        },
+        {
+          "name": "blur with a value trims it and clears the message",
+          "code": "$(\"#name\").trigger(\"focus\").val(\"  Ann \").trigger(\"blur\");\nreturn $(\"#name\").val() === \"Ann\" && $(\"#name\").next().text() === \"\";"
+        }
+      ]
+    },
+    {
+      "id": "ch10-07-enable-a-button-with-change",
+      "title": "Enable a button with change",
+      "chapters": [
+        10
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "The **Submit** button starts disabled. When the `#agree` check box changes, enable the button if it's checked and disable it if not, using jQuery's `prop()` method.",
+      "setup": {
+        "html": "<label><input type=\"checkbox\" id=\"agree\"> I agree</label>\n<button id=\"submit\" disabled>Submit</button>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#submit\").prop(\"disabled\", !this.checked)"
+      ],
+      "solution": "$(\"#agree\").change( function() {\n  $(\"#submit\").prop(\"disabled\", !$(this).prop(\"checked\"));\n});",
+      "tests": [
+        {
+          "name": "Checking enables the button",
+          "code": "$(\"#agree\").prop(\"checked\", true).trigger(\"change\");\nreturn $(\"#submit\").prop(\"disabled\") === false;"
+        },
+        {
+          "name": "Unchecking disables it",
+          "code": "$(\"#agree\").prop(\"checked\", false).trigger(\"change\");\nreturn $(\"#submit\").prop(\"disabled\") === true;"
+        },
+        {
+          "name": "Uses prop()",
+          "code": "return /\\.prop\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch10-08-validation-application",
+      "title": "Validation application",
+      "chapters": [
+        10
+      ],
+      "difficulty": "hard",
+      "useJQuery": true,
+      "prompt": "Like the chapter's Validation application: on submit, validate and show messages in each field's following `<span>`:\n\n- `#name`: required → `This field is required.`\n- `#age`: a whole number from 18 to 120 → `Enter an age from 18 to 120.`\n- `#phone`: matches `999-999-9999` → `Use 999-999-9999 format.`\n\nClear the message for valid fields, and cancel the submit if any field is invalid.",
+      "setup": {
+        "html": "<form id=\"account\">\n  <label>Name:</label> <input type=\"text\" id=\"name\"> <span></span><br>\n  <label>Age:</label> <input type=\"text\" id=\"age\"> <span></span><br>\n  <label>Phone:</label> <input type=\"text\" id=\"phone\"> <span></span><br>\n  <input type=\"submit\" value=\"Save\">\n</form>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nspan { color: #c0392b; }\nlabel { display: inline-block; width: 4em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "parseInt the age and check isNaN and the range.",
+        "/^\\d{3}-\\d{3}-\\d{4}$/.test(phone)"
+      ],
+      "solution": "$(\"#account\").submit( evt => {\n  let isValid = true;\n  const name = $(\"#name\").val().trim();\n  const age = parseInt($(\"#age\").val());\n  const phone = $(\"#phone\").val().trim();\n\n  if (name === \"\") { $(\"#name\").next().text(\"This field is required.\"); isValid = false; }\n  else { $(\"#name\").next().text(\"\"); }\n\n  if (isNaN(age) || age < 18 || age > 120) { $(\"#age\").next().text(\"Enter an age from 18 to 120.\"); isValid = false; }\n  else { $(\"#age\").next().text(\"\"); }\n\n  if (!/^\\d{3}-\\d{3}-\\d{4}$/.test(phone)) { $(\"#phone\").next().text(\"Use 999-999-9999 format.\"); isValid = false; }\n  else { $(\"#phone\").next().text(\"\"); }\n\n  if (!isValid) {\n    evt.preventDefault();\n  }\n});",
+      "tests": [
+        {
+          "name": "Empty form shows three messages and cancels",
+          "code": "const ok = document.getElementById(\"account\").dispatchEvent(new Event(\"submit\", { cancelable: true }));\nreturn ok === false && $(\"#name\").next().text() === \"This field is required.\" && $(\"#age\").next().text() === \"Enter an age from 18 to 120.\" && $(\"#phone\").next().text() === \"Use 999-999-9999 format.\";"
+        },
+        {
+          "name": "Age 17 and a bad phone are rejected",
+          "code": "$(\"#name\").val(\"Ann\"); $(\"#age\").val(\"17\"); $(\"#phone\").val(\"5551234567\");\nconst ok = document.getElementById(\"account\").dispatchEvent(new Event(\"submit\", { cancelable: true }));\nreturn ok === false && $(\"#name\").next().text() === \"\" && $(\"#age\").next().text() !== \"\" && $(\"#phone\").next().text() !== \"\";"
+        },
+        {
+          "name": "Valid data submits",
+          "code": "$(\"#age\").val(\"44\"); $(\"#phone\").val(\"555-123-4567\");\nconst ok = document.getElementById(\"account\").dispatchEvent(new Event(\"submit\", { cancelable: true }));\nreturn ok === true && $(\"span\").text() === \"\";"
+        }
+      ]
+    },
+    {
+      "id": "ch10-09-reset-a-form",
+      "title": "Reset a form",
+      "chapters": [
+        10
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "When `#reset` is clicked, reset the form `#survey` to its starting values (use the **DOM** `reset()` method — jQuery has no reset method, so get the DOM element from the jQuery object), clear all the `<span>` messages, and put the focus in `#name`.",
+      "setup": {
+        "html": "<form id=\"survey\">\n  <input type=\"text\" id=\"name\" value=\"Your name\"> <span>Too short</span><br>\n  <input type=\"text\" id=\"email\"> <span>Required</span><br>\n  <button type=\"button\" id=\"reset\">Reset</button>\n</form>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nspan { color: #c0392b; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#survey\")[0] or $(\"#survey\").get(0) is the DOM form element."
+      ],
+      "solution": "$(\"#reset\").click( () => {\n  $(\"#survey\")[0].reset();\n  $(\"#survey span\").text(\"\");\n  $(\"#name\").focus();\n});",
+      "tests": [
+        {
+          "name": "Fields go back to their starting values",
+          "code": "$(\"#name\").val(\"changed\"); $(\"#email\").val(\"x@y.z\");\n$(\"#reset\").click();\nreturn $(\"#name\").val() === \"Your name\" && $(\"#email\").val() === \"\";"
+        },
+        {
+          "name": "Messages are cleared",
+          "code": "return $(\"#survey span\").text() === \"\";"
+        },
+        {
+          "name": "Uses the DOM reset() method",
+          "code": "return /(\\[0\\]|\\.get\\(\\s*0\\s*\\))\\.reset\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch10-10-validate-as-the-user-types",
+      "title": "Validate as the user types",
+      "chapters": [
+        10
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "As the user types in `#username` (the `input` event), show the rule that's broken in `#hint`, checking in this order:\n\n1. fewer than 4 characters → `At least 4 characters`\n2. contains anything other than letters and digits → `Letters and digits only`\n3. otherwise → `Looks good!` and add the class `ok` to `#hint` (remove `ok` in the other cases).",
+      "setup": {
+        "html": "<input type=\"text\" id=\"username\"> <span id=\"hint\"></span>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#hint { color: #c0392b; }\n#hint.ok { color: #27ae60; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "/^[A-Za-z0-9]+$/.test(value)",
+        "$(\"#hint\").toggleClass(\"ok\", condition)"
+      ],
+      "solution": "$(\"#username\").on(\"input\", function() {\n  const value = $(this).val();\n  let message;\n  if (value.length < 4) {\n    message = \"At least 4 characters\";\n  } else if (!/^[A-Za-z0-9]+$/.test(value)) {\n    message = \"Letters and digits only\";\n  } else {\n    message = \"Looks good!\";\n  }\n  $(\"#hint\").text(message).toggleClass(\"ok\", message === \"Looks good!\");\n});",
+      "tests": [
+        {
+          "name": "\"ab\" is too short",
+          "code": "$(\"#username\").val(\"ab\").trigger(\"input\");\nreturn $(\"#hint\").text() === \"At least 4 characters\" && !$(\"#hint\").hasClass(\"ok\");"
+        },
+        {
+          "name": "\"ab cd\" has an invalid character",
+          "code": "$(\"#username\").val(\"ab cd\").trigger(\"input\");\nreturn $(\"#hint\").text() === \"Letters and digits only\";"
+        },
+        {
+          "name": "\"grace99\" looks good",
+          "code": "$(\"#username\").val(\"grace99\").trigger(\"input\");\nreturn $(\"#hint\").text() === \"Looks good!\" && $(\"#hint\").hasClass(\"ok\");"
+        }
+      ]
+    }
+  ]
+}

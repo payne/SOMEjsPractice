@@ -1,0 +1,305 @@
+{
+  "title": "Chapter 12: How to work with numbers, strings, and dates",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Get started fast with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with images and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
+  },
+  "questions": [
+    {
+      "id": "ch12-01-number-object-properties-and-methods",
+      "title": "Number object properties and methods",
+      "chapters": [
+        12
+      ],
+      "difficulty": "easy",
+      "prompt": "Write a function `describe(value)` that returns:\n\n- `\"not a number\"` if `Number.isNaN(value)`\n- `\"infinite\"` if the value isn't finite (`Number.isFinite()`)\n- `\"integer\"` if `Number.isInteger(value)`\n- otherwise the value rounded to 2 decimals with `toFixed()`",
+      "starterCode": "",
+      "hints": [
+        "Check the cases in the order listed."
+      ],
+      "solution": "function describe(value) {\n  if (Number.isNaN(value)) return \"not a number\";\n  if (!Number.isFinite(value)) return \"infinite\";\n  if (Number.isInteger(value)) return \"integer\";\n  return value.toFixed(2);\n}",
+      "tests": [
+        {
+          "name": "NaN and 1/0",
+          "code": "return describe(NaN) === \"not a number\" && describe(1 / 0) === \"infinite\";"
+        },
+        {
+          "name": "42 is an integer",
+          "code": "return describe(42) === \"integer\";"
+        },
+        {
+          "name": "3.14159 is \"3.14\"",
+          "code": "return describe(3.14159) === \"3.14\";"
+        }
+      ]
+    },
+    {
+      "id": "ch12-02-the-math-object",
+      "title": "The Math object",
+      "chapters": [
+        12
+      ],
+      "difficulty": "easy",
+      "prompt": "Write `hypotenuse(a, b)` that returns √(a² + b²) rounded to **2 decimal places** as a number, using `Math.sqrt()`, `Math.pow()` (or `**`) and `Math.round()`.",
+      "starterCode": "",
+      "hints": [
+        "Math.round(x * 100) / 100 rounds to 2 decimals."
+      ],
+      "solution": "function hypotenuse(a, b) {\n  const c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));\n  return Math.round(c * 100) / 100;\n}",
+      "tests": [
+        {
+          "name": "hypotenuse(3, 4) is 5",
+          "code": "return hypotenuse(3, 4) === 5;"
+        },
+        {
+          "name": "hypotenuse(1, 1) is 1.41",
+          "code": "return hypotenuse(1, 1) === 1.41;"
+        },
+        {
+          "name": "Uses Math.sqrt()",
+          "code": "return /Math\\.sqrt\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch12-03-random-number-in-a-range",
+      "title": "Random number in a range",
+      "chapters": [
+        12
+      ],
+      "difficulty": "medium",
+      "prompt": "Write `getRandomInt(min, max)` that returns a random **whole number** from `min` to `max`, **inclusive**, with every value equally likely.",
+      "starterCode": "",
+      "hints": [
+        "Math.floor(Math.random() * (max - min + 1)) + min"
+      ],
+      "solution": "const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;",
+      "tests": [
+        {
+          "name": "Always an integer within 5..8",
+          "code": "for (let i = 0; i < 3000; i++) { const n = getRandomInt(5, 8); if (!Number.isInteger(n) || n < 5 || n > 8) return false; }\nreturn true;"
+        },
+        {
+          "name": "Every value 5..8 appears",
+          "code": "const seen = new Set();\nfor (let i = 0; i < 3000; i++) seen.add(getRandomInt(5, 8));\nreturn seen.size === 4;"
+        },
+        {
+          "name": "Works for a single value",
+          "code": "return getRandomInt(3, 3) === 3;"
+        }
+      ]
+    },
+    {
+      "id": "ch12-04-pig-score-a-turn",
+      "title": "PIG: score a turn",
+      "chapters": [
+        12
+      ],
+      "difficulty": "medium",
+      "prompt": "In the chapter's PIG game, a player rolls a die until they decide to stop or roll a **1**. Rolling a 1 ends the turn and **loses** all points from that turn.\n\nWrite `scoreTurn(rolls)`, where `rolls` is the array of rolls in a turn. Return the sum of the rolls, or 0 if any roll is a 1 (stop reading at the 1).",
+      "starterCode": "",
+      "hints": [
+        "Loop through the rolls; if a roll is 1, return 0; otherwise add it."
+      ],
+      "solution": "function scoreTurn(rolls) {\n  let total = 0;\n  for (const roll of rolls) {\n    if (roll === 1) {\n      return 0;\n    }\n    total += roll;\n  }\n  return total;\n}",
+      "tests": [
+        {
+          "name": "[4, 6, 3] scores 13",
+          "code": "return scoreTurn([4, 6, 3]) === 13;"
+        },
+        {
+          "name": "[5, 1, 6] scores 0",
+          "code": "return scoreTurn([5, 1, 6]) === 0;"
+        },
+        {
+          "name": "[] scores 0",
+          "code": "return scoreTurn([]) === 0;"
+        }
+      ]
+    },
+    {
+      "id": "ch12-05-capitalize-words",
+      "title": "Capitalize words",
+      "chapters": [
+        12
+      ],
+      "difficulty": "easy",
+      "prompt": "Write `capitalizeWords(text)` that returns the text with the first letter of each word uppercase and the rest lowercase. Words are separated by single spaces.\n\n```\ncapitalizeWords(\"hello WORLD from js\")   // \"Hello World From Js\"\n```",
+      "starterCode": "",
+      "hints": [
+        "split(\" \"), change each word with charAt(0).toUpperCase() + slice(1).toLowerCase(), then join(\" \")."
+      ],
+      "solution": "function capitalizeWords(text) {\n  return text.split(\" \")\n    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())\n    .join(\" \");\n}",
+      "tests": [
+        {
+          "name": "\"hello WORLD from js\"",
+          "code": "return capitalizeWords(\"hello WORLD from js\") === \"Hello World From Js\";"
+        },
+        {
+          "name": "A single word",
+          "code": "return capitalizeWords(\"jAVASCRIPT\") === \"Javascript\";"
+        }
+      ]
+    },
+    {
+      "id": "ch12-06-palindromes",
+      "title": "Palindromes",
+      "chapters": [
+        12
+      ],
+      "difficulty": "medium",
+      "prompt": "Write `isPalindrome(text)` that returns `true` if the text reads the same backwards, **ignoring case and anything that isn't a letter or digit**.\n\n```\nisPalindrome(\"Never odd or even\")   // true\nisPalindrome(\"A man, a plan, a canal: Panama!\")   // true\nisPalindrome(\"JavaScript\")   // false\n```",
+      "starterCode": "",
+      "hints": [
+        "Build a cleaned string: lowercase it and keep only characters where /[a-z0-9]/ matches.",
+        "Reverse with split(\"\").reverse().join(\"\")."
+      ],
+      "solution": "function isPalindrome(text) {\n  let clean = \"\";\n  for (const ch of text.toLowerCase()) {\n    if (/[a-z0-9]/.test(ch)) {\n      clean += ch;\n    }\n  }\n  return clean === clean.split(\"\").reverse().join(\"\");\n}",
+      "tests": [
+        {
+          "name": "\"Never odd or even\" is a palindrome",
+          "code": "return isPalindrome(\"Never odd or even\") === true;"
+        },
+        {
+          "name": "\"A man, a plan, a canal: Panama!\" is a palindrome",
+          "code": "return isPalindrome(\"A man, a plan, a canal: Panama!\") === true;"
+        },
+        {
+          "name": "\"JavaScript\" is not",
+          "code": "return isPalindrome(\"JavaScript\") === false;"
+        }
+      ]
+    },
+    {
+      "id": "ch12-07-mask-a-card-number",
+      "title": "Mask a card number",
+      "chapters": [
+        12
+      ],
+      "difficulty": "easy",
+      "prompt": "Write `maskCard(number)` that takes a card number **string** (spaces and dashes allowed) and returns only the digits, with every digit except the **last four** replaced by `*`.\n\n```\nmaskCard(\"1234-5678-9012-3456\")   // \"************3456\"\n```",
+      "starterCode": "",
+      "hints": [
+        "Remove non-digits with replace(/\\D/g, \"\") or a loop.",
+        "slice(-4) gets the last four; padStart() can add the stars."
+      ],
+      "solution": "function maskCard(number) {\n  const digits = number.replace(/\\D/g, \"\");\n  return digits.slice(-4).padStart(digits.length, \"*\");\n}",
+      "tests": [
+        {
+          "name": "\"1234-5678-9012-3456\"",
+          "code": "return maskCard(\"1234-5678-9012-3456\") === \"************3456\";"
+        },
+        {
+          "name": "\"4111 1111 1111 1\"",
+          "code": "return maskCard(\"4111 1111 1111 1\") === \"*********1111\";"
+        }
+      ]
+    },
+    {
+      "id": "ch12-08-create-an-array-from-a-string",
+      "title": "Create an array from a string",
+      "chapters": [
+        12
+      ],
+      "difficulty": "easy",
+      "prompt": "Write `countWords(text)` that returns the number of words in the text. Words are separated by one or more spaces, and leading/trailing spaces don't count. An empty or all-space string has 0 words.",
+      "starterCode": "",
+      "hints": [
+        "trim() first. Then split(\" \") and ignore empty strings — or split on a regular expression /\\s+/."
+      ],
+      "solution": "function countWords(text) {\n  const trimmed = text.trim();\n  if (trimmed === \"\") {\n    return 0;\n  }\n  return trimmed.split(/\\s+/).length;\n}",
+      "tests": [
+        {
+          "name": "\"  the quick   brown fox \" has 4 words",
+          "code": "return countWords(\"  the quick   brown fox \") === 4;"
+        },
+        {
+          "name": "\"\" and \"   \" have 0 words",
+          "code": "return countWords(\"\") === 0 && countWords(\"   \") === 0;"
+        },
+        {
+          "name": "\"one\" has 1 word",
+          "code": "return countWords(\"one\") === 1;"
+        }
+      ]
+    },
+    {
+      "id": "ch12-09-count-down-days-until-a-date",
+      "title": "Count Down: days until a date",
+      "chapters": [
+        12
+      ],
+      "difficulty": "medium",
+      "prompt": "Like the chapter's Count Down application, write `daysUntil(target, from)` that returns the number of **whole days** from the Date `from` to the Date `target` (round **up** partial days). If the target has passed, return 0.\n\n```\ndaysUntil(new Date(2026, 11, 25), new Date(2026, 11, 1))   // 24\n```",
+      "starterCode": "",
+      "hints": [
+        "Subtracting two Dates gives milliseconds. One day is 24 * 60 * 60 * 1000 ms.",
+        "Math.ceil() rounds up."
+      ],
+      "solution": "function daysUntil(target, from) {\n  const msPerDay = 24 * 60 * 60 * 1000;\n  const days = Math.ceil((target.getTime() - from.getTime()) / msPerDay);\n  return days > 0 ? days : 0;\n}",
+      "tests": [
+        {
+          "name": "Dec 1 to Dec 25 is 24 days",
+          "code": "return daysUntil(new Date(2026, 11, 25), new Date(2026, 11, 1)) === 24;"
+        },
+        {
+          "name": "A partial day rounds up",
+          "code": "return daysUntil(new Date(2026, 11, 25), new Date(2026, 11, 24, 18, 0)) === 1;"
+        },
+        {
+          "name": "A past date is 0",
+          "code": "return daysUntil(new Date(2026, 0, 1), new Date(2026, 5, 1)) === 0;"
+        }
+      ]
+    },
+    {
+      "id": "ch12-10-dates-and-the-internationalization-api",
+      "title": "Dates and the Internationalization API",
+      "chapters": [
+        12
+      ],
+      "difficulty": "hard",
+      "prompt": "Write two functions:\n\n1. `addDays(date, days)` returns a **new** Date that many days later, without changing `date`.\n2. `formatLong(date)` returns the date formatted with the **Internationalization API** for `en-US` with the weekday, month name, day and year:\n\n```\nformatLong(new Date(2026, 11, 25))   // \"Friday, December 25, 2026\"\n```",
+      "starterCode": "",
+      "hints": [
+        "const copy = new Date(date); copy.setDate(copy.getDate() + days);",
+        "new Intl.DateTimeFormat(\"en-US\", { weekday: \"long\", month: \"long\", day: \"numeric\", year: \"numeric\" }).format(date)"
+      ],
+      "solution": "function addDays(date, days) {\n  const copy = new Date(date);\n  copy.setDate(copy.getDate() + days);\n  return copy;\n}\n\nfunction formatLong(date) {\n  return new Intl.DateTimeFormat(\"en-US\", {\n    weekday: \"long\", month: \"long\", day: \"numeric\", year: \"numeric\",\n  }).format(date);\n}",
+      "tests": [
+        {
+          "name": "addDays crosses a month",
+          "code": "const d = addDays(new Date(2026, 0, 30), 5);\nreturn d.getMonth() === 1 && d.getDate() === 4;"
+        },
+        {
+          "name": "addDays does not change the original",
+          "code": "const orig = new Date(2026, 0, 30);\naddDays(orig, 5);\nreturn orig.getDate() === 30;"
+        },
+        {
+          "name": "formatLong gives \"Friday, December 25, 2026\"",
+          "code": "return formatLong(new Date(2026, 11, 25)) === \"Friday, December 25, 2026\";"
+        }
+      ]
+    }
+  ]
+}

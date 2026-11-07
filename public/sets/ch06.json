@@ -1,0 +1,350 @@
+{
+  "title": "Chapter 6: How to script the DOM with JavaScript",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Get started fast with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with images and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
+  },
+  "questions": [
+    {
+      "id": "ch06-01-node-properties",
+      "title": "Node properties",
+      "chapters": [
+        6
+      ],
+      "difficulty": "easy",
+      "prompt": "Using DOM node properties (not `querySelectorAll`), store:\n\n- `count` — the number of **element** children of `#tasks`\n- `first` — the text of its first element child\n- `last` — the text of its last element child",
+      "setup": {
+        "html": "<ul id=\"tasks\">\n  <li>Read chapter 6</li>\n  <li class=\"done\">Install VS Code</li>\n  <li>Try the FAQs app</li>\n  <li class=\"done\">Read chapter 5</li>\n</ul>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n.done { text-decoration: line-through; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "element.children is a collection of child elements (childNodes also includes text nodes).",
+        "firstElementChild and lastElementChild."
+      ],
+      "solution": "const list = document.getElementById(\"tasks\");\nconst count = list.children.length;\nconst first = list.firstElementChild.textContent;\nconst last = list.lastElementChild.textContent;",
+      "tests": [
+        {
+          "name": "count is 4",
+          "code": "return count === 4;"
+        },
+        {
+          "name": "first and last are correct",
+          "code": "return first === \"Read chapter 6\" && last === \"Read chapter 5\";"
+        },
+        {
+          "name": "Uses node properties",
+          "code": "return /firstElementChild|children\\[0\\]|firstChild/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch06-02-set-attributes-on-external-links",
+      "title": "Set attributes on external links",
+      "chapters": [
+        6
+      ],
+      "difficulty": "medium",
+      "prompt": "For every link whose `href` **starts with** `http`, set the `target` attribute to `_blank` and add the class `external`. Leave the other links alone. Use `getAttribute()` and `setAttribute()`.",
+      "setup": {
+        "html": "<ul>\n  <li><a href=\"about.html\">About</a></li>\n  <li><a href=\"https://www.murach.com\">Murach</a></li>\n  <li><a href=\"contact.html\">Contact</a></li>\n  <li><a href=\"http://example.com\">Example</a></li>\n</ul>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\na.external::after { content: \" ↗\"; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "link.getAttribute(\"href\") returns the attribute exactly as written.",
+        "startsWith(\"http\")"
+      ],
+      "solution": "for (const link of document.querySelectorAll(\"a\")) {\n  if (link.getAttribute(\"href\").startsWith(\"http\")) {\n    link.setAttribute(\"target\", \"_blank\");\n    link.classList.add(\"external\");\n  }\n}",
+      "tests": [
+        {
+          "name": "External links open in a new tab and have the class",
+          "code": "const ext = [...document.querySelectorAll(\"a\")].filter(a => a.getAttribute(\"href\").startsWith(\"http\"));\nreturn ext.length === 2 && ext.every(a => a.getAttribute(\"target\") === \"_blank\" && a.classList.contains(\"external\"));"
+        },
+        {
+          "name": "Local links are unchanged",
+          "code": "const loc = [...document.querySelectorAll(\"a\")].filter(a => !a.getAttribute(\"href\").startsWith(\"http\"));\nreturn loc.every(a => !a.hasAttribute(\"target\") && !a.classList.contains(\"external\"));"
+        },
+        {
+          "name": "Uses setAttribute()",
+          "code": "return /setAttribute\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch06-03-faqs-with-classlist",
+      "title": "FAQs with classList",
+      "chapters": [
+        6
+      ],
+      "difficulty": "medium",
+      "prompt": "Like the chapter's FAQs application: when an `<h2>` in `#faqs` is clicked, **toggle** the class `minus` on it and toggle the class `open` on the `<div>` right after it (the CSS shows a div only when it has class `open`).",
+      "setup": {
+        "html": "<section id=\"faqs\">\n  <h2>What is the DOM?</h2>\n  <div><p>The Document Object Model.</p></div>\n  <h2>What is a node?</h2>\n  <div><p>Any item in the DOM tree.</p></div>\n</section>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nh2 { cursor: pointer; font-size: 1.1em; }\nh2::before { content: \"+ \"; }\nh2.minus::before { content: \"- \"; }\n#faqs div { display: none; }\n#faqs div.open { display: block; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "Loop over document.querySelectorAll(\"#faqs h2\") and add a click handler to each.",
+        "h2.nextElementSibling is the div."
+      ],
+      "solution": "for (const h2 of document.querySelectorAll(\"#faqs h2\")) {\n  h2.addEventListener(\"click\", evt => {\n    const heading = evt.currentTarget;\n    heading.classList.toggle(\"minus\");\n    heading.nextElementSibling.classList.toggle(\"open\");\n  });\n}",
+      "tests": [
+        {
+          "name": "Clicking the first heading opens its answer",
+          "code": "const h = document.querySelectorAll(\"#faqs h2\")[0];\nh.click();\nreturn h.classList.contains(\"minus\") && h.nextElementSibling.classList.contains(\"open\");"
+        },
+        {
+          "name": "The second answer stays closed",
+          "code": "return !document.querySelectorAll(\"#faqs div\")[1].classList.contains(\"open\");"
+        },
+        {
+          "name": "Clicking again closes it",
+          "code": "const h = document.querySelectorAll(\"#faqs h2\")[0];\nh.click();\nreturn !h.classList.contains(\"minus\") && !h.nextElementSibling.classList.contains(\"open\");"
+        }
+      ]
+    },
+    {
+      "id": "ch06-04-textbox-and-select-values",
+      "title": "Textbox and select values",
+      "chapters": [
+        6
+      ],
+      "difficulty": "easy",
+      "prompt": "When **Preview** is clicked, show `Hello, NAME from STATE!` in `#preview`, using the text box value (trimmed) and the **text** (not the value) of the selected option. If the name is empty, show `Please enter your name.` and put the focus in the name box.",
+      "setup": {
+        "html": "<label>Name: <input type=\"text\" id=\"name\" value=\"  Ana \"></label>\n<label>State: <select id=\"state\">\n  <option value=\"CA\">California</option>\n  <option value=\"TX\" selected>Texas</option>\n  <option value=\"NY\">New York</option>\n</select></label>\n<button type=\"button\" id=\"preview_btn\">Preview</button>\n<p id=\"preview\"></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "select.options[select.selectedIndex].text gives the selected option's text.",
+        "input.focus() moves the cursor into a field."
+      ],
+      "solution": "document.getElementById(\"preview_btn\").addEventListener(\"click\", () => {\n  const name = document.getElementById(\"name\").value.trim();\n  const state = document.getElementById(\"state\");\n  const preview = document.getElementById(\"preview\");\n  if (name === \"\") {\n    preview.textContent = \"Please enter your name.\";\n    document.getElementById(\"name\").focus();\n  } else {\n    preview.textContent = `Hello, ${name} from ${state.options[state.selectedIndex].text}!`;\n  }\n});",
+      "tests": [
+        {
+          "name": "Shows \"Hello, Ana from Texas!\"",
+          "code": "document.getElementById(\"preview_btn\").click();\nreturn document.getElementById(\"preview\").textContent === \"Hello, Ana from Texas!\";"
+        },
+        {
+          "name": "Uses the option text after changing the state",
+          "code": "document.getElementById(\"state\").value = \"NY\";\ndocument.getElementById(\"preview_btn\").click();\nreturn document.getElementById(\"preview\").textContent === \"Hello, Ana from New York!\";"
+        },
+        {
+          "name": "Empty name shows a message and focuses the box",
+          "code": "document.getElementById(\"name\").value = \"  \";\ndocument.getElementById(\"preview_btn\").click();\nreturn document.getElementById(\"preview\").textContent === \"Please enter your name.\" && document.activeElement === document.getElementById(\"name\");"
+        }
+      ]
+    },
+    {
+      "id": "ch06-05-radio-buttons-and-check-boxes",
+      "title": "Radio buttons and check boxes",
+      "chapters": [
+        6
+      ],
+      "difficulty": "medium",
+      "prompt": "Calculate a pizza price when **Total** is clicked: the checked **radio button**'s `value` is the base price, and each checked **check box** adds 1.50. Show the total in `#total` with 2 decimals, like `$13.00`.",
+      "setup": {
+        "html": "<p>Size:\n  <label><input type=\"radio\" name=\"size\" value=\"10\"> Small</label>\n  <label><input type=\"radio\" name=\"size\" value=\"12\" checked> Medium</label>\n  <label><input type=\"radio\" name=\"size\" value=\"14\"> Large</label></p>\n<p>Toppings:\n  <label><input type=\"checkbox\" name=\"topping\" value=\"cheese\" checked> Extra cheese</label>\n  <label><input type=\"checkbox\" name=\"topping\" value=\"olives\"> Olives</label>\n  <label><input type=\"checkbox\" name=\"topping\" value=\"peppers\"> Peppers</label></p>\n<button type=\"button\" id=\"calc\">Total</button>\n<p id=\"total\"></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "document.querySelector(\"input[name=size]:checked\") gets the checked radio.",
+        "document.querySelectorAll(\"input[name=topping]:checked\").length counts checked boxes."
+      ],
+      "solution": "document.getElementById(\"calc\").addEventListener(\"click\", () => {\n  const base = parseFloat(document.querySelector(\"input[name=size]:checked\").value);\n  const toppings = document.querySelectorAll(\"input[name=topping]:checked\").length;\n  const total = base + toppings * 1.5;\n  document.getElementById(\"total\").textContent = \"$\" + total.toFixed(2);\n});",
+      "tests": [
+        {
+          "name": "Medium with extra cheese is $13.50",
+          "code": "document.getElementById(\"calc\").click();\nreturn document.getElementById(\"total\").textContent === \"$13.50\";"
+        },
+        {
+          "name": "Large with all three toppings is $18.50",
+          "code": "document.querySelector(\"input[value='14']\").checked = true;\ndocument.querySelectorAll(\"input[name=topping]\").forEach(c => c.checked = true);\ndocument.getElementById(\"calc\").click();\nreturn document.getElementById(\"total\").textContent === \"$18.50\";"
+        }
+      ]
+    },
+    {
+      "id": "ch06-06-form-methods-and-events",
+      "title": "Form methods and events",
+      "chapters": [
+        6
+      ],
+      "difficulty": "medium",
+      "prompt": "1. When the page loads, move the focus to the `#username` field.\n2. When the **Clear** button is clicked, call the form's `reset()` method and put the focus back in `#username`.\n3. When `#username` loses focus (`blur` event), convert its value to lowercase.",
+      "setup": {
+        "html": "<form id=\"signup\">\n  <label>Username: <input type=\"text\" id=\"username\"></label>\n  <label>City: <input type=\"text\" id=\"city\" value=\"Fresno\"></label>\n  <button type=\"button\" id=\"clear\">Clear</button>\n</form>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "element.focus()",
+        "document.getElementById(\"signup\").reset() restores the starting values."
+      ],
+      "solution": "const username = document.getElementById(\"username\");\nusername.focus();\ndocument.getElementById(\"clear\").addEventListener(\"click\", () => {\n  document.getElementById(\"signup\").reset();\n  username.focus();\n});\nusername.addEventListener(\"blur\", () => {\n  username.value = username.value.toLowerCase();\n});",
+      "tests": [
+        {
+          "name": "Calls focus() when the page loads",
+          "code": "return (code.match(/\\.focus\\s*\\(/g) || []).length >= 2;"
+        },
+        {
+          "name": "Blur lowercases the username",
+          "code": "const u = document.getElementById(\"username\");\nu.value = \"GraceH\";\nu.dispatchEvent(new Event(\"blur\"));\nreturn u.value === \"graceh\";"
+        },
+        {
+          "name": "Clear resets the form and focuses username",
+          "code": "document.getElementById(\"city\").value = \"Tulsa\";\ndocument.getElementById(\"username\").blur();\ndocument.getElementById(\"clear\").click();\nreturn document.getElementById(\"city\").value === \"Fresno\" && document.getElementById(\"username\").value === \"\" && document.activeElement === document.getElementById(\"username\");"
+        }
+      ]
+    },
+    {
+      "id": "ch06-07-create-and-add-nodes",
+      "title": "Create and add nodes",
+      "chapters": [
+        6
+      ],
+      "difficulty": "easy",
+      "prompt": "For each name in the `names` array, **create** an `<li>` element with `createElement()`, set its text, and add it to `#roster` with `appendChild()`. Don't use `innerHTML`.",
+      "setup": {
+        "html": "<h2>Roster</h2>\n<ol id=\"roster\"></ol>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "const names = [\"Ada\", \"Alan\", \"Grace\"];\n",
+      "hints": [
+        "const li = document.createElement(\"li\"); li.textContent = name;"
+      ],
+      "solution": "const names = [\"Ada\", \"Alan\", \"Grace\"];\nconst roster = document.getElementById(\"roster\");\nfor (const name of names) {\n  const li = document.createElement(\"li\");\n  li.textContent = name;\n  roster.appendChild(li);\n}",
+      "tests": [
+        {
+          "name": "The list has Ada, Alan, Grace",
+          "code": "return [...document.querySelectorAll(\"#roster li\")].map(li => li.textContent).join() === \"Ada,Alan,Grace\";"
+        },
+        {
+          "name": "Uses createElement and appendChild, not innerHTML",
+          "code": "return /createElement\\s*\\(/.test(code) && /appendChild\\s*\\(|\\.append\\s*\\(/.test(code) && !/innerHTML/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch06-08-remove-and-replace-nodes",
+      "title": "Remove and replace nodes",
+      "chapters": [
+        6
+      ],
+      "difficulty": "medium",
+      "prompt": "1. **Remove** every `<li>` with the class `done` from `#tasks`.\n2. **Replace** the `<h1>` with a new `<h2>` element that has the same text.",
+      "setup": {
+        "html": "<h1>My Tasks</h1>\n<ul id=\"tasks\">\n  <li>Read chapter 6</li>\n  <li class=\"done\">Install VS Code</li>\n  <li>Try the FAQs app</li>\n  <li class=\"done\">Read chapter 5</li>\n</ul>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n.done { text-decoration: line-through; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "element.remove() removes an element; parent.removeChild(child) also works.",
+        "parent.replaceChild(newNode, oldNode) or oldNode.replaceWith(newNode)."
+      ],
+      "solution": "for (const li of document.querySelectorAll(\"#tasks li.done\")) {\n  li.remove();\n}\nconst h1 = document.querySelector(\"h1\");\nconst h2 = document.createElement(\"h2\");\nh2.textContent = h1.textContent;\nh1.parentNode.replaceChild(h2, h1);",
+      "tests": [
+        {
+          "name": "Only the two unfinished tasks remain",
+          "code": "return [...document.querySelectorAll(\"#tasks li\")].map(li => li.textContent).join(\"|\") === \"Read chapter 6|Try the FAQs app\";"
+        },
+        {
+          "name": "The h1 became an h2 with the same text",
+          "code": "return !document.querySelector(\"h1\") && document.querySelector(\"h2\")?.textContent === \"My Tasks\";"
+        },
+        {
+          "name": "The h2 is still before the list",
+          "code": "return document.querySelector(\"h2\").nextElementSibling === document.getElementById(\"tasks\");"
+        }
+      ]
+    },
+    {
+      "id": "ch06-09-register-list-the-errors",
+      "title": "Register: list the errors",
+      "chapters": [
+        6
+      ],
+      "difficulty": "hard",
+      "prompt": "Like the chapter's Register application: when **Register** is clicked, check the fields and show each problem as an `<li>` in `#errors` (clear old errors first):\n\n- `Email is required.` if the email is blank\n- `Password must be at least 8 characters.`\n- `You must accept the terms.` if the box isn't checked\n\nIf there are no errors, show `Registered!` in `#status`; otherwise make `#status` empty.",
+      "setup": {
+        "html": "<label>Email: <input type=\"text\" id=\"email\"></label><br>\n<label>Password: <input type=\"password\" id=\"password\"></label><br>\n<label><input type=\"checkbox\" id=\"terms\"> I accept the terms</label><br>\n<button type=\"button\" id=\"register\">Register</button>\n<ul id=\"errors\"></ul>\n<p id=\"status\"></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#errors { color: #c0392b; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "Collect messages in an array, then create one li per message.",
+        "Clear the list with errorsList.innerHTML = \"\" (or remove its children)."
+      ],
+      "solution": "const $ = selector => document.querySelector(selector);\n\n$(\"#register\").addEventListener(\"click\", () => {\n  const errors = [];\n  if ($(\"#email\").value.trim() === \"\") errors.push(\"Email is required.\");\n  if ($(\"#password\").value.length < 8) errors.push(\"Password must be at least 8 characters.\");\n  if (!$(\"#terms\").checked) errors.push(\"You must accept the terms.\");\n\n  const list = $(\"#errors\");\n  list.innerHTML = \"\";\n  for (const message of errors) {\n    const li = document.createElement(\"li\");\n    li.textContent = message;\n    list.appendChild(li);\n  }\n  $(\"#status\").textContent = errors.length === 0 ? \"Registered!\" : \"\";\n});",
+      "tests": [
+        {
+          "name": "Empty form shows all three errors",
+          "code": "document.getElementById(\"register\").click();\nreturn [...document.querySelectorAll(\"#errors li\")].map(l => l.textContent).join(\"|\") === \"Email is required.|Password must be at least 8 characters.|You must accept the terms.\";"
+        },
+        {
+          "name": "Errors are cleared before showing new ones",
+          "code": "document.getElementById(\"email\").value = \"a@b.com\";\ndocument.getElementById(\"register\").click();\nreturn document.querySelectorAll(\"#errors li\").length === 2;"
+        },
+        {
+          "name": "A valid form shows \"Registered!\" and no errors",
+          "code": "document.getElementById(\"password\").value = \"longenough\";\ndocument.getElementById(\"terms\").checked = true;\ndocument.getElementById(\"register\").click();\nreturn document.querySelectorAll(\"#errors li\").length === 0 && document.getElementById(\"status\").textContent === \"Registered!\";"
+        }
+      ]
+    },
+    {
+      "id": "ch06-10-innerhtml-versus-textcontent",
+      "title": "innerHTML versus textContent",
+      "chapters": [
+        6
+      ],
+      "difficulty": "medium",
+      "prompt": "The user's comment in the starter code contains HTML. Show it in two places:\n\n- In `#safe`, show it as **plain text** (the tags appear as typed), using `textContent`.\n- In `#list`, use `innerHTML` to build a `<ul>` with one `<li>` per tag word in `tags` (these are trusted).\n\nThen store in `safeHasBold` whether `#safe` contains a `<b>` element (it shouldn't).",
+      "setup": {
+        "html": "<p id=\"safe\"></p>\n<div id=\"list\"></div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "const comment = \"Nice <b>work</b>!\";\nconst tags = [\"dom\", \"nodes\", \"events\"];\n",
+      "hints": [
+        "textContent never parses HTML; innerHTML does.",
+        "Build the HTML string with a loop or tags.map(...).join(\"\")."
+      ],
+      "solution": "const comment = \"Nice <b>work</b>!\";\nconst tags = [\"dom\", \"nodes\", \"events\"];\ndocument.getElementById(\"safe\").textContent = comment;\nlet html = \"<ul>\";\nfor (const tag of tags) {\n  html += `<li>${tag}</li>`;\n}\nhtml += \"</ul>\";\ndocument.getElementById(\"list\").innerHTML = html;\nconst safeHasBold = document.querySelector(\"#safe b\") !== null;",
+      "tests": [
+        {
+          "name": "#safe shows the tags as text",
+          "code": "const s = document.getElementById(\"safe\");\nreturn s.textContent === \"Nice <b>work</b>!\" && !s.querySelector(\"b\");"
+        },
+        {
+          "name": "#list has a ul with 3 li items",
+          "code": "return [...document.querySelectorAll(\"#list ul li\")].map(l => l.textContent).join() === \"dom,nodes,events\";"
+        },
+        {
+          "name": "safeHasBold is false",
+          "code": "return safeHasBold === false;"
+        }
+      ]
+    }
+  ]
+}

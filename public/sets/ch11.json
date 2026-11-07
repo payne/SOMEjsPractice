@@ -1,0 +1,347 @@
+{
+  "title": "Chapter 11: How to use jQuery plugins and UI widgets",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Get started fast with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with images and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
+  },
+  "questions": [
+    {
+      "id": "ch11-01-accordion-widget",
+      "title": "Accordion widget",
+      "chapters": [
+        11
+      ],
+      "difficulty": "easy",
+      "useJQueryUI": true,
+      "prompt": "jQuery and **jQuery UI** are loaded. Turn `#faqs` into an **Accordion** widget. The HTML already has the structure the widget expects: a heading followed by a `<div>` for each panel.",
+      "setup": {
+        "html": "<div id=\"faqs\">\n  <h3>What is jQuery UI?</h3>\n  <div><p>A library of widgets and effects built on jQuery.</p></div>\n  <h3>Is it free?</h3>\n  <div><p>Yes.</p></div>\n  <h3>Where do I get it?</h3>\n  <div><p>From jqueryui.com.</p></div>\n</div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#faqs\").accordion();"
+      ],
+      "solution": "$(\"#faqs\").accordion();",
+      "tests": [
+        {
+          "name": "#faqs is an accordion",
+          "code": "return $(\"#faqs\").hasClass(\"ui-accordion\");"
+        },
+        {
+          "name": "Only the first panel is open",
+          "code": "const panels = $(\"#faqs .ui-accordion-content\");\nreturn panels.length === 3 && panels.eq(0).is(\":visible\") && panels.eq(1).is(\":hidden\");"
+        }
+      ]
+    },
+    {
+      "id": "ch11-02-accordion-options",
+      "title": "Accordion options",
+      "chapters": [
+        11
+      ],
+      "difficulty": "medium",
+      "useJQueryUI": true,
+      "prompt": "Create an Accordion from `#faqs` with these **options**: all panels can be closed (`collapsible`), **no** panel is open at the start (`active: false`), panels open on **mouseover** instead of click (`event`), and each panel is only as tall as its content (`heightStyle: \"content\"`).",
+      "setup": {
+        "html": "<div id=\"faqs\">\n  <h3>Question 1</h3><div><p>Answer 1</p></div>\n  <h3>Question 2</h3><div><p>Answer 2 is a little longer than the first.</p></div>\n</div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#faqs\").accordion({ collapsible: true, active: false, event: \"mouseover\", heightStyle: \"content\" });"
+      ],
+      "solution": "$(\"#faqs\").accordion({\n  collapsible: true,\n  active: false,\n  event: \"mouseover\",\n  heightStyle: \"content\",\n});",
+      "tests": [
+        {
+          "name": "Options are set",
+          "code": "const a = $(\"#faqs\");\nreturn a.accordion(\"option\", \"collapsible\") === true && a.accordion(\"option\", \"active\") === false && a.accordion(\"option\", \"event\") === \"mouseover\" && a.accordion(\"option\", \"heightStyle\") === \"content\";"
+        },
+        {
+          "name": "No panel is open at the start",
+          "code": "return $(\"#faqs .ui-accordion-content:visible\").length === 0;"
+        }
+      ]
+    },
+    {
+      "id": "ch11-03-tabs-widget",
+      "title": "Tabs widget",
+      "chapters": [
+        11
+      ],
+      "difficulty": "easy",
+      "useJQueryUI": true,
+      "prompt": "Turn `#tabs` into a **Tabs** widget, and make the **second** tab the one that is selected when the page loads.",
+      "setup": {
+        "html": "<div id=\"tabs\">\n  <ul>\n    <li><a href=\"#book\">Book</a></li>\n    <li><a href=\"#ebook\">eBook</a></li>\n    <li><a href=\"#both\">Both</a></li>\n  </ul>\n  <div id=\"book\">Print book: $59.50</div>\n  <div id=\"ebook\">eBook: $54.50</div>\n  <div id=\"both\">Print + eBook: $72.00</div>\n</div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "The active option is a zero-based index: $(\"#tabs\").tabs({ active: 1 });"
+      ],
+      "solution": "$(\"#tabs\").tabs({ active: 1 });",
+      "tests": [
+        {
+          "name": "#tabs is a tabs widget",
+          "code": "return $(\"#tabs\").hasClass(\"ui-tabs\");"
+        },
+        {
+          "name": "The eBook tab is selected",
+          "code": "return $(\"#ebook\").is(\":visible\") && $(\"#book\").is(\":hidden\") && $(\"#tabs\").tabs(\"option\", \"active\") === 1;"
+        },
+        {
+          "name": "Clicking \"Both\" shows that panel",
+          "code": "$(\"#tabs a[href='#both']\").trigger(\"click\");\nreturn $(\"#both\").is(\":visible\") && $(\"#ebook\").is(\":hidden\");"
+        }
+      ]
+    },
+    {
+      "id": "ch11-04-button-widget",
+      "title": "Button widget",
+      "chapters": [
+        11
+      ],
+      "difficulty": "easy",
+      "useJQueryUI": true,
+      "prompt": "Turn every `<button>` and every submit input in `#controls` into jQuery UI **Button** widgets. Then **disable** just the `#delete` button using the widget's `disable` method.",
+      "setup": {
+        "html": "<div id=\"controls\">\n  <button type=\"button\" id=\"save\">Save</button>\n  <button type=\"button\" id=\"delete\">Delete</button>\n  <input type=\"submit\" value=\"Submit\">\n</div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#controls button, #controls input[type=submit]\").button();",
+        "$(\"#delete\").button(\"disable\");"
+      ],
+      "solution": "$(\"#controls button, #controls input[type=submit]\").button();\n$(\"#delete\").button(\"disable\");",
+      "tests": [
+        {
+          "name": "All three are Button widgets",
+          "code": "return $(\"#controls .ui-button\").length === 3;"
+        },
+        {
+          "name": "#delete is disabled",
+          "code": "return $(\"#delete\").button(\"option\", \"disabled\") === true && $(\"#save\").button(\"option\", \"disabled\") === false;"
+        }
+      ]
+    },
+    {
+      "id": "ch11-05-dialog-widget",
+      "title": "Dialog widget",
+      "chapters": [
+        11
+      ],
+      "difficulty": "medium",
+      "useJQueryUI": true,
+      "prompt": "Make `#terms` a **modal Dialog** that does **not** open automatically (`autoOpen: false`) and is 350px wide. Clicking `#show_terms` opens it.",
+      "setup": {
+        "html": "<button type=\"button\" id=\"show_terms\">Read the terms</button>\n<div id=\"terms\" title=\"Terms of use\"><p>Be nice. Practice daily.</p></div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#terms\").dialog({ autoOpen: false, modal: true, width: 350 });",
+        "$(\"#terms\").dialog(\"open\");"
+      ],
+      "solution": "$(\"#terms\").dialog({ autoOpen: false, modal: true, width: 350 });\n$(\"#show_terms\").click( () => {\n  $(\"#terms\").dialog(\"open\");\n});",
+      "tests": [
+        {
+          "name": "The dialog starts closed",
+          "code": "return $(\"#terms\").dialog(\"isOpen\") === false;"
+        },
+        {
+          "name": "Options are modal and 350 wide",
+          "code": "return $(\"#terms\").dialog(\"option\", \"modal\") === true && $(\"#terms\").dialog(\"option\", \"width\") === 350;"
+        },
+        {
+          "name": "Clicking the button opens it",
+          "code": "$(\"#show_terms\").click();\nreturn $(\"#terms\").dialog(\"isOpen\") === true;"
+        }
+      ]
+    },
+    {
+      "id": "ch11-06-dialog-with-buttons",
+      "title": "Dialog with buttons",
+      "chapters": [
+        11
+      ],
+      "difficulty": "hard",
+      "useJQueryUI": true,
+      "prompt": "Create a Dialog from `#confirm` that opens right away, with two **buttons**: `Delete` (puts `Deleted` in `#result` and closes the dialog) and `Cancel` (puts `Cancelled` in `#result` and closes it).",
+      "setup": {
+        "html": "<div id=\"confirm\" title=\"Delete file?\"><p>This cannot be undone.</p></div>\n<p id=\"result\"></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "buttons: { Delete: function() { ...; $(this).dialog(\"close\"); }, Cancel: function() { ... } }"
+      ],
+      "solution": "$(\"#confirm\").dialog({\n  modal: true,\n  buttons: {\n    Delete: function() {\n      $(\"#result\").text(\"Deleted\");\n      $(this).dialog(\"close\");\n    },\n    Cancel: function() {\n      $(\"#result\").text(\"Cancelled\");\n      $(this).dialog(\"close\");\n    },\n  },\n});",
+      "tests": [
+        {
+          "name": "The dialog is open with two buttons",
+          "code": "return $(\"#confirm\").dialog(\"isOpen\") && $(\".ui-dialog-buttonpane button\").length === 2;"
+        },
+        {
+          "name": "Cancel closes it and shows \"Cancelled\"",
+          "code": "$(\".ui-dialog-buttonpane button:contains('Cancel')\").click();\nreturn $(\"#result\").text() === \"Cancelled\" && !$(\"#confirm\").dialog(\"isOpen\");"
+        },
+        {
+          "name": "Delete shows \"Deleted\"",
+          "code": "$(\"#confirm\").dialog(\"open\");\n$(\".ui-dialog-buttonpane button:contains('Delete')\").click();\nreturn $(\"#result\").text() === \"Deleted\" && !$(\"#confirm\").dialog(\"isOpen\");"
+        }
+      ]
+    },
+    {
+      "id": "ch11-07-datepicker-widget",
+      "title": "Datepicker widget",
+      "chapters": [
+        11
+      ],
+      "difficulty": "easy",
+      "useJQueryUI": true,
+      "prompt": "Attach a **Datepicker** to `#arrival` that doesn't allow dates before today (`minDate: 0`) and shows **two months** at a time (`numberOfMonths`).",
+      "setup": {
+        "html": "<label>Arrival date: <input type=\"text\" id=\"arrival\"></label>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#arrival\").datepicker({ minDate: 0, numberOfMonths: 2 });"
+      ],
+      "solution": "$(\"#arrival\").datepicker({ minDate: 0, numberOfMonths: 2 });",
+      "tests": [
+        {
+          "name": "#arrival has a datepicker",
+          "code": "return $(\"#arrival\").hasClass(\"hasDatepicker\");"
+        },
+        {
+          "name": "minDate is 0 and numberOfMonths is 2",
+          "code": "return $(\"#arrival\").datepicker(\"option\", \"minDate\") === 0 && $(\"#arrival\").datepicker(\"option\", \"numberOfMonths\") === 2;"
+        }
+      ]
+    },
+    {
+      "id": "ch11-08-datepicker-set-and-get-dates",
+      "title": "Datepicker: set and get dates",
+      "chapters": [
+        11
+      ],
+      "difficulty": "medium",
+      "useJQueryUI": true,
+      "prompt": "Attach Datepickers to `#checkin` and `#checkout`. Set `#checkin` to **today** (`setDate`). When `#nights` is clicked, read both dates with `getDate` and show the number of nights between them in `#count`.",
+      "setup": {
+        "html": "<input type=\"text\" id=\"checkin\"> to <input type=\"text\" id=\"checkout\">\n<button type=\"button\" id=\"nights\">Nights</button>\n<p>Nights: <span id=\"count\"></span></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#checkin\").datepicker(\"setDate\", new Date());",
+        "Subtract the dates (milliseconds) and divide by 24 * 60 * 60 * 1000; round to handle daylight saving."
+      ],
+      "solution": "$(\"#checkin, #checkout\").datepicker();\n$(\"#checkin\").datepicker(\"setDate\", new Date());\n$(\"#nights\").click( () => {\n  const start = $(\"#checkin\").datepicker(\"getDate\");\n  const end = $(\"#checkout\").datepicker(\"getDate\");\n  const nights = Math.round((end - start) / (24 * 60 * 60 * 1000));\n  $(\"#count\").text(nights);\n});",
+      "tests": [
+        {
+          "name": "#checkin is set to today",
+          "code": "const d = $(\"#checkin\").datepicker(\"getDate\");\nconst t = new Date();\nreturn !!d && d.getFullYear() === t.getFullYear() && d.getMonth() === t.getMonth() && d.getDate() === t.getDate();"
+        },
+        {
+          "name": "3 nights are counted",
+          "code": "const end = new Date();\nend.setDate(end.getDate() + 3);\n$(\"#checkout\").datepicker(\"setDate\", end);\n$(\"#nights\").click();\nreturn $(\"#count\").text() === \"3\";"
+        }
+      ]
+    },
+    {
+      "id": "ch11-09-write-a-simple-plugin",
+      "title": "Write a simple plugin",
+      "chapters": [
+        11
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "A jQuery **plugin** is a function added to `$.fn`. Write a plugin named `highlight` that sets the `background-color` of the selected elements to the color passed in (default `yellow`) and **returns the jQuery object** so it can be chained. Then call it on the `.tip` paragraphs with `lightgreen`.",
+      "setup": {
+        "html": "<p class=\"tip\">Tip one</p>\n<p>Not a tip</p>\n<p class=\"tip\">Tip two</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$.fn.highlight = function(color = \"yellow\") { return this.css(\"background-color\", color); };"
+      ],
+      "solution": "$.fn.highlight = function(color = \"yellow\") {\n  return this.css(\"background-color\", color);\n};\n$(\".tip\").highlight(\"lightgreen\");",
+      "tests": [
+        {
+          "name": "The tips are light green",
+          "code": "return $(\".tip\").toArray().every(p => $(p).css(\"background-color\") === \"rgb(144, 238, 144)\");"
+        },
+        {
+          "name": "The default color is yellow",
+          "code": "$(\"p\").eq(1).highlight();\nreturn $(\"p\").eq(1).css(\"background-color\") === \"rgb(255, 255, 0)\";"
+        },
+        {
+          "name": "It can be chained",
+          "code": "return $(\"p\").eq(1).highlight(\"red\").addClass(\"x\").hasClass(\"x\");"
+        }
+      ]
+    },
+    {
+      "id": "ch11-10-plugin-options-with-extend",
+      "title": "Plugin options with $.extend()",
+      "chapters": [
+        11
+      ],
+      "difficulty": "hard",
+      "useJQuery": true,
+      "prompt": "Write a plugin `truncate` that shortens the text of each selected element. It takes an options object; use `$.extend()` to merge it with these **defaults**: `{ length: 20, ending: \"…\" }`. Text longer than `length` is cut to `length` characters plus `ending`. Use `this.each()` and return its result.",
+      "setup": {
+        "html": "<p class=\"summary\">jQuery makes DOM scripting easier and more fun.</p>\n<p class=\"summary\">Short text.</p>\n<p id=\"custom\">Plugins let you reuse code across pages.</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "const settings = $.extend({ length: 20, ending: \"…\" }, options);",
+        "return this.each( function() { const text = $(this).text(); ... });"
+      ],
+      "solution": "$.fn.truncate = function(options) {\n  const settings = $.extend({ length: 20, ending: \"…\" }, options);\n  return this.each( function() {\n    const text = $(this).text();\n    if (text.length > settings.length) {\n      $(this).text(text.substring(0, settings.length) + settings.ending);\n    }\n  });\n};",
+      "tests": [
+        {
+          "name": "Defaults: long text is cut to 20 characters + \"…\"",
+          "code": "$(\".summary\").truncate();\nreturn $(\".summary\").eq(0).text() === \"jQuery makes DOM scr…\";"
+        },
+        {
+          "name": "Short text is unchanged",
+          "code": "return $(\".summary\").eq(1).text() === \"Short text.\";"
+        },
+        {
+          "name": "Options override the defaults",
+          "code": "$(\"#custom\").truncate({ length: 7, ending: \"...\" });\nreturn $(\"#custom\").text() === \"Plugins...\";"
+        },
+        {
+          "name": "Uses $.extend()",
+          "code": "return /\\$\\.extend\\s*\\(|jQuery\\.extend\\s*\\(/.test(code);"
+        }
+      ]
+    }
+  ]
+}

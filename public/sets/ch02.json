@@ -1,0 +1,303 @@
+{
+  "title": "Chapter 2: Get started fast with JavaScript",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Get started fast with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with images and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
+  },
+  "questions": [
+    {
+      "id": "ch02-01-variables-constants-and-a-total",
+      "title": "Variables, constants and a total",
+      "chapters": [
+        2
+      ],
+      "difficulty": "easy",
+      "prompt": "1. Declare a **constant** `TAX_RATE` equal to `0.075`.\n2. Declare a **variable** `subtotal` equal to `80`.\n3. Declare `tax` as subtotal times the tax rate, and `total` as subtotal plus tax.\n4. Then change `subtotal` to `100` (a variable can change; a constant can't).",
+      "starterCode": "",
+      "hints": [
+        "const for values that never change, let for values that do."
+      ],
+      "solution": "const TAX_RATE = 0.075;\nlet subtotal = 80;\nconst tax = subtotal * TAX_RATE;\nconst total = subtotal + tax;\nsubtotal = 100;",
+      "tests": [
+        {
+          "name": "TAX_RATE is a constant equal to 0.075",
+          "code": "return TAX_RATE === 0.075 && /const\\s+TAX_RATE/.test(code);"
+        },
+        {
+          "name": "tax is 6 and total is 86",
+          "code": "return tax === 6 && total === 86;"
+        },
+        {
+          "name": "subtotal was changed to 100",
+          "code": "return subtotal === 100 && /let\\s+subtotal/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch02-02-arithmetic-expressions",
+      "title": "Arithmetic expressions",
+      "chapters": [
+        2
+      ],
+      "difficulty": "easy",
+      "prompt": "A rectangle is `length` 12.5 by `width` 4. Declare those two variables, then calculate:\n\n- `area` (length × width)\n- `perimeter` (2 × length + 2 × width)\n- `average` of the length and width — watch the **order of precedence**!",
+      "starterCode": "",
+      "hints": [
+        "Multiplication and division happen before addition. Use parentheses to change the order."
+      ],
+      "solution": "const length = 12.5;\nconst width = 4;\nconst area = length * width;\nconst perimeter = 2 * length + 2 * width;\nconst average = (length + width) / 2;",
+      "tests": [
+        {
+          "name": "area is 50",
+          "code": "return area === 50;"
+        },
+        {
+          "name": "perimeter is 33",
+          "code": "return perimeter === 33;"
+        },
+        {
+          "name": "average is 8.25",
+          "code": "return average === 8.25;"
+        }
+      ]
+    },
+    {
+      "id": "ch02-03-modulus-hours-and-minutes",
+      "title": "Modulus: hours and minutes",
+      "chapters": [
+        2
+      ],
+      "difficulty": "medium",
+      "prompt": "Given `totalMinutes` (in the starter code), calculate `hours` (whole hours) and `minutes` (the minutes left over) using division and the **modulus** operator. Then build the string `message` like `135 minutes is 2 hours and 15 minutes`.",
+      "starterCode": "const totalMinutes = 135;\n",
+      "hints": [
+        "Math.floor() or parseInt() drops the decimal part.",
+        "% gives the remainder: 135 % 60 is 15."
+      ],
+      "solution": "const totalMinutes = 135;\nconst hours = Math.floor(totalMinutes / 60);\nconst minutes = totalMinutes % 60;\nconst message = totalMinutes + \" minutes is \" + hours + \" hours and \" + minutes + \" minutes\";",
+      "tests": [
+        {
+          "name": "hours is 2 and minutes is 15",
+          "code": "return hours === 2 && minutes === 15;"
+        },
+        {
+          "name": "Uses the % operator",
+          "code": "return /%/.test(code);"
+        },
+        {
+          "name": "message is correct",
+          "code": "return message === \"135 minutes is 2 hours and 15 minutes\";"
+        }
+      ]
+    },
+    {
+      "id": "ch02-04-concatenate-strings",
+      "title": "Concatenate strings",
+      "chapters": [
+        2
+      ],
+      "difficulty": "easy",
+      "prompt": "Given `firstName` and `lastName` in the starter code:\n\n1. Build `fullName` (first, a space, last) with the **+ operator**.\n2. Build `greeting` as `Hello, Ada Lovelace! Your name has 11 letters.` using a **template literal**. Count the letters with the `length` property of `firstName` and `lastName`.\n3. Use the **+=** operator to add ` Welcome back.` to the end of `greeting`.",
+      "starterCode": "const firstName = \"Ada\";\nconst lastName = \"Lovelace\";\n",
+      "hints": [
+        "Template literal: `Hello, ${name}!`",
+        "string.length gives the number of characters."
+      ],
+      "solution": "const firstName = \"Ada\";\nconst lastName = \"Lovelace\";\nconst fullName = firstName + \" \" + lastName;\nlet greeting = `Hello, ${fullName}! Your name has ${firstName.length + lastName.length} letters.`;\ngreeting += \" Welcome back.\";",
+      "tests": [
+        {
+          "name": "fullName is \"Ada Lovelace\"",
+          "code": "return fullName === \"Ada Lovelace\";"
+        },
+        {
+          "name": "greeting is correct",
+          "code": "return greeting === \"Hello, Ada Lovelace! Your name has 11 letters. Welcome back.\";"
+        },
+        {
+          "name": "Uses a template literal and +=",
+          "code": "return /`[^`]*\\$\\{/.test(code) && /\\+=/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch02-05-special-characters-in-strings",
+      "title": "Special characters in strings",
+      "chapters": [
+        2
+      ],
+      "difficulty": "medium",
+      "prompt": "Assign to `quote` a string that, when logged, shows **two lines** exactly like this:\n\n```\nShe said, \"Don't panic.\"\n\t— The Guide\n```\n\nThe second line starts with a **tab**. Use a regular double-quoted string with escape sequences (not a template literal), then log it.",
+      "starterCode": "",
+      "hints": [
+        "\\\" is a double quote inside a double-quoted string.",
+        "\\n starts a new line and \\t is a tab."
+      ],
+      "solution": "const quote = \"She said, \\\"Don't panic.\\\"\\n\\t— The Guide\";\nconsole.log(quote);",
+      "tests": [
+        {
+          "name": "quote has the exact text",
+          "code": "return quote === \"She said, \\\"Don't panic.\\\"\\n\\t— The Guide\";"
+        },
+        {
+          "name": "Uses escape sequences",
+          "code": "return /\\\\n/.test(code) && /\\\\t/.test(code) && /\\\\\"/.test(code);"
+        },
+        {
+          "name": "Logs the quote",
+          "code": "return logs.includes(quote);"
+        }
+      ]
+    },
+    {
+      "id": "ch02-06-parseint-and-parsefloat",
+      "title": "parseInt() and parseFloat()",
+      "chapters": [
+        2
+      ],
+      "difficulty": "easy",
+      "prompt": "Text from a form is always a string. Using `parseInt()` and `parseFloat()` on the strings in the starter code, create:\n\n- `quantity` — the whole number from `quantityText`\n- `price` — the decimal number from `priceText`\n- `cost` — quantity × price\n- `isNumber` — `true` or `false`: whether `parseFloat(badText)` gives a number (use `isNaN()`).",
+      "starterCode": "const quantityText = \"3 boxes\";\nconst priceText = \"4.25\";\nconst badText = \"four\";\n",
+      "hints": [
+        "parseInt(\"3 boxes\") reads digits until it hits a non-digit: 3.",
+        "isNaN(value) is true when value is not a number."
+      ],
+      "solution": "const quantityText = \"3 boxes\";\nconst priceText = \"4.25\";\nconst badText = \"four\";\nconst quantity = parseInt(quantityText);\nconst price = parseFloat(priceText);\nconst cost = quantity * price;\nconst isNumber = !isNaN(parseFloat(badText));",
+      "tests": [
+        {
+          "name": "quantity is 3 and price is 4.25",
+          "code": "return quantity === 3 && price === 4.25;"
+        },
+        {
+          "name": "cost is 12.75",
+          "code": "return cost === 12.75;"
+        },
+        {
+          "name": "isNumber is false",
+          "code": "return isNumber === false && /isNaN\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch02-07-round-with-tofixed",
+      "title": "Round with toFixed()",
+      "chapters": [
+        2
+      ],
+      "difficulty": "easy",
+      "prompt": "Convert the Fahrenheit temperature in the starter code to Celsius with the formula `(F − 32) × 5 / 9`. Store the result, rounded to **one decimal place**, as a string in `celsius`, and log `98.6 F = 37.0 C`.",
+      "starterCode": "const fahrenheit = 98.6;\n",
+      "hints": [
+        "Parentheses make the subtraction happen first.",
+        "toFixed(1) returns a string with one decimal place."
+      ],
+      "solution": "const fahrenheit = 98.6;\nconst celsius = ((fahrenheit - 32) * 5 / 9).toFixed(1);\nconsole.log(fahrenheit + \" F = \" + celsius + \" C\");",
+      "tests": [
+        {
+          "name": "celsius is \"37.0\"",
+          "code": "return celsius === \"37.0\";"
+        },
+        {
+          "name": "Logs \"98.6 F = 37.0 C\"",
+          "code": "return logs.includes(\"98.6 F = 37.0 C\");"
+        }
+      ]
+    },
+    {
+      "id": "ch02-08-fix-the-identifiers",
+      "title": "Fix the identifiers",
+      "chapters": [
+        2
+      ],
+      "difficulty": "medium",
+      "prompt": "The starter code won't run because three of its **identifiers** (names) are illegal or reserved. Rename them so the code runs:\n\n- `2ndPlace` → `secondPlace`\n- `first-name` → `firstName`\n- `class` → `className`\n\nRename each everywhere it is used. Then the code logs `Ann, Bo: JS 101`.",
+      "starterCode": "let 2ndPlace = \"Bo\";\nlet first-name = \"Ann\";\nconst class = \"JS 101\";\nconsole.log(first-name + \", \" + 2ndPlace + \": \" + class);\n",
+      "hints": [
+        "Identifiers can't start with a digit or contain a hyphen, and can't be reserved words."
+      ],
+      "solution": "let secondPlace = \"Bo\";\nlet firstName = \"Ann\";\nconst className = \"JS 101\";\nconsole.log(firstName + \", \" + secondPlace + \": \" + className);",
+      "tests": [
+        {
+          "name": "Variables are secondPlace, firstName and className",
+          "code": "return secondPlace === \"Bo\" && firstName === \"Ann\" && className === \"JS 101\";"
+        },
+        {
+          "name": "Logs \"Ann, Bo: JS 101\"",
+          "code": "return logs.includes(\"Ann, Bo: JS 101\");"
+        }
+      ]
+    },
+    {
+      "id": "ch02-09-compound-assignment-operators",
+      "title": "Compound assignment operators",
+      "chapters": [
+        2
+      ],
+      "difficulty": "easy",
+      "prompt": "Start with `let balance = 100;`. Then, using only the **compound assignment** operators `+=`, `-=`, `*=` and the **increment** operator `++`, one statement each:\n\n1. add 50\n2. subtract 30\n3. double it\n4. add 1\n\n`balance` should end at `241`.",
+      "starterCode": "",
+      "hints": [
+        "balance += 50 is short for balance = balance + 50."
+      ],
+      "solution": "let balance = 100;\nbalance += 50;\nbalance -= 30;\nbalance *= 2;\nbalance++;",
+      "tests": [
+        {
+          "name": "balance is 241",
+          "code": "return balance === 241;"
+        },
+        {
+          "name": "Uses +=, -=, *= and ++",
+          "code": "return /\\+=/.test(code) && /-=/.test(code) && /\\*=/.test(code) && /\\+\\+/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch02-10-test-scores-average-of-three",
+      "title": "Test Scores: average of three",
+      "chapters": [
+        2
+      ],
+      "difficulty": "medium",
+      "prompt": "Like the chapter's Test Scores application: the three scores below arrive as **strings** (as if typed into `prompt()`). Convert them to numbers, calculate the average, and store it as a **whole number** (rounded down with `parseInt()`) in `average`. Then display `Average score: 84` in the `#result` paragraph.",
+      "setup": {
+        "html": "<h1>Test Scores</h1>\n<p id=\"result\"></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "const score1 = \"92\";\nconst score2 = \"75\";\nconst score3 = \"86\";\n",
+      "hints": [
+        "Adding strings joins them: \"92\" + \"75\" is \"9275\". Convert first.",
+        "parseInt(253 / 3) gives 84."
+      ],
+      "solution": "const score1 = \"92\";\nconst score2 = \"75\";\nconst score3 = \"86\";\nconst total = parseInt(score1) + parseInt(score2) + parseInt(score3);\nconst average = parseInt(total / 3);\ndocument.getElementById(\"result\").textContent = \"Average score: \" + average;",
+      "tests": [
+        {
+          "name": "average is 84",
+          "code": "return average === 84;"
+        },
+        {
+          "name": "The page shows \"Average score: 84\"",
+          "code": "return document.getElementById(\"result\").textContent.trim() === \"Average score: 84\";"
+        }
+      ]
+    }
+  ]
+}

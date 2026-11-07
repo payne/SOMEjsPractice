@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef } from 'react';
-import { buildDocument } from '../harness.js';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { buildDocument, needsPreparing, prepareQuestion } from '../harness.js';
 
 // Runs the question page + student code inside a sandboxed iframe.
 // A new `run` object (with a new nonce) reloads the frame.
@@ -8,7 +8,15 @@ export default function Sandbox({ question, run, onMessage }) {
   const handler = useRef(onMessage);
   handler.current = onMessage;
 
-  const srcDoc = useMemo(() => buildDocument(question, run.code, run.mode), [question, run]);
+  const [ready, setReady] = useState(() => !needsPreparing(question));
+  useEffect(() => {
+    if (ready) return;
+    let live = true;
+    prepareQuestion(question).then(() => { if (live) setReady(true); });
+    return () => { live = false; };
+  }, [question, ready]);
+
+  const srcDoc = useMemo(() => (ready ? buildDocument(question, run.code, run.mode) : ''), [question, run, ready]);
 
   useEffect(() => {
     const listen = (e) => {
@@ -19,6 +27,7 @@ export default function Sandbox({ question, run, onMessage }) {
     return () => window.removeEventListener('message', listen);
   }, [run]);
 
+  if (!ready) return <p className="muted" style={{ padding: '.5em .8em' }}>Loading jQuery UI…</p>;
   return (
     <iframe
       key={run.nonce}

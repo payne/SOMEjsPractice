@@ -1,0 +1,305 @@
+{
+  "title": "Chapter 3: The essential JavaScript statements",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Get started fast with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with images and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
+  },
+  "questions": [
+    {
+      "id": "ch03-01-letter-grade-with-if-else",
+      "title": "Letter grade with if-else",
+      "chapters": [
+        3
+      ],
+      "difficulty": "easy",
+      "prompt": "Write a function `getGrade(score)` that returns a letter grade using an **if / else if / else** statement:\n\n- 90 or more: `\"A\"` · 80–89: `\"B\"` · 70–79: `\"C\"` · 60–69: `\"D\"` · below 60: `\"F\"`",
+      "starterCode": "",
+      "hints": [
+        "Check the highest range first; then each else if only needs a lower bound."
+      ],
+      "solution": "function getGrade(score) {\n  if (score >= 90) {\n    return \"A\";\n  } else if (score >= 80) {\n    return \"B\";\n  } else if (score >= 70) {\n    return \"C\";\n  } else if (score >= 60) {\n    return \"D\";\n  } else {\n    return \"F\";\n  }\n}",
+      "tests": [
+        {
+          "name": "Boundaries 90, 80, 70, 60 give A, B, C, D",
+          "code": "return getGrade(90) === \"A\" && getGrade(80) === \"B\" && getGrade(70) === \"C\" && getGrade(60) === \"D\";"
+        },
+        {
+          "name": "89 is B, 59 is F, 100 is A",
+          "code": "return getGrade(89) === \"B\" && getGrade(59) === \"F\" && getGrade(100) === \"A\";"
+        },
+        {
+          "name": "Uses if and else",
+          "code": "return /\\bif\\s*\\(/.test(code) && /\\belse\\b/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch03-02-relational-and-logical-operators",
+      "title": "Relational and logical operators",
+      "chapters": [
+        3
+      ],
+      "difficulty": "easy",
+      "prompt": "Write a function `canRent(age, hasLicense)` that returns `true` only when the age is **between 25 and 75 inclusive** **and** `hasLicense` is true. Use the relational operators and the logical operators `&&` / `||` (or `!`) — no if statement needed.",
+      "starterCode": "",
+      "hints": [
+        "return age >= 25 && age <= 75 && hasLicense;"
+      ],
+      "solution": "const canRent = (age, hasLicense) => age >= 25 && age <= 75 && hasLicense === true;",
+      "tests": [
+        {
+          "name": "25 and 75 with a license are allowed",
+          "code": "return canRent(25, true) === true && canRent(75, true) === true;"
+        },
+        {
+          "name": "24 and 76 are not allowed",
+          "code": "return canRent(24, true) === false && canRent(76, true) === false;"
+        },
+        {
+          "name": "No license is not allowed",
+          "code": "return canRent(40, false) === false;"
+        }
+      ]
+    },
+    {
+      "id": "ch03-03-while-loop-doubling",
+      "title": "while loop: doubling",
+      "chapters": [
+        3
+      ],
+      "difficulty": "easy",
+      "prompt": "Starting with `let value = 1;`, use a **while** loop to keep doubling `value` until it is **greater than 1000**. Count how many times you doubled it in a variable named `doublings`.\n\n(The answer is `value` = 1024 and `doublings` = 10.)",
+      "starterCode": "",
+      "hints": [
+        "while (value <= 1000) { ... }"
+      ],
+      "solution": "let value = 1;\nlet doublings = 0;\nwhile (value <= 1000) {\n  value *= 2;\n  doublings++;\n}",
+      "tests": [
+        {
+          "name": "value is 1024 and doublings is 10",
+          "code": "return value === 1024 && doublings === 10;"
+        },
+        {
+          "name": "Uses a while loop",
+          "code": "return /\\bwhile\\s*\\(/.test(code) && !/\\bdo\\s*\\{/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch03-04-do-while-loop",
+      "title": "do-while loop",
+      "chapters": [
+        3
+      ],
+      "difficulty": "medium",
+      "prompt": "The array `entries` holds values a user typed, in order. Use a **do-while** loop to read entries (starting at index 0) until you find the first one that `parseInt()` turns into a number from **1 to 10**. Store that number in `choice` and the number of entries you read in `tries`.",
+      "starterCode": "const entries = [\"abc\", \"0\", \"15\", \"7\", \"3\"];\n",
+      "hints": [
+        "A do-while loop always runs its body at least once; the condition is checked at the end.",
+        "Keep looping while the value is NaN, below 1 or above 10."
+      ],
+      "solution": "const entries = [\"abc\", \"0\", \"15\", \"7\", \"3\"];\nlet choice;\nlet tries = 0;\ndo {\n  choice = parseInt(entries[tries]);\n  tries++;\n} while (isNaN(choice) || choice < 1 || choice > 10);",
+      "tests": [
+        {
+          "name": "choice is 7 and tries is 4",
+          "code": "return choice === 7 && tries === 4;"
+        },
+        {
+          "name": "Uses a do-while loop",
+          "code": "return /\\bdo\\s*\\{/.test(code) && /\\}\\s*while\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch03-05-for-loop-factorial",
+      "title": "for loop: factorial",
+      "chapters": [
+        3
+      ],
+      "difficulty": "easy",
+      "prompt": "Write a function `factorial(n)` that uses a **for** loop to return n! (n × (n−1) × … × 1). `factorial(0)` and `factorial(1)` are both 1.",
+      "starterCode": "",
+      "hints": [
+        "Start a result at 1 and multiply by each number from 2 to n."
+      ],
+      "solution": "function factorial(n) {\n  let result = 1;\n  for (let i = 2; i <= n; i++) {\n    result *= i;\n  }\n  return result;\n}",
+      "tests": [
+        {
+          "name": "factorial(5) is 120",
+          "code": "return factorial(5) === 120;"
+        },
+        {
+          "name": "factorial(0) and factorial(1) are 1",
+          "code": "return factorial(0) === 1 && factorial(1) === 1;"
+        },
+        {
+          "name": "factorial(10) is 3628800 and a for loop is used",
+          "code": "return factorial(10) === 3628800 && /\\bfor\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch03-06-future-value",
+      "title": "Future Value",
+      "chapters": [
+        3
+      ],
+      "difficulty": "medium",
+      "prompt": "Like the chapter's Future Value application, write a function `futureValue(investment, rate, years)` where `rate` is a yearly percentage (e.g. 5 for 5%). Use a **for** loop that adds a year's interest each year. Return the result **rounded to 2 decimals as a number**.\n\n```\nfutureValue(10000, 5, 10)   // 16288.95\n```",
+      "starterCode": "",
+      "hints": [
+        "Each year: value += value * rate / 100",
+        "Number(value.toFixed(2)) rounds and keeps it a number."
+      ],
+      "solution": "function futureValue(investment, rate, years) {\n  let value = investment;\n  for (let i = 1; i <= years; i++) {\n    value += value * rate / 100;\n  }\n  return Number(value.toFixed(2));\n}",
+      "tests": [
+        {
+          "name": "futureValue(10000, 5, 10) is 16288.95",
+          "code": "return futureValue(10000, 5, 10) === 16288.95;"
+        },
+        {
+          "name": "futureValue(1000, 10, 2) is 1210",
+          "code": "return futureValue(1000, 10, 2) === 1210;"
+        },
+        {
+          "name": "Zero years returns the investment",
+          "code": "return futureValue(500, 3, 0) === 500;"
+        }
+      ]
+    },
+    {
+      "id": "ch03-07-create-and-fill-an-array",
+      "title": "Create and fill an array",
+      "chapters": [
+        3
+      ],
+      "difficulty": "easy",
+      "prompt": "1. Create an **empty** array named `scores`.\n2. Add the scores 85, 92 and 78 to it, using the array's `length` property as the index (`scores[scores.length] = …`), as shown in the chapter.\n3. Use a **for** loop with an index to calculate `total`, and then `average` (total ÷ number of scores).",
+      "starterCode": "",
+      "hints": [
+        "let total = 0; for (let i = 0; i < scores.length; i++) { total += scores[i]; }"
+      ],
+      "solution": "const scores = [];\nscores[scores.length] = 85;\nscores[scores.length] = 92;\nscores[scores.length] = 78;\nlet total = 0;\nfor (let i = 0; i < scores.length; i++) {\n  total += scores[i];\n}\nconst average = total / scores.length;",
+      "tests": [
+        {
+          "name": "scores is [85, 92, 78]",
+          "code": "return Array.isArray(scores) && scores.join() === \"85,92,78\";"
+        },
+        {
+          "name": "Adds with scores[scores.length]",
+          "code": "return /scores\\[\\s*scores\\.length\\s*\\]\\s*=/.test(code);"
+        },
+        {
+          "name": "total is 255 and average is 85",
+          "code": "return total === 255 && average === 85;"
+        }
+      ]
+    },
+    {
+      "id": "ch03-08-for-of-and-for-in-loops",
+      "title": "for-of and for-in loops",
+      "chapters": [
+        3
+      ],
+      "difficulty": "medium",
+      "prompt": "Given the `names` array:\n\n1. Use a **for-of** loop to build a new array `upper` holding each name in uppercase.\n2. Use a **for-in** loop to log each element with its index, like `0: ann`, `1: bo`, `2: cy`.",
+      "starterCode": "const names = [\"ann\", \"bo\", \"cy\"];\n",
+      "hints": [
+        "for (const name of names) gives each value.",
+        "for (const i in names) gives each index (as a string)."
+      ],
+      "solution": "const names = [\"ann\", \"bo\", \"cy\"];\nconst upper = [];\nfor (const name of names) {\n  upper.push(name.toUpperCase());\n}\nfor (const i in names) {\n  console.log(i + \": \" + names[i]);\n}",
+      "tests": [
+        {
+          "name": "upper is [\"ANN\", \"BO\", \"CY\"]",
+          "code": "return Array.isArray(upper) && upper.join() === \"ANN,BO,CY\";"
+        },
+        {
+          "name": "Logs \"0: ann\", \"1: bo\", \"2: cy\"",
+          "code": "return [\"0: ann\", \"1: bo\", \"2: cy\"].every(l => logs.includes(l));"
+        },
+        {
+          "name": "Uses for-of and for-in",
+          "code": "return /for\\s*\\(\\s*(const|let|var)\\s+\\w+\\s+of\\b/.test(code) && /for\\s*\\(\\s*(const|let|var)\\s+\\w+\\s+in\\b/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch03-09-fizzbuzz-into-an-array",
+      "title": "FizzBuzz into an array",
+      "chapters": [
+        3
+      ],
+      "difficulty": "medium",
+      "prompt": "Use a loop from 1 to 15 to fill an array named `results`: for each number, add `\"FizzBuzz\"` if it's divisible by 3 **and** 5, `\"Fizz\"` if only by 3, `\"Buzz\"` if only by 5, and otherwise the number itself.",
+      "starterCode": "",
+      "hints": [
+        "n % 3 === 0 means divisible by 3. Check the \"both\" case first."
+      ],
+      "solution": "const results = [];\nfor (let n = 1; n <= 15; n++) {\n  if (n % 3 === 0 && n % 5 === 0) {\n    results.push(\"FizzBuzz\");\n  } else if (n % 3 === 0) {\n    results.push(\"Fizz\");\n  } else if (n % 5 === 0) {\n    results.push(\"Buzz\");\n  } else {\n    results.push(n);\n  }\n}",
+      "tests": [
+        {
+          "name": "results has 15 items",
+          "code": "return Array.isArray(results) && results.length === 15;"
+        },
+        {
+          "name": "Items 3, 5 and 15 are Fizz, Buzz, FizzBuzz",
+          "code": "return results[2] === \"Fizz\" && results[4] === \"Buzz\" && results[14] === \"FizzBuzz\";"
+        },
+        {
+          "name": "Other items are numbers",
+          "code": "return results[0] === 1 && results[6] === 7 && results[12] === 13;"
+        }
+      ]
+    },
+    {
+      "id": "ch03-10-enhanced-test-scores-with-validation",
+      "title": "Enhanced Test Scores with validation",
+      "chapters": [
+        3
+      ],
+      "difficulty": "hard",
+      "prompt": "The array `entries` holds text a user typed into `prompt()`. Like the enhanced Test Scores application, loop through them and keep only **valid** scores (numbers from 0 to 100) in a new array `scores`, skipping the rest. Then display `Scores: 88, 100, 0 — Average: 63` in `#result`, with the average rounded to a whole number with `Math.round()`.",
+      "setup": {
+        "html": "<p id=\"result\"></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "const entries = [\"88\", \"abc\", \"100\", \"105\", \"0\", \"-5\"];\n",
+      "hints": [
+        "parseInt each entry and check isNaN, < 0 and > 100.",
+        "scores.join(\", \") makes \"88, 100, 0\"."
+      ],
+      "solution": "const entries = [\"88\", \"abc\", \"100\", \"105\", \"0\", \"-5\"];\nconst scores = [];\nfor (const entry of entries) {\n  const score = parseInt(entry);\n  if (!isNaN(score) && score >= 0 && score <= 100) {\n    scores.push(score);\n  }\n}\nlet total = 0;\nfor (const score of scores) {\n  total += score;\n}\nconst average = Math.round(total / scores.length);\ndocument.querySelector(\"#result\").textContent = `Scores: ${scores.join(\", \")} — Average: ${average}`;",
+      "tests": [
+        {
+          "name": "scores is [88, 100, 0]",
+          "code": "return Array.isArray(scores) && scores.length === 3 && scores[0] === 88 && scores[1] === 100 && scores[2] === 0;"
+        },
+        {
+          "name": "The page shows the scores and average",
+          "code": "return document.querySelector(\"#result\").textContent.trim() === \"Scores: 88, 100, 0 — Average: 63\";"
+        }
+      ]
+    }
+  ]
+}

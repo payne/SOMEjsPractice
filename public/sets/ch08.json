@@ -1,0 +1,351 @@
+{
+  "title": "Chapter 8: Get off to a fast start with jQuery",
+  "book": "Murach's JavaScript and jQuery (4th Edition)",
+  "version": 1,
+  "updated": "2026-11-07",
+  "chapters": {
+    "1": "Introduction to web development",
+    "2": "Get started fast with JavaScript",
+    "3": "The essential JavaScript statements",
+    "4": "How to work with JavaScript objects, functions, and events",
+    "5": "How to test and debug a JavaScript application",
+    "6": "How to script the DOM with JavaScript",
+    "7": "How to work with images and timers",
+    "8": "Get off to a fast start with jQuery",
+    "9": "How to use effects and animations",
+    "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
+    "12": "How to work with numbers, strings, and dates",
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
+  },
+  "questions": [
+    {
+      "id": "ch08-01-jquery-selectors",
+      "title": "jQuery selectors",
+      "chapters": [
+        8
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "jQuery is loaded. Using jQuery selectors and the `text()` method:\n\n1. Set the text of the element with id `title` to `Selected!`.\n2. Add the class `highlight` to every element with class `tip` **inside** `#tips`.\n3. Store the number of `<li>` elements on the page in `itemCount`.",
+      "setup": {
+        "html": "<h1 id=\"title\">Title</h1>\n<ul id=\"tips\">\n  <li class=\"tip\">Use ids for single elements</li>\n  <li>Plain item</li>\n  <li class=\"tip\">Use classes for groups</li>\n</ul>\n<p class=\"tip\">Outside tip</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n.highlight { background: #fff3a0; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#id\"), $(\".class\"), $(\"parent child\"), $(\"tag\")",
+        "A jQuery object has a length property."
+      ],
+      "solution": "$(\"#title\").text(\"Selected!\");\n$(\"#tips .tip\").addClass(\"highlight\");\nconst itemCount = $(\"li\").length;",
+      "tests": [
+        {
+          "name": "#title says \"Selected!\"",
+          "code": "return $(\"#title\").text() === \"Selected!\";"
+        },
+        {
+          "name": "Only the 2 tips in #tips are highlighted",
+          "code": "return $(\".highlight\").length === 2 && $(\"#tips .tip.highlight\").length === 2;"
+        },
+        {
+          "name": "itemCount is 3",
+          "code": "return itemCount === 3;"
+        }
+      ]
+    },
+    {
+      "id": "ch08-02-stripe-a-table-with-even",
+      "title": "Stripe a table with :even",
+      "chapters": [
+        8
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "Using jQuery's filter selectors, add the class `stripe` to the **even-numbered** rows (0, 2, 4…) of the table **body**, and add the class `first` to the **first** cell of every row in the body.",
+      "setup": {
+        "html": "<table id=\"scores\">\n  <thead><tr><th>Name</th><th>Score</th></tr></thead>\n  <tbody>\n    <tr><td>Ann</td><td>90</td></tr>\n    <tr><td>Bo</td><td>85</td></tr>\n    <tr><td>Cy</td><td>77</td></tr>\n    <tr><td>Di</td><td>98</td></tr>\n  </tbody>\n</table>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n.stripe { background: #eef; }\n.first { font-weight: bold; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"tbody tr:even\")",
+        "$(\"tbody td:first-child\") selects the first cell of each row (td:first would select only one cell)."
+      ],
+      "solution": "$(\"#scores tbody tr:even\").addClass(\"stripe\");\n$(\"#scores tbody td:first-child\").addClass(\"first\");",
+      "tests": [
+        {
+          "name": "Rows 0 and 2 of the body are striped",
+          "code": "const rows = $(\"#scores tbody tr\");\nreturn rows.eq(0).hasClass(\"stripe\") && rows.eq(2).hasClass(\"stripe\") && !rows.eq(1).hasClass(\"stripe\") && !rows.eq(3).hasClass(\"stripe\");"
+        },
+        {
+          "name": "The header row is not striped",
+          "code": "return !$(\"thead tr\").hasClass(\"stripe\");"
+        },
+        {
+          "name": "Each body row's first cell has class \"first\"",
+          "code": "return $(\"tbody td.first\").length === 4 && $(\"tbody tr\").toArray().every(tr => $(tr).children().first().hasClass(\"first\"));"
+        }
+      ]
+    },
+    {
+      "id": "ch08-03-val-text-and-attr",
+      "title": "val(), text() and attr()",
+      "chapters": [
+        8
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "When the **Update** button is clicked:\n\n1. Copy the text box's value (`val()`) into `#name_out` with `text()`.\n2. Set the `href` attribute of `#profile` to `profile.html?user=` followed by the value, using `attr()`.\n3. Clear the text box.",
+      "setup": {
+        "html": "<input type=\"text\" id=\"name\" value=\"ada\">\n<button type=\"button\" id=\"update\">Update</button>\n<p>Hello, <span id=\"name_out\"></span>! <a id=\"profile\" href=\"#\">Your profile</a></p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#name\").val() reads; $(\"#name\").val(\"\") clears.",
+        "$(\"#profile\").attr(\"href\", value) sets an attribute."
+      ],
+      "solution": "$(\"#update\").click(() => {\n  const name = $(\"#name\").val();\n  $(\"#name_out\").text(name);\n  $(\"#profile\").attr(\"href\", \"profile.html?user=\" + name);\n  $(\"#name\").val(\"\");\n});",
+      "tests": [
+        {
+          "name": "Clicking copies the name and sets the link",
+          "code": "$(\"#update\").click();\nreturn $(\"#name_out\").text() === \"ada\" && $(\"#profile\").attr(\"href\") === \"profile.html?user=ada\";"
+        },
+        {
+          "name": "The text box is cleared",
+          "code": "return $(\"#name\").val() === \"\";"
+        }
+      ]
+    },
+    {
+      "id": "ch08-04-chain-jquery-methods",
+      "title": "Chain jQuery methods",
+      "chapters": [
+        8
+      ],
+      "difficulty": "easy",
+      "useJQuery": true,
+      "prompt": "In **one statement** that **chains** three methods on `$(\"#notice\")`: set its text to `Sale today!`, add the class `alert`, and set its CSS `font-size` to `24px`.",
+      "setup": {
+        "html": "<p id=\"notice\">Notice</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n.alert { color: #c0392b; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "Most jQuery methods return the jQuery object, so you can call another method right after: $(...).a().b().c();"
+      ],
+      "solution": "$(\"#notice\").text(\"Sale today!\").addClass(\"alert\").css(\"font-size\", \"24px\");",
+      "tests": [
+        {
+          "name": "Text, class and font-size are set",
+          "code": "const n = $(\"#notice\");\nreturn n.text() === \"Sale today!\" && n.hasClass(\"alert\") && n.css(\"font-size\") === \"24px\";"
+        },
+        {
+          "name": "Uses one chained statement",
+          "code": "return (code.match(/\\$\\(/g) || []).length === 1;"
+        }
+      ]
+    },
+    {
+      "id": "ch08-05-the-ready-event-and-this",
+      "title": "The ready event and $(this)",
+      "chapters": [
+        8
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "Inside a **ready** event handler, attach a `click` handler to every `<li>` in `#menu`. When an item is clicked, give **it** the class `selected` and remove that class from all the other items. Use `$(this)`.",
+      "setup": {
+        "html": "<ul id=\"menu\">\n  <li>Home</li>\n  <li>Products</li>\n  <li>Contact</li>\n</ul>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n#menu li { cursor: pointer; }\n.selected { font-weight: bold; color: #2f5fd0; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(document).ready( () => { ... }); or the shorthand $( () => { ... });",
+        "Inside a regular function handler, this is the clicked element. $(this).siblings() gets the others."
+      ],
+      "solution": "$(document).ready( () => {\n  $(\"#menu li\").click( function() {\n    $(this).addClass(\"selected\").siblings().removeClass(\"selected\");\n  });\n});",
+      "tests": [
+        {
+          "name": "Clicking Products selects it",
+          "code": "$(\"#menu li\").eq(1).click();\nreturn $(\"#menu li\").eq(1).hasClass(\"selected\") && $(\".selected\").length === 1;"
+        },
+        {
+          "name": "Clicking Contact moves the selection",
+          "code": "$(\"#menu li\").eq(2).click();\nreturn $(\"#menu li\").eq(2).hasClass(\"selected\") && $(\".selected\").length === 1;"
+        },
+        {
+          "name": "Uses a ready handler and $(this)",
+          "code": "return /\\$\\(\\s*(document\\s*\\)\\.ready|\\(\\s*\\)\\s*=>|function)/.test(code) && /\\$\\(\\s*this\\s*\\)/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch08-06-each-to-build-a-list",
+      "title": "each() to build a list",
+      "chapters": [
+        8
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "Use `$.each()` (or `.each()`) to go through the `books` array and **append** an `<li>` to `#books` for each, with text like `Dune (1965)`. Then use `.each()` on the new items to add the class `old` to books from before 1970.",
+      "setup": {
+        "html": "<ul id=\"books\"></ul>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\n.old { font-style: italic; }"
+      },
+      "starterCode": "const books = [\n  { title: \"Dune\", year: 1965 },\n  { title: \"Neuromancer\", year: 1984 },\n  { title: \"Foundation\", year: 1951 },\n];\n",
+      "hints": [
+        "$.each(array, (index, item) => { ... })",
+        "$(\"#books\").append(`<li>${...}</li>`)"
+      ],
+      "solution": "const books = [\n  { title: \"Dune\", year: 1965 },\n  { title: \"Neuromancer\", year: 1984 },\n  { title: \"Foundation\", year: 1951 },\n];\n$.each(books, (index, book) => {\n  $(\"#books\").append(`<li>${book.title} (${book.year})</li>`);\n});\n$(\"#books li\").each( function(index) {\n  if (books[index].year < 1970) {\n    $(this).addClass(\"old\");\n  }\n});",
+      "tests": [
+        {
+          "name": "The list shows the 3 books",
+          "code": "return $(\"#books li\").map((i, li) => $(li).text()).get().join(\"|\") === \"Dune (1965)|Neuromancer (1984)|Foundation (1951)\";"
+        },
+        {
+          "name": "Books before 1970 have class \"old\"",
+          "code": "const li = $(\"#books li\");\nreturn li.eq(0).hasClass(\"old\") && !li.eq(1).hasClass(\"old\") && li.eq(2).hasClass(\"old\");"
+        },
+        {
+          "name": "Uses each()",
+          "code": "return /\\.each\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch08-07-email-list-with-jquery",
+      "title": "Email List with jQuery",
+      "chapters": [
+        8
+      ],
+      "difficulty": "hard",
+      "useJQuery": true,
+      "prompt": "Like the chapter's Email List application, written with jQuery: on the form's `submit` event, show errors in the `<span>` after each field and cancel the submit if any:\n\n- `#email` empty → `This field is required.`\n- `#email2` not equal to `#email` → `Emails must match.`\n- `#first` empty → `This field is required.`\n\nFields are trimmed, and a field with no error has an empty span.",
+      "setup": {
+        "html": "<form id=\"email_form\">\n  <label>Email:</label> <input type=\"text\" id=\"email\"> <span></span><br>\n  <label>Re-enter:</label> <input type=\"text\" id=\"email2\"> <span></span><br>\n  <label>First name:</label> <input type=\"text\" id=\"first\"> <span></span><br>\n  <input type=\"submit\" value=\"Join\">\n</form>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nspan { color: #c0392b; }\nlabel { display: inline-block; width: 6em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#email\").next() is the span after the field.",
+        "evt.preventDefault() inside $(\"#email_form\").submit(evt => { ... })"
+      ],
+      "solution": "$( () => {\n  $(\"#email_form\").submit( evt => {\n    let isValid = true;\n    const email = $(\"#email\").val().trim();\n    const email2 = $(\"#email2\").val().trim();\n    const first = $(\"#first\").val().trim();\n\n    $(\"#email\").next().text(email === \"\" ? \"This field is required.\" : \"\");\n    $(\"#email2\").next().text(email2 !== email ? \"Emails must match.\" : \"\");\n    $(\"#first\").next().text(first === \"\" ? \"This field is required.\" : \"\");\n    if (email === \"\" || email2 !== email || first === \"\") {\n      isValid = false;\n    }\n    if (!isValid) {\n      evt.preventDefault();\n    }\n  });\n});",
+      "tests": [
+        {
+          "name": "Empty form shows required messages and cancels",
+          "code": "const ok = document.getElementById(\"email_form\").dispatchEvent(new Event(\"submit\", { cancelable: true }));\nreturn ok === false && $(\"#email\").next().text() === \"This field is required.\" && $(\"#first\").next().text() === \"This field is required.\";"
+        },
+        {
+          "name": "Mismatched emails are reported",
+          "code": "$(\"#email\").val(\"a@b.com\"); $(\"#email2\").val(\"x@b.com\"); $(\"#first\").val(\"Al\");\nconst ok = document.getElementById(\"email_form\").dispatchEvent(new Event(\"submit\", { cancelable: true }));\nreturn ok === false && $(\"#email2\").next().text() === \"Emails must match.\" && $(\"#email\").next().text() === \"\";"
+        },
+        {
+          "name": "A valid form submits with no messages",
+          "code": "$(\"#email2\").val(\" a@b.com \");\nconst ok = document.getElementById(\"email_form\").dispatchEvent(new Event(\"submit\", { cancelable: true }));\nreturn ok === true && $(\"span\").text() === \"\";"
+        }
+      ]
+    },
+    {
+      "id": "ch08-08-hover-image-rollover",
+      "title": "hover() image rollover",
+      "chapters": [
+        8
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "Using jQuery's `hover()` event method, swap each image in `#rollovers` to the URL in its `data-over` attribute when the mouse enters, and back to its original `src` when the mouse leaves.",
+      "setup": {
+        "html": "<div id=\"rollovers\">\n  <img src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\" data-over=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%2327ae60'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EGreen%3C/text%3E%3C/svg%3E\" alt=\"\">\n  <img src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%232980b9'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EBlue%3C/text%3E%3C/svg%3E\" data-over=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\" alt=\"\">\n</div>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(selector).hover(enterHandler, leaveHandler)",
+        "Save the original with $(this).attr(\"src\") in an each() loop, or in a data attribute."
+      ],
+      "solution": "$(\"#rollovers img\").each( function() {\n  const original = $(this).attr(\"src\");\n  const over = $(this).attr(\"data-over\");\n  $(this).hover(\n    () => $(this).attr(\"src\", over),\n    () => $(this).attr(\"src\", original)\n  );\n});",
+      "tests": [
+        {
+          "name": "mouseenter swaps to the data-over image",
+          "code": "const img = $(\"#rollovers img\").eq(0);\nimg.trigger(\"mouseenter\");\nreturn img.attr(\"src\") === img.attr(\"data-over\");"
+        },
+        {
+          "name": "mouseleave restores the original",
+          "code": "const img = $(\"#rollovers img\").eq(0);\nimg.trigger(\"mouseleave\");\nreturn img.attr(\"src\").includes(\"Red\");"
+        },
+        {
+          "name": "Uses hover()",
+          "code": "return /\\.hover\\s*\\(/.test(code);"
+        }
+      ]
+    },
+    {
+      "id": "ch08-09-image-swap-with-jquery",
+      "title": "Image Swap with jQuery",
+      "chapters": [
+        8
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "Rewrite the Image Swap application with jQuery: clicking a link in `#links` sets `#image`'s `src` to the link's `href` and `#caption`'s text to the link's `title`. Cancel the default action with the event object's `preventDefault()`.",
+      "setup": {
+        "html": "<ul id=\"links\">\n  <li><a href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\" title=\"Red\">Red</a></li>\n  <li><a href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%2327ae60'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3EGreen%3C/text%3E%3C/svg%3E\" title=\"Green\">Green</a></li>\n</ul>\n<img id=\"image\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100'%3E%3Crect width='160' height='100' fill='%23e74c3c'/%3E%3Ctext x='80' y='58' font-size='22' text-anchor='middle' fill='white'%3ERed%3C/text%3E%3C/svg%3E\" alt=\"\">\n<p id=\"caption\">Red</p>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#links a\").click( function(evt) { ... $(this).attr(\"href\") ... evt.preventDefault(); });"
+      ],
+      "solution": "$(\"#links a\").click( function(evt) {\n  $(\"#image\").attr(\"src\", $(this).attr(\"href\"));\n  $(\"#caption\").text($(this).attr(\"title\"));\n  evt.preventDefault();\n});",
+      "tests": [
+        {
+          "name": "Clicking Green swaps image and caption",
+          "code": "const a = document.querySelectorAll(\"#links a\")[1];\nconst ok = a.dispatchEvent(new MouseEvent(\"click\", { bubbles: true, cancelable: true }));\nreturn ok === false && $(\"#image\").attr(\"src\") === a.getAttribute(\"href\") && $(\"#caption\").text() === \"Green\";"
+        }
+      ]
+    },
+    {
+      "id": "ch08-10-faqs-with-toggle",
+      "title": "FAQs with toggle()",
+      "chapters": [
+        8
+      ],
+      "difficulty": "medium",
+      "useJQuery": true,
+      "prompt": "Like the chapter's jQuery FAQs application (no animation yet): when an `<h2>` in `#faqs` is clicked, toggle the class `minus` on it and show or hide the `<div>` after it with `toggle()`. Also make sure the answers are hidden when the page loads, using `hide()`.",
+      "setup": {
+        "html": "<section id=\"faqs\">\n  <h2>What is jQuery?</h2>\n  <div>A JavaScript library.</div>\n  <h2>Is it free?</h2>\n  <div>Yes, it is open source.</div>\n</section>",
+        "css": "body { font-family: Arial, Helvetica, sans-serif; padding: 1em; }\nh2 { font-size: 1.1em; cursor: pointer; }\nh2::before { content: \"+ \"; }\nh2.minus::before { content: \"- \"; }"
+      },
+      "starterCode": "",
+      "hints": [
+        "$(\"#faqs div\").hide();",
+        "$(this).next().toggle();"
+      ],
+      "solution": "$( () => {\n  $(\"#faqs div\").hide();\n  $(\"#faqs h2\").click( function() {\n    $(this).toggleClass(\"minus\");\n    $(this).next().toggle();\n  });\n});",
+      "tests": [
+        {
+          "name": "Answers start hidden",
+          "code": "return $(\"#faqs div\").toArray().every(d => $(d).is(\":hidden\"));"
+        },
+        {
+          "name": "Clicking a heading shows its answer",
+          "code": "$(\"#faqs h2\").eq(1).click();\nreturn $(\"#faqs h2\").eq(1).hasClass(\"minus\") && $(\"#faqs div\").eq(1).is(\":visible\") && $(\"#faqs div\").eq(0).is(\":hidden\");"
+        },
+        {
+          "name": "Clicking again hides it",
+          "code": "$(\"#faqs h2\").eq(1).click();\nreturn !$(\"#faqs h2\").eq(1).hasClass(\"minus\") && $(\"#faqs div\").eq(1).is(\":hidden\");"
+        }
+      ]
+    }
+  ]
+}
