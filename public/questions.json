@@ -1,21 +1,28 @@
 {
   "title": "Murach's JavaScript and jQuery — Closed-Book Practice",
   "book": "Murach's JavaScript and jQuery (4th Edition)",
-  "version": 1,
+  "version": 2,
   "updated": "2026-11-07",
   "chapters": {
     "1": "Introduction to web development",
-    "2": "Getting started with JavaScript",
+    "2": "Get started fast with JavaScript",
     "3": "The essential JavaScript statements",
     "4": "How to work with JavaScript objects, functions, and events",
     "5": "How to test and debug a JavaScript application",
     "6": "How to script the DOM with JavaScript",
-    "7": "How to work with links, images, and timers",
+    "7": "How to work with images and timers",
     "8": "Get off to a fast start with jQuery",
     "9": "How to use effects and animations",
     "10": "How to work with forms and data validation",
+    "11": "How to use jQuery plugins and UI widgets",
     "12": "How to work with numbers, strings, and dates",
-    "13": "How to work with control structures and arrays"
+    "13": "How to work with control structures, exceptions, and regular expressions",
+    "14": "How to work with browser objects, cookies, and web storage",
+    "15": "How to work with arrays, sets, and maps",
+    "16": "How to work with objects",
+    "17": "How to work with functions, closures, and modules",
+    "18": "How to work with Ajax",
+    "19": "How to work with Node.js"
   },
   "questions": [
     {
@@ -52,7 +59,7 @@
       "title": "Loop through an array of scores",
       "chapters": [
         3,
-        13
+        15
       ],
       "difficulty": "easy",
       "prompt": "The starter code declares an array of test scores. Using a loop (`for`, `for...of`, or `while`):\n\n1. Find the highest score and store it in a variable named `highest`. **Do not** use `Math.max()` or `sort()`.\n2. Count how many scores are **80 or higher** and store the count in a variable named `passing`.",

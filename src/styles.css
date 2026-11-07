@@ -82,7 +82,14 @@ input, select { font: inherit; color: var(--text); background: var(--surface); b
 
 /* List */
 .list-head { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; justify-content: space-between; margin-bottom: 1rem; }
-.list-head p { margin: 0; }
+.list-head p { margin: 0 0 .25em; }
+.list-title { flex: 1 1 320px; min-width: 0; }
+.pickers { display: flex; flex-wrap: wrap; gap: .75rem; max-width: 100%; }
+.set-list { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: .6rem; }
+.set-item { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; justify-content: space-between; padding: .75rem 1rem; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.set-item.current { border-color: var(--accent); }
+.set-item p { margin: .15em 0 0; font-size: .9rem; }
+.set-item .actions { display: flex; gap: .4rem; }
 .filter { display: flex; flex-direction: column; font-size: .85rem; color: var(--muted); gap: .2rem; max-width: 100%; }
 .filter select { max-width: 100%; }
 .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }

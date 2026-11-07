@@ -1,0 +1,16 @@
+{
+  "sets": [
+    {
+      "id": "core",
+      "title": "Core Practice",
+      "description": "Ten closed-book questions on loops, functions, DOM scripting, events and jQuery (chapters 3–10).",
+      "url": "questions.json"
+    },
+    {
+      "id": "chapter-tour",
+      "title": "Chapter Tour",
+      "description": "Ten questions drawn from the book's chapter topics: debugging, timers, numbers and dates, regex and exceptions, web storage, sets and maps, classes, closures and Ajax.",
+      "url": "questions-chapter-tour.json"
+    }
+  ]
+}

@@ -100,3 +100,22 @@ What I changed:
 - The README links to the live site.
 
 The app already uses relative paths, so it works from the `/SOMEjsPractice/` subfolder. Offline mode and installing it as an app should work there too.
+
+### 11:18 — User
+
+> Create the ability to choose different question sets.   Create a second question set: in it generate ten questions inspired by the description of each chapter in https://www.murach.com/shop/murach-s-javascript-and-jquery-4th-edition-detail
+
+### 11:24 — Claude (work done)
+
+- Read the Murach product page. It has no prose description per chapter, only each chapter's topic list and a short blurb per section, so the new questions are based on the topic lists. The page showed that several of my from-memory chapter titles were wrong.
+- Wrote the **Chapter Tour** set (`public/questions-chapter-tour.json`): one question each for chapters 2, 5, 7, 12, 13, 14, 15, 16, 17 and 18. Left out Ch 11 (needs jQuery UI) and Ch 19 (Node.js can't run in a browser).
+- Added two harness features: `storage` (pre-filled sandbox local storage, for the Ch 14 question) and `mockFetch` (a fake `fetch()` with sample data, for the Ch 18 Ajax question, since exams run without internet).
+- Fixed the Core set: correct titles for all 19 chapters; question 2 (arrays) now tagged Ch 3 and 15 instead of 13.
+- Added question sets: `public/question-sets.json` lists the sets. There's a set picker on the question list and a set list on About, and you can add or remove your own set by URL. Each set keeps its own progress, saved questions and position. Existing saved progress moves into Core Practice automatically.
+- The service worker now caches every file in `public/`, so all sets work offline.
+- Checked in headless Chromium: all 20 model solutions pass and blank starters fail. End-to-end test covered migration, switching sets, answering the fetch question, switching sets offline, adding/removing a set by URL, and phone layout.
+- Updated README. App version 1.1.0.
+
+### 11:24 — Claude (response)
+
+See the final response below this entry in the conversation; summarized: question sets added, Chapter Tour set created and verified, Core set chapter titles corrected, pushed to main.

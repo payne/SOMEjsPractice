@@ -5,7 +5,18 @@ export function statusOf(entry) {
   return { label: 'Not started', cls: 'new' };
 }
 
-export default function QuestionList({ bank, progress, chapter, setChapter, onOpen }) {
+export function SetPicker({ set, sets, chooseSet }) {
+  return (
+    <label className="filter">
+      Question set
+      <select value={set.id} onChange={(e) => chooseSet(e.target.value)}>
+        {sets.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
+      </select>
+    </label>
+  );
+}
+
+export default function QuestionList({ bank, set, sets, chooseSet, progress, chapter, setChapter, onOpen }) {
   const chapters = bank.chapters || {};
   const used = [...new Set(bank.questions.flatMap((q) => q.chapters || []))].sort((a, b) => a - b);
   const shown = bank.questions
@@ -15,10 +26,13 @@ export default function QuestionList({ bank, progress, chapter, setChapter, onOp
   return (
     <section>
       <div className="list-head">
-        <div>
-          <h1>{bank.title || 'Practice questions'}</h1>
+        <div className="list-title">
+          <h1>{set.title}</h1>
+          {set.description && <p>{set.description}</p>}
           {bank.book && <p className="muted">Based on {bank.book}. Closed book — no notes, no internet.</p>}
         </div>
+        <div className="pickers">
+        {sets.length > 1 && <SetPicker set={set} sets={sets} chooseSet={chooseSet} />}
         <label className="filter">
           Chapter
           <select value={chapter} onChange={(e) => setChapter(e.target.value)}>
@@ -28,6 +42,7 @@ export default function QuestionList({ bank, progress, chapter, setChapter, onOp
             ))}
           </select>
         </label>
+        </div>
       </div>
 
       <ol className="cards">

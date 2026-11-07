@@ -98,6 +98,32 @@ const RUNNER = `
 })();
 `;
 
+// Optional per-question extras that run before the student's code:
+//  - question.storage:   { key: "string value" } pre-loaded into localStorage
+//  - question.mockFetch: { url: jsonValue }      served by a fake fetch(), since
+//    exams run without internet. Unknown URLs get a 404 response.
+function extrasScript(question) {
+  const parts = [];
+  if (question.storage) {
+    parts.push(`(() => { const seed = ${jsonSafe(question.storage)};
+      Object.keys(seed).forEach((k) => localStorage.setItem(k, seed[k])); })();`);
+  }
+  if (question.mockFetch) {
+    parts.push(`(() => { const routes = ${jsonSafe(question.mockFetch)};
+      window.fetch = (input) => {
+        const url = String(input && input.url ? input.url : input);
+        const found = Object.prototype.hasOwnProperty.call(routes, url);
+        const body = JSON.stringify(found ? routes[url] : {});
+        return new Promise((resolve) => setTimeout(() => resolve(new Response(body, {
+          status: found ? 200 : 404,
+          headers: { 'Content-Type': 'application/json' },
+        })), 20));
+      };
+      window.XMLHttpRequest = undefined; })();`);
+  }
+  return parts.length ? `<script>${parts.join('\n')}</script>` : '';
+}
+
 /**
  * @param {object} question  question from the bank
  * @param {string} code      the student's code
@@ -113,6 +139,7 @@ export function buildDocument(question, code, mode) {
 ${setup.html || ''}
 <script>${BOOTSTRAP}</script>
 ${mode === 'check' ? `<script>${CHECK_MODE}</script>` : ''}
+${extrasScript(question)}
 ${question.useJQuery ? `<script>${scriptSafe(jquerySource)}</script>` : ''}
 <script type="application/json" id="__job">${jsonSafe(job)}</script>
 <script>${RUNNER}</script>

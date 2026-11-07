@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { APP_VERSION, GITHUB_URL } from '../config.js';
-import { usageBytes, wipeAll } from '../storage.js';
+import { forgetSet, usageBytes, wipeAll } from '../storage.js';
+import { inspectSetUrl } from '../useQuestionBank.js';
 
 async function reloadApp() {
   if (!navigator.onLine && !window.confirm(
@@ -27,10 +28,43 @@ function resetData() {
   }
 }
 
-export default function About({ bankState, settings, updateSettings, questionCount }) {
-  const [url, setUrl] = useState(settings.questionsUrl);
+export default function About({ set, sets, chooseSet, bankState, settings, updateSettings, questionCount }) {
+  const [url, setUrl] = useState('');
+  const [adding, setAdding] = useState({ busy: false, error: null });
   const { bank, fetchedAt, source, status, error, refresh } = bankState;
   const kb = (usageBytes() / 1024).toFixed(1);
+
+  const addSet = async (e) => {
+    e.preventDefault();
+    const target = url.trim();
+    if (!target) return;
+    setAdding({ busy: true, error: null });
+    try {
+      const data = await inspectSetUrl(target);
+      if (sets.some((s) => s.url === target)) throw new Error('That set is already in the list');
+      const id = 'custom-' + Date.now().toString(36);
+      const added = {
+        id,
+        title: data.title || target,
+        description: `${data.questions.length} questions added from a URL.`,
+        url: target,
+      };
+      updateSettings({ customSets: [...settings.customSets, added], setId: id });
+      setUrl('');
+      setAdding({ busy: false, error: null });
+    } catch (err) {
+      setAdding({ busy: false, error: err.message });
+    }
+  };
+
+  const removeSet = (s) => {
+    if (!window.confirm(`Remove “${s.title}” and your progress in it?`)) return;
+    forgetSet(s.id);
+    updateSettings({
+      customSets: settings.customSets.filter((c) => c.id !== s.id),
+      setId: s.id === set.id ? sets[0].id : set.id,
+    });
+  };
 
   return (
     <section className="about">
@@ -48,23 +82,50 @@ export default function About({ bankState, settings, updateSettings, questionCou
         <dd>{APP_VERSION}</dd>
       </dl>
 
-      <h2>Question bank</h2>
+      <h2>Question sets</h2>
+      <p className="muted">Each set keeps its own answers and progress.</p>
+      <ul className="set-list">
+        {sets.map((s) => (
+          <li key={s.id} className={s.id === set.id ? 'set-item current' : 'set-item'}>
+            <div>
+              <strong>{s.title}</strong>{s.id === set.id && <span className="muted"> — current</span>}
+              {s.description && <p className="muted">{s.description}</p>}
+              <p className="muted small"><code>{s.url}</code></p>
+            </div>
+            <div className="actions">
+              {s.id !== set.id && <button onClick={() => chooseSet(s.id)}>Use this set</button>}
+              {s.custom && <button onClick={() => removeSet(s)}>Remove</button>}
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <h2>Current set: {set.title}</h2>
       <dl className="facts">
-        <dt>Title</dt><dd>{bank?.title ?? '—'}</dd>
-        <dt>Questions</dt><dd>{questionCount}{bank?.version != null && ` (bank version ${bank.version})`}</dd>
-        <dt>Downloaded from</dt><dd><code>{source ?? '—'}</code></dd>
+        <dt>Questions</dt><dd>{questionCount}{bank?.version != null && ` (version ${bank.version})`}</dd>
+        <dt>Downloaded from</dt><dd><code>{source ?? set.url}</code></dd>
         <dt>Last downloaded</dt><dd>{fetchedAt ? new Date(fetchedAt).toLocaleString() : '—'}</dd>
       </dl>
-      <form className="row" onSubmit={(e) => { e.preventDefault(); updateSettings({ questionsUrl: url.trim() }); }}>
-        <label className="grow">Questions JSON URL
-          <input value={url} onChange={(e) => setUrl(e.target.value)} spellCheck={false} />
-        </label>
-        <button type="submit" disabled={url.trim() === settings.questionsUrl}>Use this URL</button>
+      <div className="row" style={{ marginTop: '.75rem' }}>
         <button type="button" onClick={refresh} disabled={status === 'loading'}>
           {status === 'loading' ? 'Downloading…' : 'Download again'}
         </button>
+      </div>
+      {status === 'error' && (
+        <p className="bad">Download failed: {error}.{bank ? ' Using the saved copy.' : ''}</p>
+      )}
+
+      <h2>Add a question set</h2>
+      <form className="row" onSubmit={addSet}>
+        <label className="grow">URL of a question set JSON file
+          <input value={url} onChange={(e) => setUrl(e.target.value)} spellCheck={false}
+            placeholder="https://example.com/my-questions.json" />
+        </label>
+        <button type="submit" disabled={adding.busy || !url.trim()}>
+          {adding.busy ? 'Checking…' : 'Add set'}
+        </button>
       </form>
-      {status === 'error' && <p className="bad">Download failed: {error}. Using the saved copy.</p>}
+      {adding.error && <p className="bad">Couldn't add that set: {adding.error}</p>}
 
       <h2>Settings</h2>
       <div className="settings">
@@ -89,7 +150,7 @@ export default function About({ bankState, settings, updateSettings, questionCou
 
       <h2>Storage</h2>
       <p>
-        Your code, check results, hints used, settings and a copy of the questions are saved in this
+        Your code, check results, hints used, settings and a copy of each question set are saved in this
         browser's local storage (about {kb} KB). Nothing is sent anywhere.
       </p>
       <div className="danger-zone">

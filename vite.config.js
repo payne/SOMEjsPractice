@@ -1,17 +1,20 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import fs from 'node:fs';
+import path from 'node:path';
 import crypto from 'node:crypto';
 
 // Builds dist/sw.js from sw-template.js, filling in every built file so the
-// whole app (including questions.json) is cached for offline use.
+// whole app (including every question set in public/) is cached for offline use.
 function serviceWorkerPlugin() {
   return {
     name: 'generate-service-worker',
     apply: 'build',
     generateBundle(_options, bundle) {
-      const publicFiles = ['questions.json', 'manifest.webmanifest', 'icons/icon.svg',
-        'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png'];
+      const publicDir = new URL('./public/', import.meta.url);
+      const publicFiles = fs.readdirSync(publicDir, { recursive: true })
+        .map((f) => f.split(path.sep).join('/'))
+        .filter((f) => fs.statSync(new URL(f, publicDir)).isFile());
       const files = ['./', 'index.html', ...publicFiles, ...Object.keys(bundle)];
       const version = crypto.createHash('sha1').update(files.join('|') + Date.now()).digest('hex').slice(0, 10);
       const template = fs.readFileSync(new URL('./sw-template.js', import.meta.url), 'utf8');

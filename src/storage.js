@@ -22,6 +22,29 @@ export function save(key, value) {
   }
 }
 
+/**
+ * Version 1 kept one question bank under "bank" and "progress". Progress now
+ * lives per question set ("progress.<setId>"), so move it to the core set.
+ */
+export function migrate() {
+  try {
+    const old = localStorage.getItem(PREFIX + 'progress');
+    if (old != null && localStorage.getItem(PREFIX + 'progress.core') == null) {
+      localStorage.setItem(PREFIX + 'progress.core', old);
+    }
+    localStorage.removeItem(PREFIX + 'progress');
+    localStorage.removeItem(PREFIX + 'bank');
+    localStorage.removeItem(PREFIX + 'ui');
+  } catch { /* ignore */ }
+}
+
+/** Removes the saved bank, progress and position for one question set. */
+export function forgetSet(setId) {
+  ['bank', 'progress', 'ui'].forEach((k) => {
+    try { localStorage.removeItem(`${PREFIX}${k}.${setId}`); } catch { /* ignore */ }
+  });
+}
+
 /** Removes every key this origin has stored (local and session storage). */
 export function wipeAll() {
   try { localStorage.clear(); } catch { /* ignore */ }
