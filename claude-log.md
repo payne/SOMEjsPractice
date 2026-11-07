@@ -144,3 +144,11 @@ You can now choose between question sets, and there's a second 10-question set c
 - **I fixed chapter titles in the Core set.** The product page showed some of my from-memory titles were wrong. For example, arrays are Ch 15, not Ch 13.
 
 **GitHub Pages still isn't turned on,** so the site hasn't deployed yet. At https://github.com/payne/SOMEjsPractice/settings/pages, set **Source** to **GitHub Actions**. Then run the workflow from the Actions tab, or tell me and I'll start a deploy.
+
+### 11:26 — User
+
+> I've set github pages source to github actions
+
+### 11:26 — Claude (work done)
+
+- Pushed this log update to `main` to start a new Pages deploy, and watched the workflow run.
