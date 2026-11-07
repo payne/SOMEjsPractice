@@ -160,3 +160,29 @@ You can now choose between question sets, and there's a second 10-question set c
 The app is live at **https://payne.github.io/SOMEjsPractice/**. The deploy succeeded, and I loaded the live site in a browser: both question sets appear and offline support is active.
 
 From now on, every push to `main` updates the site automatically, usually within a minute or two. Phones and browsers that already have the app installed pick up a new version the next time it's opened online, or right away with **About → Reload app**.
+
+### 11:32 — User
+
+> Add a feature where on each question, one can download an offline version of the question.  The download should be a zip file that unpacks a directory tree: SOMEjsPractice/QuestionSet/Question and puts all of the files into that folder including the question.  This way a person can use VS Code (or notepad, or vi) to edit the files and try things themselves.   The can also zip up their answer to the question and email it to someone for discussions.
+
+### 11:34 — Claude (work done)
+
+- Added the `fflate` library for creating and reading zip files.
+- New `src/offlinePackage.js` builds a zip for one question: `SOMEjsPractice/<Question-Set>/<NN-Question-Title>/` containing `README.md` (question, chapters, steps, list of checks), `index.html`, `styles.css` and `main.js` (the student's current code). Questions that need them also get jQuery, `seed-storage.js` or `mock-fetch.js`. `HINTS.md` and `SOLUTION.md` are included unless exam mode is on.
+- Added two buttons to each question: **Download as files (.zip)** and **Load answer from file…** (loads a `main.js` or a question zip back into the editor, asking before replacing code).
+- Tested in headless Chromium: downloaded zips from four kinds of questions and checked the folder layout. Opened each unzipped `index.html` from disk: plain DOM, jQuery, web storage and mock fetch all worked with no server or internet. Loaded a zip back in and its answer passed all checks.
+- Updated README. App version 1.2.0.
+
+### 11:34 — Claude (response)
+
+Each question now has a **Download as files (.zip)** button. The zip unpacks to `SOMEjsPractice/<Question-Set>/<NN-Question-Title>/`, for example `SOMEjsPractice/Core-Practice/04-One-line-to-change-a-heading/`. Inside are `index.html`, `styles.css`, `main.js` and a `README.md` with the question, so students can edit `main.js` in VS Code, Notepad or vi and open `index.html` in a browser. It's committed and pushed, so the live site will have it in a minute or two.
+
+**What's in the folder**
+- `main.js` holds the code currently in the app's editor, or the starter code if there isn't any.
+- `README.md` has the question, its chapters, steps for working on it, and the list of checks the app runs.
+- **Everything works with no internet.** jQuery questions include a copy of jQuery. The web storage and Ajax questions include small scripts with their starting data and sample `fetch()` responses.
+- `HINTS.md` and `SOLUTION.md` are included, except when exam mode is on.
+
+**Sharing answers:** zip the folder and email it. I also added a **Load answer from file…** button. It loads a `main.js` or one of these zips back into the editor so the answer can be checked automatically. That covers both checking your own work after editing offline, and someone checking an answer you emailed them.
+
+**Tested:** I downloaded zips from four kinds of questions and opened each unzipped `index.html` straight from disk. The plain DOM, jQuery, web storage and `fetch()` questions all ran correctly. Loading a zip back into the app passed all its checks.

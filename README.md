@@ -34,6 +34,24 @@ To add a built-in set, drop a question JSON file in `public/` and add an entry t
 `question-sets.json`: `{ "id": "…", "title": "…", "description": "…", "url": "file.json" }`.
 Every file in `public/` is cached for offline use automatically.
 
+## Working on a question outside the app
+
+Each question has **Download as files (.zip)**. The zip unpacks to
+`SOMEjsPractice/<Question-Set>/<NN-Question-Title>/` and contains:
+
+| File | What it is |
+|---|---|
+| `README.md` | The question, its chapters, how to work on it, and the list of checks |
+| `index.html` | The question's page; open it in a browser to run the code |
+| `styles.css` | The page's CSS |
+| `main.js` | The student's current code (or the starter code), to edit in any editor |
+| `jquery-3.7.1.min.js` | Only for jQuery questions, so they work without internet |
+| `seed-storage.js` / `mock-fetch.js` | Only for questions that use web storage or `fetch()` |
+| `HINTS.md`, `SOLUTION.md` | Left out when exam mode is on |
+
+**Load answer from file…** loads a `main.js`, or a zip of a question folder (for example, one
+emailed by someone else), back into the editor so it can be checked.
+
 ## Offline and storage
 
 - The service worker (`sw-template.js`, filled in at build time) caches every built file and

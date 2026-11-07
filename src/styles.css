@@ -144,6 +144,7 @@ input, select { font: inherit; color: var(--text); background: var(--surface); b
   tab-size: 2; white-space: pre; overflow: auto;
 }
 
+.offline-row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
 .panel { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; }
 .panel-title { display: flex; justify-content: space-between; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); padding: .4em .8em; background: var(--surface-2); }
 .panel-title span { text-transform: none; letter-spacing: 0; }

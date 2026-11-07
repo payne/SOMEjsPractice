@@ -5,4 +5,4 @@ export const GITHUB_URL = 'https://github.com/payne/SOMEjsPractice';
 // a question bank JSON file. More sets can be added by URL on the About page.
 export const QUESTION_SETS_URL = 'question-sets.json';
 
-export const APP_VERSION = '1.1.0';
+export const APP_VERSION = '1.2.0';

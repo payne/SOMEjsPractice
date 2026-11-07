@@ -145,3 +145,5 @@ ${question.useJQuery ? `<script>${scriptSafe(jquerySource)}</script>` : ''}
 <script>${RUNNER}</script>
 </body></html>`;
 }
+
+export { jquerySource };

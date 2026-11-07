@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import Prompt from './Prompt.jsx';
 import CodeEditor from './CodeEditor.jsx';
 import Sandbox from './Sandbox.jsx';
+import { buildQuestionZip, downloadBlob, readAnswerFile } from '../offlinePackage.js';
 
 const CHECK_TIMEOUT_MS = 15000;
 
 export default function QuestionView({
-  question, number, total, chapters, entry, update, settings, onPrev, onNext, onBack,
+  question, set, number, total, chapters, entry, update, settings, onPrev, onNext, onBack,
 }) {
   const starter = question.starterCode ?? '';
   const code = entry.code ?? starter;
@@ -49,6 +50,34 @@ export default function QuestionView({
         lastChecked: new Date().toISOString(),
         lastResults: msg.results,
       }));
+    }
+  };
+
+  const fileInput = useRef(null);
+  const [fileNotice, setFileNotice] = useState(null);
+
+  const downloadFiles = () => {
+    const { fileName, blob } = buildQuestionZip({
+      set, question, number, code, chapters,
+      includeHelp: !settings.examMode,
+      appUrl: window.location.origin + window.location.pathname,
+    });
+    downloadBlob(blob, fileName);
+    setFileNotice({ ok: true, text: `Downloaded ${fileName}. Unzip it and open index.html.` });
+  };
+
+  const loadAnswer = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const loaded = await readAnswerFile(file);
+      const hasOwnCode = code.trim() !== '' && code !== starter && code !== loaded;
+      if (hasOwnCode && !window.confirm(`Replace the code in the editor with the code from ${file.name}?`)) return;
+      update({ code: loaded });
+      setFileNotice({ ok: true, text: `Loaded your answer from ${file.name}. Press Check answer to test it.` });
+    } catch (err) {
+      setFileNotice({ ok: false, text: `Couldn't load ${file.name}: ${err.message}.` });
     }
   };
 
@@ -149,6 +178,20 @@ export default function QuestionView({
             onSubmit={() => start('check')}
             fontSize={settings.fontSize}
           />
+
+          <div className="offline-row">
+            <button onClick={downloadFiles}
+              title="A zip with index.html, styles.css and main.js to edit in VS Code, Notepad or vi">
+              Download as files (.zip)
+            </button>
+            <button onClick={() => fileInput.current?.click()}
+              title="Load main.js, or a zip of a downloaded question folder, into the editor">
+              Load answer from file…
+            </button>
+            <input ref={fileInput} type="file" hidden accept=".js,.zip,text/javascript,application/zip"
+              onChange={loadAnswer} aria-label="Answer file" />
+            {fileNotice && <span className={fileNotice.ok ? 'muted small' : 'bad small'}>{fileNotice.text}</span>}
+          </div>
 
           <div className={question.setup ? 'panel' : 'panel hidden-frame'}>
             <div className="panel-title">Page</div>

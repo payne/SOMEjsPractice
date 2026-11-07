@@ -127,6 +127,7 @@ function Workspace({ set, setsState, settings, updateSettings }) {
           <QuestionView
             key={current.id}
             question={current}
+            set={set}
             number={index + 1}
             total={questions.length}
             chapters={bank.chapters || {}}
