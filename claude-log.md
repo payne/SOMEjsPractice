@@ -284,3 +284,16 @@ I checked it end to end. The live app's events reached the tracker, and uploads 
 **Later changes:** run `npm run deploy` in `tracker/` to publish a change to the tracker. App changes still deploy when you push to `main`.
 
 Visitors who already have the app open will start sending counts once their browser loads the new version, usually on their next visit.
+
+### 10:11 — User
+
+> The tracker should contain a link to https://payne.github.io/SOMEjsPractice/
+
+### 10:11 — Claude (work done)
+
+- Linked "JS Practice Exam app" in the stats page's opening sentence to https://payne.github.io/SOMEjsPractice/ (`tracker/src/stats.html`).
+- Redeployed the Worker and checked that the live page has the link. Committed and pushed.
+
+### 10:11 — Claude (response)
+
+The stats page at https://tracksomejs.appfarms.org/ now links to the app. In the first sentence, "JS Practice Exam app" goes to https://payne.github.io/SOMEjsPractice/. It's deployed, and I checked that the live page has the link. If you had the page open, reload it; browsers may keep the old copy for up to 5 minutes. The change is committed and pushed.
