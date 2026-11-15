@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { APP_VERSION, GITHUB_URL } from '../config.js';
 import { forgetSet, usageBytes, wipeAll } from '../storage.js';
 import { inspectSetUrl } from '../useQuestionBank.js';
+import { flush, track } from '../analytics.js';
 
 async function reloadApp() {
   if (!navigator.onLine && !window.confirm(
     'You appear to be offline. Reloading clears the cached app files, so it may not load again until you are online. Continue?'
   )) return;
+  track('reload_app');
+  await flush();
   try {
     if ('serviceWorker' in navigator) {
       const regs = await navigator.serviceWorker.getRegistrations();
@@ -23,6 +26,8 @@ async function reloadApp() {
 
 function resetData() {
   if (window.confirm('Delete ALL your saved answers, progress, settings and the downloaded questions? This cannot be undone.')) {
+    track('reset_data');
+    flush(true);
     wipeAll();
     window.location.reload();
   }
@@ -49,6 +54,7 @@ export default function About({ set, sets, chooseSet, bankState, settings, updat
         description: `${data.questions.length} questions added from a URL.`,
         url: target,
       };
+      track('set_added', { setId: id, data: { questions: data.questions.length } });
       updateSettings({ customSets: [...settings.customSets, added], setId: id });
       setUrl('');
       setAdding({ busy: false, error: null });
@@ -151,7 +157,11 @@ export default function About({ set, sets, chooseSet, bankState, settings, updat
       <h2>Storage</h2>
       <p>
         Your code, check results, hints used, settings and a copy of each question set are saved in this
-        browser's local storage (about {kb} KB). Nothing is sent anywhere.
+        browser's local storage (about {kb} KB). Your code is never sent anywhere.
+      </p>
+      <p>
+        The app collects anonymous usage counts, such as which questions are opened, checked and
+        downloaded, so we can see how many people use it. No personal data is collected.
       </p>
       <div className="danger-zone">
         <div>

@@ -62,6 +62,22 @@ emailed by someone else), back into the editor so it can be checked.
 - **About → Reload app** removes the service worker and cached files and reloads (progress kept).
 - **About → Reset all data** clears local storage completely.
 
+## Usage tracking
+
+The app sends anonymous usage counts to a Cloudflare Worker at
+**https://tracksomejs.appfarms.org** (code in `tracker/`, see `tracker/README.md`). No logins.
+
+- Each browser gets a random ID (`jsPractice.uid` in local storage). A "user" is one browser, so
+  one person on two devices counts twice, and **Reset all data** makes a new ID.
+- Events: `app_open`, `about_view`, `set_changed`, `set_added`, `question_view`, `run_code`,
+  `check_answer` (pass, checks passed, attempt), `hint_shown`, `solution_shown`, `self_mark`,
+  `download_zip`, `load_answer`, `reload_app`, `reset_data`. Code the student typed is never sent.
+- Events wait in `jsPractice.analyticsQueue` and are uploaded in batches, so offline use is
+  counted when the browser is next online. Tracking only runs in production builds.
+- `TRACK_URL` in `src/config.js` sets the address (empty string turns tracking off).
+  `VITE_TRACK_URL=http://localhost:8787 npm run build` points a build at a local tracker.
+- Stats page: https://tracksomejs.appfarms.org/ — data as JSON at `/summary.json` and `/events.json`.
+
 ## Question file format
 
 ```jsonc

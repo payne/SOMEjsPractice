@@ -1,0 +1,29 @@
+// Cloudflare Worker that stores anonymous usage events for SOMEjsPractice.
+// Deploy from this folder: npx wrangler deploy  (see README.md here).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "track-somejs",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "routes": [
+    { "pattern": "tracksomejs.appfarms.org", "custom_domain": true }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "track-somejs",
+      "database_id": "47bb2166-feaf-466a-b2c5-89b45d9fbfaf",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // At most 30 uploads per minute from one IP address (the app batches events).
+  "ratelimits": [
+    { "name": "LIMITER", "namespace_id": "4101", "simple": { "limit": 30, "period": 60 } }
+  ],
+  // Web pages allowed to upload events (comma-separated). Reading the data is open to everyone.
+  "vars": {
+    "ALLOWED_ORIGINS": "https://payne.github.io,http://localhost:5173,http://localhost:4173"
+  },
+  "observability": { "enabled": true }
+}

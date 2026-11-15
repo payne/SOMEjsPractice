@@ -190,3 +190,74 @@ Each question now has a **Download as files (.zip)** button. The zip unpacks to 
 ### 12:00 — User
 
 > Create a question set for each chapter in the book: there should be 10 questions in each of these.
+
+## Session 2 — 2026-11-15
+
+### 09:46 — User
+
+> What is a good way to know how many unique users are using this application?  I don't want to require authentication or authorization.  I want to track the number of unique users and how often they return, what exercies they work, what they download, etc.  I'd like that data to be visible somewhere on the Internet and I'd like the data available for download in some common format (e.g. json).
+
+### 09:48 — Claude (work done)
+
+- Looked at `src/config.js`, `vite.config.js` and the GitHub Pages deploy workflow to see how the app is hosted.
+- Answered with options for anonymous usage tracking; no code changed.
+
+### 09:48 — Claude (response)
+
+You can do this without logins by giving each browser a random anonymous ID. On first visit, the app saves an ID from `crypto.randomUUID()` in `localStorage` and sends it with every event. That ID is your "unique user." One caveat: it really counts unique *browsers*. The same person on a phone and a laptop counts as two users, and clearing site data makes a new one. Every tool without logins has this limit.
+
+**What to track** (small events, no personal data):
+- `app_open`: gives unique users per day and week, and return visits (first-seen date vs. later visits).
+- `question_view`, `check_run` (pass or fail), `hint_shown`, `solution_shown`
+- `download_zip`, `load_answer`, `question_set_changed`
+
+Because it's a PWA, events can wait in `localStorage` while offline and be sent with `navigator.sendBeacon()` once back online.
+
+**Where the data goes: three good options**
+
+1. **A small backend you own (my recommendation): Cloudflare Worker + D1 (SQLite), free tier.** About 60 lines of code. `POST /event` stores a row. `GET /events.json` and `GET /summary.json` are public URLs anyone can download. Then add a **Stats** page to the app (on GitHub Pages) that reads `summary.json` and shows unique users, returning users, top questions and downloads. It fits your "public on the Internet + JSON download" requirement exactly, and you own the data. Downside: one more thing to deploy, and anyone could post fake events. A simple rate limit plus checking event names keeps that manageable for a practice app.
+2. **PostHog Cloud (free up to 1M events/month).** You get unique users, retention charts and per-event breakdowns with no backend to write. Dashboards can be shared by public link, and data can be exported as JSON or CSV through its API. Downside: heavier script, third-party data storage, and public JSON download needs an API key, so you'd still want a small proxy or a scheduled export.
+3. **GoatCounter or Umami.** Lightweight, privacy-friendly, with public dashboards and CSV export. Good for page views and simple custom events, but weak at "how often does *this* anonymous user return." That's the main thing you asked for, so I'd rank these third.
+
+**Privacy:** add a short note on the About page ("anonymous usage counts, no personal data, here's the public data") and maybe an opt-out checkbox. Never send code that students typed.
+
+If you want option 1, I can build it: the event tracking in the app, the Worker + D1 backend with `events.json`/`summary.json`, and a Stats page. You'd just need a free Cloudflare account to deploy the Worker.
+
+### 09:53 — User
+
+> build option 1.  I have a cloudflare account.  One of the domains I've bought from them is AppFarms.org.   Create trackSomeJS.AppFarms.org.  Add a short note on the about page saying the app colects anonymous usage counts with no personal data.  Do not link to the public data.  Do not put in an opt out checkbox.
+
+### 09:58 — Claude (work done)
+
+- New `tracker/` folder: a Cloudflare Worker (`track-somejs`) with a D1 database, set up for the custom domain `tracksomejs.appfarms.org`. `POST /event` stores batches of events (checks the ID format, event names, sizes and page origin, and limits each IP address to 30 uploads a minute; IP addresses aren't stored). `/summary.json` and `/events.json` (paged) publish the data. `/` is a stats page with user totals, a daily active users chart, return visits, events, a per-question table, sets, versions and countries, in light and dark mode.
+- New `src/analytics.js`: a random ID per browser, events queued in localStorage and sent in batches (also works after being offline). Production builds only.
+- Tracked: app opens, About views, set changes and additions, question views, Run, Check answer (pass, checks passed, attempt number), hints, solutions, self-marks, zip downloads, loaded answers, Reload and Reset. Code the student typed is never sent.
+- About page: added the anonymous usage note, and changed "Nothing is sent anywhere" to "Your code is never sent anywhere". No link to the data and no opt-out.
+- Tested locally (wrangler dev + headless Chromium): every app event arrived with the right data, bad uploads were rejected, HTML in titles is escaped on the stats page, the chart tooltip works, and the page fits a phone screen with no sideways scrolling.
+- Updated README and added `tracker/README.md`. App version 1.3.0. Not deployed or committed yet: waiting for `wrangler login`.
+
+### 09:59 — Claude (response)
+
+The tracker is built and tested locally, but it isn't on your Cloudflare account yet. To deploy it, Wrangler needs you to log in once. Please run this in the prompt; it opens your browser so you can approve access:
+
+```
+! cd tracker && npx wrangler login
+```
+
+When that's done, tell me and I'll create the D1 database and tables, then deploy the Worker to **tracksomejs.appfarms.org** (Cloudflare sets up the DNS record and certificate). Then I'll commit and push so the live app starts sending events.
+
+**What I built**
+- **Tracker (`tracker/`):** a Cloudflare Worker with a D1 database.
+  - **https://tracksomejs.appfarms.org/** is a public stats page showing unique users, active today, this week and this month, returning users, a 90-day daily users chart, how many days each user has come back, and a table per question (views, users, checks, users who passed, hints, solutions, downloads, answers loaded).
+  - **`/summary.json`** has everything on that page as JSON.
+  - **`/events.json`** has every raw event as JSON, 5,000 per page.
+- **App:** each browser gets a random ID. Events wait in local storage and are sent in batches, so work done offline is counted once the browser is back online. Typed code is never sent.
+- **About page:** the Storage section now says: *"The app collects anonymous usage counts, such as which questions are opened, checked and downloaded, so we can see how many people use it. No personal data is collected."* No link to the data and no opt-out, as you asked. I also changed the old line "Nothing is sent anywhere" to "Your code is never sent anywhere", since the old one would no longer be true.
+
+**Tested locally:** I ran the Worker on a local database and clicked through the built app in headless Chromium. All nine kinds of events I triggered arrived with the right question, set and details. Bad uploads were rejected. The stats page works in light and dark mode and on a phone-sized screen.
+
+Since the data is public, anyone can see it. I kept it to counts and question titles: no IP addresses are stored, only a country code from Cloudflare.
+
+### 10:07 — User
+
+> Deploy all of this

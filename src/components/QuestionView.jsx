@@ -3,6 +3,7 @@ import Prompt from './Prompt.jsx';
 import CodeEditor from './CodeEditor.jsx';
 import Sandbox from './Sandbox.jsx';
 import { buildQuestionZip, downloadBlob, readAnswerFile } from '../offlinePackage.js';
+import { trackQuestion } from '../analytics.js';
 
 const CHECK_TIMEOUT_MS = 15000;
 
@@ -21,10 +22,20 @@ export default function QuestionView({
 
   useEffect(() => () => clearTimeout(timer.current), []);
 
+  const viewed = useRef(false);
+  useEffect(() => {
+    if (viewed.current) return;
+    viewed.current = true;
+    trackQuestion('question_view', set, question, { passedBefore: entry.status === 'passed' });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const ev = (name, data) => trackQuestion(name, set, question, data);
+
   const start = (mode) => {
     clearTimeout(timer.current);
     setConsoleLines([]);
     setTimedOut(false);
+    if (mode === 'run') ev('run_code');
     if (mode === 'check') {
       setResults(null);
       setChecking(true);
@@ -41,6 +52,12 @@ export default function QuestionView({
       setChecking(false);
       setResults(msg.results);
       const allPassed = msg.results.length > 0 && msg.results.every((r) => r.pass);
+      ev('check_answer', {
+        pass: allPassed,
+        passed: msg.results.filter((r) => r.pass).length,
+        total: msg.results.length,
+        attempt: (entry.attempts || 0) + 1,
+      });
       update((prev) => ({
         ...prev,
         code: fromRun.code,
@@ -63,6 +80,7 @@ export default function QuestionView({
       appUrl: window.location.origin + window.location.pathname,
     });
     downloadBlob(blob, fileName);
+    ev('download_zip', { withHelp: !settings.examMode });
     setFileNotice({ ok: true, text: `Downloaded ${fileName}. Unzip it and open index.html.` });
   };
 
@@ -75,8 +93,10 @@ export default function QuestionView({
       const hasOwnCode = code.trim() !== '' && code !== starter && code !== loaded;
       if (hasOwnCode && !window.confirm(`Replace the code in the editor with the code from ${file.name}?`)) return;
       update({ code: loaded });
+      ev('load_answer', { ok: true, kind: file.name.toLowerCase().endsWith('.zip') ? 'zip' : 'js' });
       setFileNotice({ ok: true, text: `Loaded your answer from ${file.name}. Press Check answer to test it.` });
     } catch (err) {
+      ev('load_answer', { ok: false });
       setFileNotice({ ok: false, text: `Couldn't load ${file.name}: ${err.message}.` });
     }
   };
@@ -134,7 +154,10 @@ export default function QuestionView({
               ))}
               <div className="row">
                 {hintsShown < hints.length && (
-                  <button onClick={() => update({ hintsShown: hintsShown + 1 })}>
+                  <button onClick={() => {
+                    ev('hint_shown', { hint: hintsShown + 1, of: hints.length });
+                    update({ hintsShown: hintsShown + 1 });
+                  }}>
                     Show hint ({hintsShown + 1} of {hints.length})
                   </button>
                 )}
@@ -142,6 +165,7 @@ export default function QuestionView({
                   <button onClick={() => {
                     if (entry.solutionViewed || window.confirm('Show the model solution? Try the question first!')) {
                       setShowSolution(true);
+                      ev('solution_shown', { firstTime: !entry.solutionViewed });
                       update({ solutionViewed: true });
                     }
                   }}>Show solution</button>
@@ -157,9 +181,17 @@ export default function QuestionView({
           <section className="selfmark">
             <span className="muted">How did it go?</span>
             <button className={entry.confidence === 'know' ? 'on' : ''}
-              onClick={() => update({ confidence: entry.confidence === 'know' ? null : 'know' })}>I've got this</button>
+              onClick={() => {
+                const confidence = entry.confidence === 'know' ? null : 'know';
+                ev('self_mark', { confidence: confidence ?? 'cleared' });
+                update({ confidence });
+              }}>I've got this</button>
             <button className={entry.confidence === 'review' ? 'on review' : ''}
-              onClick={() => update({ confidence: entry.confidence === 'review' ? null : 'review' })}>Needs review</button>
+              onClick={() => {
+                const confidence = entry.confidence === 'review' ? null : 'review';
+                ev('self_mark', { confidence: confidence ?? 'cleared' });
+                update({ confidence });
+              }}>Needs review</button>
           </section>
         </div>
 

@@ -4,6 +4,7 @@ import { useQuestionBank, useQuestionSets } from './useQuestionBank.js';
 import QuestionList from './components/QuestionList.jsx';
 import QuestionView from './components/QuestionView.jsx';
 import About from './components/About.jsx';
+import { track } from './analytics.js';
 
 const DEFAULT_SETTINGS = {
   setId: 'core',
@@ -52,6 +53,7 @@ function Workspace({ set, setsState, settings, updateSettings }) {
   const current = index >= 0 ? questions[index] : null;
 
   const go = (view, currentId = ui.currentId) => {
+    if (view === 'about' && ui.view !== 'about') track('about_view');
     setUi((u) => ({ ...u, view, currentId }));
     window.scrollTo(0, 0);
   };
@@ -64,7 +66,10 @@ function Workspace({ set, setsState, settings, updateSettings }) {
     });
   }, [setProgress]);
 
-  const chooseSet = (setId) => updateSettings({ setId });
+  const chooseSet = (setId) => {
+    track('set_changed', { setId, data: { from: set.id } });
+    updateSettings({ setId });
+  };
   const passed = questions.filter((q) => progress[q.id]?.status === 'passed').length;
   const view = ui.view === 'question' && !current ? 'list' : ui.view;
 

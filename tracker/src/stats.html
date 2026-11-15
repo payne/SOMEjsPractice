@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOMEjsPractice Usage</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --surface: #fcfcfb; --surface-2: #f4f3ef; --ink: #0b0b0b; --ink-2: #52514e; --muted: #6f6e69;
+    --grid: #e1e0d9; --border: #e1e0d9; --bar: #2a78d6; --bar-hover: #1f5fae; --link: #1f63b4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --surface: #1a1a19; --surface-2: #232322; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a9993;
+      --grid: #2c2c2a; --border: #34342f; --bar: #3987e5; --bar-hover: #6aa5ee; --link: #7fb2f0;
+    }
+  }
+  :root[data-theme="dark"] {
+    --surface: #1a1a19; --surface-2: #232322; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a9993;
+    --grid: #2c2c2a; --border: #34342f; --bar: #3987e5; --bar-hover: #6aa5ee; --link: #7fb2f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--surface); color: var(--ink);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  h2 { font-size: 1.1rem; margin: 32px 0 8px; }
+  a { color: var(--link); }
+  .muted { color: var(--muted); }
+  .small { font-size: .85rem; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 20px; }
+  .tile { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; }
+  .tile .label { color: var(--ink-2); font-size: .85rem; }
+  .tile .value { font-size: 1.8rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .chart { position: relative; margin-top: 8px; }
+  .chart svg { display: block; overflow: visible; }
+  .chart .gridline { stroke: var(--grid); stroke-width: 1; }
+  .chart .axis { fill: var(--muted); font-size: 11px; }
+  .chart .bar { fill: var(--bar); }
+  .chart .bar.on { fill: var(--bar-hover); }
+  .chart .hit { fill: transparent; cursor: default; }
+  .tip {
+    position: absolute; pointer-events: none; background: var(--ink); color: var(--surface);
+    padding: 6px 9px; border-radius: 6px; font-size: .8rem; white-space: nowrap; transform: translate(-50%, -100%);
+    display: none;
+  }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--ink-2); font-weight: 600; white-space: nowrap; }
+  td.n, th.n { text-align: right; }
+  details summary { cursor: pointer; color: var(--ink-2); margin-top: 8px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0 24px; }
+  code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+  .error { color: #c0392b; }
+</style>
+</head>
+<body>
+<main>
+  <h1>SOMEjsPractice usage</h1>
+  <p class="muted">Anonymous usage counts for the JS Practice Exam app. A “user” is one browser (a random ID kept in
+    that browser), so the same person on two devices counts twice. Days are in UTC.
+    <span id="updated"></span></p>
+
+  <div id="error" class="error"></div>
+  <div class="tiles" id="tiles"></div>
+
+  <h2>Daily active users (last 90 days)</h2>
+  <div class="chart" id="chart"><div class="tip" id="tip"></div></div>
+  <details><summary>Show as a table</summary><div class="scroll" id="dailyTable"></div></details>
+
+  <div class="grid2">
+    <section>
+      <h2>Return visits</h2>
+      <p class="muted small">How many different days each user has used the app.</p>
+      <div id="returns"></div>
+    </section>
+    <section>
+      <h2>Events</h2>
+      <div id="events"></div>
+    </section>
+  </div>
+
+  <h2>Questions</h2>
+  <p class="muted small">Views, checks and downloads for each question, most viewed first.</p>
+  <div class="scroll" id="questions"></div>
+
+  <div class="grid2">
+    <section><h2>Question sets</h2><div id="sets"></div></section>
+    <section><h2>App versions</h2><div id="versions"></div></section>
+    <section><h2>Countries</h2><div id="countries"></div></section>
+  </div>
+
+  <h2>Download the data</h2>
+  <ul>
+    <li><a href="/summary.json">summary.json</a>: everything on this page.</li>
+    <li><a href="/events.json">events.json</a>: every event, 5,000 per page. For the next page add
+      <code>?after=</code> with the <code>next</code> value from the previous page (up to <code>&amp;limit=10000</code>).</li>
+  </ul>
+</main>
+
+<script>
+const fmt = new Intl.NumberFormat();
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const num = (n) => fmt.format(n ?? 0);
+
+function table(columns, rows) {
+  if (!rows.length) return '<p class="muted small">No data yet.</p>';
+  const head = columns.map((c) => `<th class="${c.n ? 'n' : ''}">${esc(c.label)}</th>`).join('');
+  const body = rows.map((r) => '<tr>' + columns.map((c) => {
+    const v = c.get ? c.get(r) : r[c.key];
+    return `<td class="${c.n ? 'n' : ''}">${c.n ? num(v) : esc(v ?? '—')}</td>`;
+  }).join('') + '</tr>').join('');
+  return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+}
+
+function tiles(s) {
+  const t = s.totals;
+  const items = [
+    ['Unique users', t.users],
+    ['Active today', s.activeUsers.day1],
+    ['Active this week', s.activeUsers.day7],
+    ['Active this month', s.activeUsers.day30],
+    ['Returning users', t.returningUsers],
+    ['Installed the app', t.installedAppUsers],
+  ];
+  document.getElementById('tiles').innerHTML = items.map(([label, v]) =>
+    `<div class="tile"><div class="label">${label}</div><div class="value">${num(v)}</div></div>`).join('');
+}
+
+function chart(daily) {
+  const box = document.getElementById('chart');
+  const tip = document.getElementById('tip');
+  const W = Math.max(300, box.clientWidth || 1000), H = 220, L = 36, B = 22, T = 8;
+  const max = Math.max(1, ...daily.map((d) => d.users));
+  const step = Math.pow(10, Math.floor(Math.log10(max)));
+  const tickStep = [1, 2, 5, 10].map((m) => m * step).find((s) => max / s <= 4) || step * 10;
+  const top = Math.ceil(max / tickStep) * tickStep;
+  const y = (v) => T + (H - T - B) * (1 - v / top);
+  const slot = (W - L) / daily.length;
+  const bw = Math.max(2, slot - 2);
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Daily active users, last 90 days">`;
+  for (let v = 0; v <= top; v += tickStep) {
+    svg += `<line class="gridline" x1="${L}" x2="${W}" y1="${y(v)}" y2="${y(v)}"/>`;
+    svg += `<text class="axis" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${num(v)}</text>`;
+  }
+  let hits = ''; // drawn last so they sit above the bars
+  daily.forEach((d, i) => {
+    const x = L + i * slot + 1;
+    const h = H - B - y(d.users);
+    if (i % 15 === 0 || i === daily.length - 1) {
+      svg += `<text class="axis" x="${x + bw / 2}" y="${H - 6}" text-anchor="middle">${d.day.slice(5)}</text>`;
+    }
+    hits += `<rect class="hit" data-i="${i}" x="${x - 1}" y="${T}" width="${slot}" height="${H - T - B}"/>`;
+    if (d.users > 0) {
+      const r = Math.min(4, bw / 2, h);
+      // Rounded top, square base on the baseline.
+      svg += `<path class="bar" d="M${x},${H - B} V${H - B - h + r} Q${x},${H - B - h} ${x + r},${H - B - h} ` +
+        `H${x + bw - r} Q${x + bw},${H - B - h} ${x + bw},${H - B - h + r} V${H - B} Z"/>`;
+    } else {
+      svg += '<path class="bar" d=""/>';
+    }
+  });
+  svg += hits + '</svg>';
+  box.insertAdjacentHTML('beforeend', svg);
+
+  const bars = box.querySelectorAll('.bar');
+  box.querySelectorAll('.hit').forEach((el) => {
+    el.addEventListener('mousemove', (e) => {
+      const d = daily[+el.dataset.i];
+      bars[+el.dataset.i].classList.add('on');
+      const rect = box.getBoundingClientRect();
+      tip.innerHTML = `<strong>${d.day}</strong><br>${num(d.users)} users · ${num(d.newUsers)} new<br>${num(d.events)} events`;
+      tip.style.left = Math.min(rect.width - 70, Math.max(70, e.clientX - rect.left)) + 'px';
+      tip.style.top = (e.clientY - rect.top - 10) + 'px';
+      tip.style.display = 'block';
+    });
+    el.addEventListener('mouseleave', () => {
+      tip.style.display = 'none';
+      bars[+el.dataset.i].classList.remove('on');
+    });
+  });
+
+  document.getElementById('dailyTable').innerHTML = table([
+    { label: 'Day (UTC)', key: 'day' },
+    { label: 'Users', key: 'users', n: true },
+    { label: 'New users', key: 'newUsers', n: true },
+    { label: 'Events', key: 'events', n: true },
+  ], daily.slice().reverse().filter((d) => d.users > 0));
+}
+
+function render(s) {
+  document.getElementById('updated').textContent = `Updated ${new Date(s.generatedAt).toLocaleString()}.`;
+  tiles(s);
+  chart(s.daily);
+
+  const buckets = [['1 day', 1, 1], ['2 days', 2, 2], ['3–5 days', 3, 5], ['6–10 days', 6, 10], ['11+ days', 11, Infinity]]
+    .map(([label, lo, hi]) => ({
+      label,
+      users: s.daysActive.filter((r) => r.daysActive >= lo && r.daysActive <= hi).reduce((n, r) => n + r.users, 0),
+    }));
+  document.getElementById('returns').innerHTML = table(
+    [{ label: 'Days used', key: 'label' }, { label: 'Users', key: 'users', n: true }],
+    s.totals.users ? buckets : []);
+
+  document.getElementById('events').innerHTML = table([
+    { label: 'Event', key: 'event' }, { label: 'Count', key: 'count', n: true }, { label: 'Users', key: 'users', n: true },
+  ], s.events);
+
+  document.getElementById('questions').innerHTML = table([
+    { label: 'Set', key: 'setId' },
+    { label: 'Question', get: (r) => r.title || r.questionId },
+    { label: 'Views', key: 'views', n: true },
+    { label: 'Users', key: 'users', n: true },
+    { label: 'Checks', key: 'checks', n: true },
+    { label: 'Users passed', key: 'usersPassed', n: true },
+    { label: 'Hints', key: 'hints', n: true },
+    { label: 'Solutions', key: 'solutions', n: true },
+    { label: 'Downloads', key: 'downloads', n: true },
+    { label: 'Answers loaded', key: 'answersLoaded', n: true },
+  ], s.questions);
+
+  document.getElementById('sets').innerHTML = table([
+    { label: 'Set', get: (r) => r.title || r.setId }, { label: 'Users', key: 'users', n: true },
+    { label: 'Views', key: 'views', n: true }, { label: 'Downloads', key: 'downloads', n: true },
+  ], s.questionSets);
+  document.getElementById('versions').innerHTML = table(
+    [{ label: 'Version', key: 'version' }, { label: 'Users', key: 'users', n: true }], s.appVersions);
+  document.getElementById('countries').innerHTML = table(
+    [{ label: 'Country', key: 'country' }, { label: 'Users', key: 'users', n: true }], s.countries);
+}
+
+fetch('/summary.json')
+  .then((r) => { if (!r.ok) throw new Error(r.status + ' ' + r.statusText); return r.json(); })
+  .then(render)
+  .catch((e) => { document.getElementById('error').textContent = 'Could not load the data: ' + e.message; });
+</script>
+</body>
+</html>
