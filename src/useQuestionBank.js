@@ -30,6 +30,7 @@ const FALLBACK_SETS = [{ id: 'core', title: 'Core Practice', url: 'questions.jso
 export function useQuestionSets(customSets = []) {
   const [cached, setCached] = usePersistentState('sets', null);
   const [error, setError] = useState(null);
+  const [downloaded, setDownloaded] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
@@ -39,13 +40,16 @@ export function useQuestionSets(customSets = []) {
       setError(null);
     } catch (e) {
       setError(e.message);
+    } finally {
+      setDownloaded(true);
     }
   }, [setCached]);
 
   useEffect(() => { refresh(); }, [refresh]);
 
   const builtIn = cached?.sets?.length ? cached.sets : FALLBACK_SETS;
-  return { sets: [...builtIn, ...customSets.map((s) => ({ ...s, custom: true }))], error, refresh };
+  // loaded: the download has been tried, so a set missing from the list really doesn't exist.
+  return { sets: [...builtIn, ...customSets.map((s) => ({ ...s, custom: true }))], error, refresh, loaded: downloaded };
 }
 
 /**

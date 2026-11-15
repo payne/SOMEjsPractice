@@ -49,6 +49,13 @@ export default function CodeEditor({ value, onChange, onSubmit, fontSize = 15, r
         autoCapitalize="off"
         autoComplete="off"
         autoCorrect="off"
+        // Turn off browser writing suggestions and grammar/spelling extensions too.
+        writingsuggestions="false"
+        data-gramm="false"
+        data-gramm_editor="false"
+        data-enable-grammarly="false"
+        data-lt-active="false"
+        translate="no"
         wrap="off"
         aria-label="Your JavaScript code"
       />

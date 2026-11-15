@@ -20,6 +20,22 @@ Every push to `main` builds and deploys to GitHub Pages via `.github/workflows/d
 The build uses relative paths, so `dist/` works from any folder. The repository address shown
 on the About page is `GITHUB_URL` in `src/config.js`.
 
+## Links to questions
+
+Every screen has its own URL (in the hash, so it works on GitHub Pages and offline):
+
+- `#/core` — the question list of a set (the set's `id` from `question-sets.json`)
+- `#/core/q03-function-initials` — one question (the question's `id`)
+- `#/about` — the About page
+
+For example https://payne.github.io/SOMEjsPractice/#/core/q03-function-initials. Back and Forward
+work, and opening the app with no hash goes back to the last screen used. A link to a question or
+set that doesn't exist shows a question list instead. Sets added by URL on the About page only
+exist in that browser, so their links only work there.
+
+The editor turns off autocomplete, autocorrect, spell check and browser writing suggestions, and
+the whole app turns off font ligatures so code shows exactly the characters typed.
+
 ## Question sets
 
 `public/question-sets.json` lists the built-in sets. Students pick a set from the question list or
@@ -76,7 +92,7 @@ The app sends anonymous usage counts to a Cloudflare Worker at
   counted when the browser is next online. Tracking only runs in production builds.
 - `TRACK_URL` in `src/config.js` sets the address (empty string turns tracking off).
   `VITE_TRACK_URL=http://localhost:8787 npm run build` points a build at a local tracker.
-- Stats page: https://tracksomejs.appfarms.org/ — data as JSON at `/summary.json` and `/events.json`.
+- Stats page: https://tracksomejs.appfarms.org/ — data as JSON at `/summary.json` and `/events.json`. Question and set names on the stats page link to their pages in the app.
 
 ## Question file format
 

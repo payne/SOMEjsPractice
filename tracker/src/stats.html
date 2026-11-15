@@ -20,7 +20,7 @@
     --surface: #1a1a19; --surface-2: #232322; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a9993;
     --grid: #2c2c2a; --border: #34342f; --bar: #3987e5; --bar-hover: #6aa5ee; --link: #7fb2f0;
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; font-variant-ligatures: none; font-feature-settings: "liga" 0, "clig" 0, "calt" 0; }
   body {
     margin: 0; background: var(--surface); color: var(--ink);
     font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -106,13 +106,19 @@
 const fmt = new Intl.NumberFormat();
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const num = (n) => fmt.format(n ?? 0);
+const APP = 'https://payne.github.io/SOMEjsPractice/';
+// Sets added by URL ("custom-…") exist only in one browser, so they get no link.
+const appLink = (setId, questionId) => !setId || setId.startsWith('custom-') ? null
+  : APP + '#/' + encodeURIComponent(setId) + (questionId ? '/' + encodeURIComponent(questionId) : '');
 
 function table(columns, rows) {
   if (!rows.length) return '<p class="muted small">No data yet.</p>';
   const head = columns.map((c) => `<th class="${c.n ? 'n' : ''}">${esc(c.label)}</th>`).join('');
   const body = rows.map((r) => '<tr>' + columns.map((c) => {
     const v = c.get ? c.get(r) : r[c.key];
-    return `<td class="${c.n ? 'n' : ''}">${c.n ? num(v) : esc(v ?? '—')}</td>`;
+    const href = c.link ? c.link(r) : null;
+    const shown = c.n ? num(v) : esc(v ?? '—');
+    return `<td class="${c.n ? 'n' : ''}">${href ? `<a href="${esc(href)}">${shown}</a>` : shown}</td>`;
   }).join('') + '</tr>').join('');
   return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
 }
@@ -213,7 +219,7 @@ function render(s) {
 
   document.getElementById('questions').innerHTML = table([
     { label: 'Set', key: 'setId' },
-    { label: 'Question', get: (r) => r.title || r.questionId },
+    { label: 'Question', get: (r) => r.title || r.questionId, link: (r) => appLink(r.setId, r.questionId) },
     { label: 'Views', key: 'views', n: true },
     { label: 'Users', key: 'users', n: true },
     { label: 'Checks', key: 'checks', n: true },
@@ -225,7 +231,7 @@ function render(s) {
   ], s.questions);
 
   document.getElementById('sets').innerHTML = table([
-    { label: 'Set', get: (r) => r.title || r.setId }, { label: 'Users', key: 'users', n: true },
+    { label: 'Set', get: (r) => r.title || r.setId, link: (r) => appLink(r.setId) }, { label: 'Users', key: 'users', n: true },
     { label: 'Views', key: 'views', n: true }, { label: 'Downloads', key: 'downloads', n: true },
   ], s.questionSets);
   document.getElementById('versions').innerHTML = table(

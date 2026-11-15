@@ -32,4 +32,7 @@ function serviceWorkerPlugin() {
 export default defineConfig({
   base: './', // relative paths so the app works from any folder (e.g. GitHub Pages)
   plugins: [react(), serviceWorkerPlugin()],
+  // Only the app's page; tracker/ is a separate Cloudflare Worker.
+  optimizeDeps: { entries: ['index.html'] },
+  server: { watch: { ignored: ['**/tracker/**'] } },
 });

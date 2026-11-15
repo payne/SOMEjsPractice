@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { usePersistentState } from './storage.js';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { load, usePersistentState } from './storage.js';
 import { useQuestionBank, useQuestionSets } from './useQuestionBank.js';
 import QuestionList from './components/QuestionList.jsx';
 import QuestionView from './components/QuestionView.jsx';
 import About from './components/About.jsx';
 import { track } from './analytics.js';
+import { buildHash, parseHash } from './route.js';
 
 const DEFAULT_SETTINGS = {
   setId: 'core',
@@ -14,11 +15,43 @@ const DEFAULT_SETTINGS = {
   fontSize: 15,
 };
 
+/** Where to go when the URL has no hash: the last screen used in the current set. */
+function resumeRoute(setId) {
+  const ui = load(`ui.${setId}`, null);
+  if (ui?.view === 'about') return { view: 'about' };
+  if (ui?.view === 'question' && ui.currentId) return { view: 'question', setId, questionId: ui.currentId };
+  return { view: 'list', setId };
+}
+
 export default function App() {
   const [storedSettings, setSettings] = usePersistentState('settings', DEFAULT_SETTINGS);
   const settings = { ...DEFAULT_SETTINGS, ...storedSettings };
   const setsState = useQuestionSets(settings.customSets);
-  const currentSet = setsState.sets.find((s) => s.id === settings.setId) || setsState.sets[0];
+
+  // The URL hash decides which screen is shown (see route.js).
+  const [route, setRoute] = useState(() => parseHash(window.location.hash) ?? resumeRoute(settings.setId));
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
+
+  const navigate = useCallback((next, { replace = false } = {}) => {
+    const hash = buildHash(next);
+    if (hash !== window.location.hash) {
+      window.history[replace ? 'replaceState' : 'pushState'](null, '', hash);
+    }
+    setRoute(next);
+  }, []);
+
+  useEffect(() => {
+    if (!window.location.hash) navigate(route, { replace: true });
+    const onHashChange = () => setRoute(parseHash(window.location.hash) ?? resumeRoute(settingsRef.current.setId));
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const wantedSetId = route.setId ?? settings.setId;
+  const routeSet = setsState.sets.find((s) => s.id === wantedSetId);
+  const currentSet = routeSet || setsState.sets.find((s) => s.id === settings.setId) || setsState.sets[0];
+  const waitingForSets = !routeSet && !setsState.loaded;
 
   useEffect(() => {
     if (settings.theme === 'auto') document.documentElement.removeAttribute('data-theme');
@@ -30,6 +63,15 @@ export default function App() {
     [setSettings]
   );
 
+  // Remember the set in the URL, or fix a URL that names a set that doesn't exist.
+  useEffect(() => {
+    if (waitingForSets) return;
+    if (route.setId && route.setId !== currentSet.id) navigate({ view: 'list', setId: currentSet.id }, { replace: true });
+    if (currentSet.id !== settings.setId) updateSettings({ setId: currentSet.id });
+  }, [waitingForSets, route.setId, currentSet.id, settings.setId, navigate, updateSettings]);
+
+  if (waitingForSets) return <p className="notice">Loading question sets…</p>;
+
   // Keyed by set id so each set loads its own bank, progress and position.
   return (
     <Workspace
@@ -38,23 +80,33 @@ export default function App() {
       setsState={setsState}
       settings={settings}
       updateSettings={updateSettings}
+      route={route}
+      navigate={navigate}
     />
   );
 }
 
-function Workspace({ set, setsState, settings, updateSettings }) {
+function Workspace({ set, setsState, settings, updateSettings, route, navigate }) {
   const [ui, setUi] = usePersistentState(`ui.${set.id}`, { view: 'list', currentId: null, chapter: 'all' });
   const [progress, setProgress] = usePersistentState(`progress.${set.id}`, {});
   const bankState = useQuestionBank(set);
   const { bank } = bankState;
 
   const questions = useMemo(() => bank?.questions ?? [], [bank]);
-  const index = questions.findIndex((q) => q.id === ui.currentId);
+  const currentId = route.view === 'question' ? route.questionId : null;
+  const index = currentId ? questions.findIndex((q) => q.id === currentId) : -1;
   const current = index >= 0 ? questions[index] : null;
 
-  const go = (view, currentId = ui.currentId) => {
-    if (view === 'about' && ui.view !== 'about') track('about_view');
-    setUi((u) => ({ ...u, view, currentId }));
+  // Remember the last screen, so opening the app without a URL hash resumes there.
+  useEffect(() => {
+    setUi((u) => ({ ...u, view: route.view, currentId: route.questionId ?? u.currentId }));
+  }, [route.view, route.questionId, setUi]);
+
+  const go = (view, questionId) => {
+    if (view === 'about' && route.view !== 'about') track('about_view');
+    if (view === 'about') navigate({ view: 'about' });
+    else if (view === 'question') navigate({ view: 'question', setId: set.id, questionId });
+    else navigate({ view: 'list', setId: set.id });
     window.scrollTo(0, 0);
   };
 
@@ -69,9 +121,23 @@ function Workspace({ set, setsState, settings, updateSettings }) {
   const chooseSet = (setId) => {
     track('set_changed', { setId, data: { from: set.id } });
     updateSettings({ setId });
+    // On the About page stay there; otherwise go to where you left off in that set.
+    if (route.view !== 'about') {
+      const next = resumeRoute(setId);
+      navigate(next.view === 'about' ? { view: 'list', setId } : next);
+    }
   };
   const passed = questions.filter((q) => progress[q.id]?.status === 'passed').length;
-  const view = ui.view === 'question' && !current ? 'list' : ui.view;
+  const view = route.view === 'question' && !current ? 'list' : route.view;
+
+  // A link to a question that isn't in this set (any more) shows the list instead.
+  useEffect(() => {
+    if (route.view === 'question' && bank && !current) navigate({ view: 'list', setId: set.id }, { replace: true });
+  }, [route.view, bank, current, set.id, navigate]);
+
+  useEffect(() => {
+    document.title = view === 'question' && current ? `${current.title} · JS Practice Exam` : 'JS Practice Exam';
+  }, [view, current]);
 
   return (
     <div className="app">

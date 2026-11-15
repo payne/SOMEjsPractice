@@ -35,6 +35,12 @@
 }
 
 * { box-sizing: border-box; }
+/* No font ligatures anywhere: code must show exactly the characters typed (=>, !==, fi, ...).
+   !important because a later "font" shorthand would otherwise reset font-variant-ligatures. */
+*, *::before, *::after {
+  font-variant-ligatures: none !important;
+  font-feature-settings: "liga" 0, "clig" 0, "calt" 0, "dlig" 0 !important;
+}
 body {
   margin: 0;
   background: var(--bg);

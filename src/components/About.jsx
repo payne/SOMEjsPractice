@@ -122,9 +122,10 @@ export default function About({ set, sets, chooseSet, bankState, settings, updat
       )}
 
       <h2>Add a question set</h2>
-      <form className="row" onSubmit={addSet}>
+      <form className="row" onSubmit={addSet} autoComplete="off">
         <label className="grow">URL of a question set JSON file
           <input value={url} onChange={(e) => setUrl(e.target.value)} spellCheck={false}
+            type="url" name="question-set-url" autoComplete="off" autoCorrect="off" autoCapitalize="off"
             placeholder="https://example.com/my-questions.json" />
         </label>
         <button type="submit" disabled={adding.busy || !url.trim()}>

@@ -134,7 +134,7 @@ export function buildDocument(question, code, mode) {
   return `<!doctype html>
 <html><head><meta charset="utf-8">
 ${question.useJQueryUI && jqueryUi ? `<style>${jqueryUi.css.replace(/<\/style/gi, '<\\/style')}</style>` : ''}
-<style>body{font-family:system-ui,sans-serif;margin:0;padding:.5em;color:#222;background:#fff}${setup.css || ''}</style>
+<style>*{font-variant-ligatures:none;font-feature-settings:"liga" 0,"clig" 0,"calt" 0}body{font-family:system-ui,sans-serif;margin:0;padding:.5em;color:#222;background:#fff}${setup.css || ''}</style>
 </head><body>
 ${setup.html || ''}
 <script>${BOOTSTRAP}</script>

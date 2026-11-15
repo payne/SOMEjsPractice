@@ -297,3 +297,7 @@ Visitors who already have the app open will start sending counts once their brow
 ### 10:11 — Claude (response)
 
 The stats page at https://tracksomejs.appfarms.org/ now links to the app. In the first sentence, "JS Practice Exam app" goes to https://payne.github.io/SOMEjsPractice/. It's deployed, and I checked that the live page has the link. If you had the page open, reload it; browsers may keep the old copy for up to 5 minutes. The change is committed and pushed.
+
+### 10:16 — User
+
+> Tracker has a question sets table with number of users, views, etc.  This includes the name of the question.  The name of the question should be a hyperlink to the question page on https://payne.github.io/SOMEjsPractice.   This will require changing https://payne.github.io/SOMEjsPractice so that each question has a unique URL.  Also enhance https://payne.github.io/SOMEjsPractice so that font ligatures are not used.   There should be no auto complete in the https://payne.github.io/SOMEjsPractice/ application.
