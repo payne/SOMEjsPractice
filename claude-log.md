@@ -261,3 +261,26 @@ Since the data is public, anyone can see it. I kept it to counts and question ti
 ### 10:07 — User
 
 > Deploy all of this
+
+### 10:09 — Claude (work done)
+
+- Logged in to Cloudflare with `wrangler login` (approved in the browser).
+- Created the D1 database `track-somejs` (ID in `tracker/wrangler.jsonc`) and its `events` table.
+- Deployed the Worker to the custom domain `tracksomejs.appfarms.org`. Checked the stats page, `/summary.json`, an upload with no events, and that uploads from other sites are refused.
+- Committed and pushed (1ae2d49); the GitHub Pages deploy succeeded.
+- Opened the live app in headless Chromium: its `app_open` and `question_view` events reached the tracker with version 1.3.0. Then deleted those test rows so the stats start at zero.
+
+### 10:09 — Claude (response)
+
+It's all live. I deployed the tracker to **https://tracksomejs.appfarms.org**, and the app with tracking (version 1.3.0) is on GitHub Pages.
+
+- **Stats page:** https://tracksomejs.appfarms.org/
+- **JSON downloads:** https://tracksomejs.appfarms.org/summary.json and https://tracksomejs.appfarms.org/events.json (5,000 events per page; `tracker/README.md` has a loop to download all of them)
+
+I checked it end to end. The live app's events reached the tracker, and uploads from other websites were refused. I then deleted my test events, so your counts start at zero.
+
+**What I set up in your Cloudflare account:** a Worker named `track-somejs` on the custom domain `tracksomejs.appfarms.org` (Cloudflare added the DNS record and certificate), and a D1 database named `track-somejs`. Both are well within the free plan for this kind of traffic.
+
+**Later changes:** run `npm run deploy` in `tracker/` to publish a change to the tracker. App changes still deploy when you push to `main`.
+
+Visitors who already have the app open will start sending counts once their browser loads the new version, usually on their next visit.
