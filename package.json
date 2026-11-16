@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "icons": "node scripts/make-icons.mjs",
-    "verify": "node scripts/verify-questions.mjs"
+    "verify": "node scripts/verify-questions.mjs",
+    "codingbat": "node scripts/codingbat/build.mjs"
   },
   "dependencies": {
     "fflate": "^0.8.3",

@@ -202,6 +202,7 @@ function Workspace({ set, setsState, settings, updateSettings, route, navigate }
             number={index + 1}
             total={questions.length}
             chapters={bank.chapters || {}}
+            chapterLabel={bank.chapterLabel}
             entry={progress[current.id] || {}}
             update={(change) => updateProgress(current.id, change)}
             settings={settings}

@@ -8,7 +8,7 @@ import { trackQuestion } from '../analytics.js';
 const CHECK_TIMEOUT_MS = 15000;
 
 export default function QuestionView({
-  question, set, number, total, chapters, entry, update, settings, onPrev, onNext, onBack,
+  question, set, number, total, chapters, chapterLabel, entry, update, settings, onPrev, onNext, onBack,
 }) {
   const starter = question.starterCode ?? '';
   const code = entry.code ?? starter;
@@ -75,7 +75,7 @@ export default function QuestionView({
 
   const downloadFiles = async () => {
     const { fileName, blob } = await buildQuestionZip({
-      set, question, number, code, chapters,
+      set, question, number, code, chapters, chapterLabel,
       includeHelp: !settings.examMode,
       appUrl: window.location.origin + window.location.pathname,
     });
@@ -124,7 +124,9 @@ export default function QuestionView({
       <h1>{question.title}</h1>
       <div className="chips">
         {(question.chapters || []).map((c) => (
-          <span key={c} className="chip">Ch {c}{chapters[c] ? ` · ${chapters[c]}` : ''}</span>
+          <span key={c} className="chip">
+            {chapterLabel ? `${chapterLabel} ${chapters[c] ?? c}` : `Ch ${c}${chapters[c] ? ` · ${chapters[c]}` : ''}`}
+          </span>
         ))}
         {question.difficulty && <span className={`chip diff-${question.difficulty}`}>{question.difficulty}</span>}
         {question.useJQuery && <span className="chip">jQuery 3 loaded</span>}
@@ -133,6 +135,12 @@ export default function QuestionView({
       <div className="qgrid">
         <div className="col">
           <Prompt text={question.prompt} />
+          {question.source?.url && (
+            <p className="source muted">
+              Adapted from <a href={question.source.url} target="_blank" rel="noreferrer">{question.source.title || question.source.url}</a>
+              {question.source.author && ` by ${question.source.author}`}.
+            </p>
+          )}
 
           {question.setup?.html && (
             <details open className="setup">

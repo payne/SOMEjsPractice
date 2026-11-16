@@ -68,9 +68,15 @@ for (const key of Object.keys(seed)) {
 `;
 }
 
-function readme({ set, question, number, chapters, appUrl, includeHelp }) {
+function readme({ set, question, number, chapters, chapterLabel, appUrl, includeHelp }) {
   const chapterLines = (question.chapters || [])
-    .map((c) => `- Chapter ${c}${chapters[c] ? `: ${chapters[c]}` : ''}`).join('\n');
+    .map((c) => (chapterLabel
+      ? `- ${chapterLabel}: ${chapters[c] ?? c}`
+      : `- Chapter ${c}${chapters[c] ? `: ${chapters[c]}` : ''}`)).join('\n');
+  const src = question.source;
+  const sourceLine = src?.url
+    ? `\n\nAdapted from [${src.title || src.url}](${src.url})${src.author ? ` by ${src.author}` : ''}.`
+    : '';
   const node = question.node;
   const files = node
     ? ['- `README.md` — this file', '- `main.js` — **your code goes here**']
@@ -100,7 +106,7 @@ ${question.difficulty ? `- Difficulty: ${question.difficulty}\n` : ''}${chapterL
 
 ## The question
 
-${question.prompt}
+${question.prompt}${sourceLine}
 
 ## Files
 
@@ -131,12 +137,12 @@ ${appUrl ? `\nApp: ${appUrl}\n` : ''}`;
 }
 
 /** Returns a promise of { fileName, blob } for one question. */
-export async function buildQuestionZip({ set, question, number, code, chapters = {}, includeHelp = true, appUrl = '' }) {
+export async function buildQuestionZip({ set, question, number, code, chapters = {}, chapterLabel, includeHelp = true, appUrl = '' }) {
   const { setFolder, questionFolder } = folderNames(set, question, number);
   const root = `SOMEjsPractice/${setFolder}/${questionFolder}/`;
   const { jqueryUi } = await prepareQuestion(question);
   const files = {
-    'README.md': readme({ set, question, number, chapters, appUrl, includeHelp }),
+    'README.md': readme({ set, question, number, chapters, chapterLabel, appUrl, includeHelp }),
   };
   if (question.node) {
     Object.assign(files, question.node.files || {}, question.node.modules || {});

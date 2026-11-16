@@ -11,6 +11,12 @@
       "title": "Chapter Tour",
       "description": "Ten questions drawn from the book's chapter topics: debugging, timers, numbers and dates, regex and exceptions, web storage, sets and maps, classes, closures and Ajax.",
       "url": "questions-chapter-tour.json"
+    },
+    {
+      "id": "codingbat",
+      "title": "CodingBat in JavaScript",
+      "description": "317 JavaScript versions of the CodingBat Java problems: warmups, strings, arrays, logic, recursion, maps and map/filter.",
+      "url": "codingbat.json"
     }
   ]
 }

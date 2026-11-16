@@ -92,12 +92,36 @@ const RUNNER = `
 
   if (job.mode !== 'check') { post({ type: 'done' }); return; }
 
+  // expectEqual(actual, expected): true if they match (arrays in order, objects in any
+  // key order, a Map counts as an object), otherwise throws "got <actual>" for the results.
+  const plain = (v) => (v instanceof Map ? Object.fromEntries(v) : v);
+  const same = (a, b) => {
+    a = plain(a);
+    if (Object.is(a, b) || a === b) return true;
+    if (Array.isArray(b)) return Array.isArray(a) && a.length === b.length && b.every((x, i) => same(a[i], x));
+    if (b && typeof b === 'object') {
+      if (!a || typeof a !== 'object' || Array.isArray(a)) return false;
+      const keys = Object.keys(b);
+      return Object.keys(a).length === keys.length &&
+        keys.every((k) => Object.prototype.hasOwnProperty.call(a, k) && same(a[k], b[k]));
+    }
+    return false;
+  };
+  const show = (v) => {
+    if (v === undefined) return 'undefined';
+    try { return JSON.stringify(plain(v)); } catch (e) { return String(v); }
+  };
+  const expectEqual = (actual, expected) => {
+    if (same(actual, expected)) return true;
+    throw new Error('got ' + show(actual));
+  };
+
   const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
   const results = [];
   for (const test of job.tests) {
     try {
-      const fn = new AsyncFunction('logs', 'code', 'wait', test.code);
-      const pass = await fn(logs, job.code, wait);
+      const fn = new AsyncFunction('logs', 'code', 'wait', 'expectEqual', test.code);
+      const pass = await fn(logs, job.code, wait, expectEqual);
       results.push({ name: test.name, pass: pass === true });
     } catch (e) {
       results.push({ name: test.name, pass: false, error: e.message });

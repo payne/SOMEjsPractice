@@ -330,3 +330,49 @@ Done and live. Every question now has its own URL, and the stats page links to i
 **Tested:** I checked all of this in a headless browser, both locally and on the live site, including direct links in a fresh browser, Back, and links that don't exist. All 20 questions still pass their checks. I deleted my test events from the tracker. The 5 events left came from another visitor (possibly you) using version 1.3.0.
 
 Version 1.4.0 is committed, pushed and deployed.
+
+## Session 3 — 2026-11-16
+
+### 08:12 — User
+
+> Create a question pool that allows a person to practice javascript using javascript versions of the questions at https://codingbat.com/java give full credit to https://codingbat.com/java for these questions.
+
+### 08:31 — Claude (work done)
+
+- Downloaded the CodingBat Java problem list and all 317 problem pages (no robots.txt on the site; one request about every 0.7 s), and parsed each description, Java signature and its examples (949 in total).
+- `scripts/codingbat/`: `fetch.mjs` (downloads and parses, with a page cache), `problems.json` (the parsed problems; CodingBat's Java solutions are not kept), `solutions.mjs` (a model JavaScript answer for every problem) and `build.mjs` (`npm run codingbat`: checks every answer against CodingBat's examples, then writes `public/codingbat.json`).
+- New set "CodingBat in JavaScript" (`codingbat.json`, 317 questions) in `question-sets.json`. CodingBat's 17 sections are the chapters. Descriptions have Java details changed to JavaScript. Each question has CodingBat's examples, the starter `function name(params) {}`, 1–2 hints for its section and a model solution. Recursion questions also check for no loops, and Functional questions check for `map()`/`filter()`. zeroFront, evenOdd, fix34 and fix45 accept any valid answer.
+- Credit to CodingBat: on the set's list page (with a link to https://codingbat.com/java), under every question ("Adapted from CodingBat Java › Section › name by Nick Parlante", linking to the original problem), in each downloaded README.md, and on the About page.
+- App changes: `expectEqual(actual, expected)` helper for checks, which shows "got …" when a check fails (`src/harness.js`). Optional `chapterLabel`, `credit` and per-question `source` fields (`QuestionList`, `QuestionView`, `About`, `offlinePackage`). Version 1.5.0. README updated.
+- Tested: `npm run verify` 337 questions all OK; wrong answers report "got …"; a `Map` return value and another valid zeroFront order pass; a loop in count7 fails the recursion check; screenshots of the list and a question page; `npm run build` OK. Not committed.
+
+### 08:31 — Claude (response)
+
+I added a new question set, **CodingBat in JavaScript**. It has a JavaScript version of all 317 problems on https://codingbat.com/java, in CodingBat's order. You pick it from the question set menu like the other two sets, and you can filter by CodingBat's sections (Warmup-1 … Functional-2) instead of chapters.
+
+**Credit to CodingBat** appears in four places:
+- **List page:** "All credit for these problems goes to CodingBat: https://codingbat.com/java"
+- **Each question:** "Adapted from CodingBat Java › Recursion-1 › count8 by Nick Parlante", linking to that exact problem on CodingBat.
+- **Downloaded zip:** the README.md says the same.
+- **About page and README:** they credit CodingBat too.
+
+**What each question has:**
+- **Description:** CodingBat's wording, with the Java parts changed to JavaScript. For example, `str.length()` becomes `str.length`, `.equals()` becomes `===`, Maps become plain objects, Lists become arrays, and there's a note about `Math.floor()` where Java relies on int division.
+- **Examples and checks:** CodingBat's examples are shown and are also the automatic checks. A wrong answer now shows what the function returned, for example "sleepIn(false, false) → true — got false".
+- **Extra checks:** Recursion questions check that no loops are used, and Functional questions check for `map()` / `filter()`. For zeroFront, evenOdd, fix34 and fix45, CodingBat says other orders are fine, so any valid answer passes.
+- **Help:** starter code `function name(params) { }`, hints for each section, and a model solution.
+
+**Tested:**
+- Every model solution passes all 949 of CodingBat's examples.
+- `npm run verify` reports all 337 questions in the three sets OK (each solution passes and each blank starter fails).
+- Deliberately wrong answers fail with the right message.
+- I checked the list and question pages in a headless browser.
+
+**Where it lives:**
+- The set is `public/codingbat.json`.
+- The scripts that make it are in `scripts/codingbat/`. `npm run codingbat` rebuilds the set after you edit a solution.
+- The app version is now 1.5.0.
+
+**Before you publish:** CodingBat doesn't state a license for its problem text, and this set reuses its descriptions and examples. Crediting it may not be enough for a public site. You may want to ask Nick Parlante (the site's author) for permission.
+
+I haven't committed or pushed anything, because a push deploys the set to GitHub Pages. Should I commit and push it?

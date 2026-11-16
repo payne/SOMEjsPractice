@@ -5,7 +5,7 @@ export const GITHUB_URL = 'https://github.com/payne/SOMEjsPractice';
 // a question bank JSON file. More sets can be added by URL on the About page.
 export const QUESTION_SETS_URL = 'question-sets.json';
 
-export const APP_VERSION = '1.4.0';
+export const APP_VERSION = '1.5.0';
 
 // Where anonymous usage counts are sent (see tracker/). Empty string turns tracking off.
 // VITE_TRACK_URL overrides it at build time (e.g. a local tracker for testing).

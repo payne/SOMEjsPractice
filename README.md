@@ -45,10 +45,31 @@ the About page, and can add their own set by URL on the About page (the URL must
 |---|---|---|
 | Core Practice | `questions.json` | Loops, functions, DOM scripting, events, jQuery (ch 3–10) |
 | Chapter Tour | `questions-chapter-tour.json` | One question per chapter topic: ch 2, 5, 7, 12–18 |
+| CodingBat in JavaScript | `codingbat.json` | 317 JavaScript versions of the [CodingBat Java](https://codingbat.com/java) problems by Nick Parlante |
 
 To add a built-in set, drop a question JSON file in `public/` and add an entry to
 `question-sets.json`: `{ "id": "…", "title": "…", "description": "…", "url": "file.json" }`.
 Every file in `public/` is cached for offline use automatically.
+
+## CodingBat in JavaScript
+
+The **CodingBat in JavaScript** set contains JavaScript versions of every problem in
+[CodingBat Java](https://codingbat.com/java) by Nick Parlante — all credit for these problems goes
+to CodingBat. The set's list page, each question (with a link to the original problem) and the
+About page all say so. Sections (Warmup-1 … Functional-2) take the place of chapters.
+
+- The descriptions are CodingBat's, with Java details changed to JavaScript (`str.length`
+  instead of `str.length()`, plain objects instead of `Map`, arrays instead of `List`, and
+  `Math.floor()` where Java relies on int division).
+- The checks are CodingBat's examples. Recursion questions also check that no loops are used, and
+  Functional questions that `map()`/`filter()` are used. Where CodingBat says any order is fine
+  (`zeroFront`, `evenOdd`, `fix34`, `fix45`), any valid answer passes.
+- Files in `scripts/codingbat/`: `problems.json` (descriptions, signatures and examples from
+  CodingBat), `solutions.mjs` (model JavaScript answers), `build.mjs` (writes
+  `public/codingbat.json`) and `fetch.mjs` (downloads the problems again, only needed if CodingBat
+  changes).
+- `npm run codingbat` checks every model answer against CodingBat's examples and rebuilds the
+  set; then run `npm run verify -- codingbat.json`.
 
 ## Working on a question outside the app
 
@@ -100,6 +121,8 @@ The app sends anonymous usage counts to a Cloudflare Worker at
 {
   "title": "…", "book": "…", "version": 1,
   "chapters": { "3": "The essential JavaScript statements", … },
+  "chapterLabel": "Section",         // optional: show chapter names ("Warmup-1") instead of "Ch 3"
+  "credit": { "text": "…", "url": "https://…" },  // optional: credit line on the list and About pages
   "questions": [{
     "id": "q01-for-loop-sum",        // unique within the set; progress is saved under this id
     "title": "Sum with a for loop",
@@ -113,6 +136,7 @@ The app sends anonymous usage counts to a Cloudflare Worker at
     "starterCode": "// …",
     "hints": ["…"],
     "solution": "…",
+    "source": { "title": "…", "url": "https://…", "author": "…" },  // optional: credit link shown under the prompt
     "tests": [
       { "name": "total equals 55", "code": "return typeof total !== 'undefined' && total === 55;" }
     ]
@@ -125,6 +149,9 @@ With `mockFetch`, `fetch()` in the sandbox answers the listed URLs with that JSO
 
 Each test's `code` is the body of an `async` function that runs inside the sandbox after the
 student's code. It must `return true` to pass, and can use:
+
+- `expectEqual(actual, expected)` — returns `true` when they match (arrays in order, objects in
+  any key order; a `Map` counts as an object), otherwise fails the check with "got <actual>"
 
 - the page's `document`, and any globals the student declared (`let`/`const`/functions)
 - `logs` — array of strings written with `console.log`

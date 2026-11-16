@@ -80,6 +80,11 @@ export default function About({ set, sets, chooseSet, bankState, settings, updat
         code from memory — a loop, a function, a line that changes the page — and then checks it
         automatically in a sandbox. Works offline once loaded.
       </p>
+      <p>
+        The <em>CodingBat in JavaScript</em> set is made of JavaScript versions of the{' '}
+        <a href="https://codingbat.com/java" target="_blank" rel="noreferrer">CodingBat Java</a> problems
+        by Nick Parlante. All credit for those problems goes to CodingBat.
+      </p>
 
       <dl className="facts">
         <dt>GitHub</dt>
@@ -109,6 +114,12 @@ export default function About({ set, sets, chooseSet, bankState, settings, updat
       <h2>Current set: {set.title}</h2>
       <dl className="facts">
         <dt>Questions</dt><dd>{questionCount}{bank?.version != null && ` (version ${bank.version})`}</dd>
+        {bank?.credit?.url && (
+          <>
+            <dt>Credit</dt>
+            <dd>{bank.credit.text} <a href={bank.credit.url} target="_blank" rel="noreferrer">{bank.credit.url}</a></dd>
+          </>
+        )}
         <dt>Downloaded from</dt><dd><code>{source ?? set.url}</code></dd>
         <dt>Last downloaded</dt><dd>{fetchedAt ? new Date(fetchedAt).toLocaleString() : '—'}</dd>
       </dl>
